@@ -8,6 +8,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/Store";
 import { fetchTabs } from "@/store/Slice/tabSlice";
 import EmptyRequest from "@/components/EmptyRequest";
+import { ApiHistory } from '@/types/types'
+
+const emptyApiHistory: ApiHistory = {
+  _id: "",
+  userId: "",
+  url: "",
+  method: "GET",
+  statusCode: 0,
+  responseTime: 0,
+  isError: false,
+  testedAt: "",
+};
 
 export default function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -20,7 +32,14 @@ export default function MainLayout() {
 
   const { tabs, activeTab } = useSelector((state: RootState) => state.tabs);
   const activeTabData = tabs.find(t => t._id === activeTab);
-  console.log(tabs);
+  console.log('tabs', tabs);
+  console.log('activeTab', activeTab);
+  console.log('activeTabData', activeTabData);
+
+  useEffect(() => {
+    console.log('activeTab changed');
+
+  }, [activeTab])
 
   // console.log(location.pathname !== '/request' && location.pathname !== '/');
   const isNotRequestRoute = location.pathname !== '/request' && location.pathname !== '/';
@@ -63,7 +82,13 @@ export default function MainLayout() {
               <main className="flex-1">
                 {
                   tabs.length === 0 ? <EmptyRequest /> :
-                    <RequestForm defaultData={activeTabData?.historyData} />
+                    <>
+                      {
+                        location.pathname === '/request' ?
+                          <RequestForm defaultData={emptyApiHistory} /> :
+                          <RequestForm defaultData={activeTabData?.historyData} />
+                      }
+                    </>
                 }
                 {/* <div className="rounded-lg shadow h-full">
                   Main Content Area

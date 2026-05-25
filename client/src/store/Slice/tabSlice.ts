@@ -11,7 +11,19 @@ export interface Tab {
 }
 
 const defaultTabs: Tab[] = [
-  { _id: "685ef1bb24ffd532a328e922", name: "New Tab", sidebar: "request", method: 'GET' },
+  {
+    _id: "685ef1bb24ffd532a328e922", name: "New Tab", sidebar: "request", method: 'GET',
+    historyData: {
+      _id: '685ef1bb24ffd532a328e922',
+      userId: '685ef1bb24ffd532a328e922',
+      url: '',
+      method: 'GET',
+      statusCode: 200,
+      responseTime: 23,
+      isError: false,
+      testedAt: '',
+    }
+  },
 ];
 
 type TabState = {
@@ -194,6 +206,8 @@ const tabSlice = createSlice({
       })
       // addTabAsync
       .addCase(addTabAsync.fulfilled, (state, action) => {
+        console.log('action.payload._id', action.payload._id);
+
         state.tabs.push(action.payload);
         state.activeTab = action.payload._id;
       })
