@@ -6,13 +6,15 @@ export interface Tab {
   _id: string;
   name: string;
   sidebar: string;
+  url: string;
   method: MethodsTypes;
-  historyData?: ApiHistory;
+  historyData?: ApiHistory | RequestItem;
 }
 
 const defaultTabs: Tab[] = [
   {
     _id: "685ef1bb24ffd532a328e922", name: "New Tab", sidebar: "request", method: 'GET',
+    url: '',
     historyData: {
       _id: '685ef1bb24ffd532a328e922',
       userId: '685ef1bb24ffd532a328e922',
@@ -32,20 +34,6 @@ type TabState = {
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 };
-
-// interface RequestItem {
-//   _id: string;
-//   name: string;
-//   method: MethodsTypes;
-//   url: string;
-//   headers: any[];
-//   queryParams: any[];
-//   body: {
-//     type: string;
-//   };
-//   createdAt?: string;
-//   updatedAt?: string;
-// }
 
 const initialState: TabState = {
   tabs: defaultTabs,
@@ -94,11 +82,11 @@ const tabSlice = createSlice({
       const selectedCollectionItem = action.payload;
       const existingTabId = `collection-${selectedCollectionItem._id}`;
       const hasCollectionId = current(state).tabs.some(item => item._id.startsWith("collection"));
-      console.log('start with collection', hasCollectionId);
-      console.log('current tab ', current(state).tabs);
+      // console.log('start with collection', hasCollectionId);
+      // console.log('current tab ', current(state).tabs);
 
       if (hasCollectionId) {
-        console.log(' Updating cillection tab');
+        // console.log(' Updating cillection tab');
 
         // find existing collection tab
         const collectionTab = state.tabs.find(tab =>
@@ -110,7 +98,7 @@ const tabSlice = createSlice({
           collectionTab.name = String(selectedCollectionItem.url);
           collectionTab.sidebar = "collection";
           collectionTab.method = selectedCollectionItem.method;
-          // collectionTab.historyData = selectedCollectionItem;
+          collectionTab.historyData = selectedCollectionItem;
 
           // make that tab active
           state.activeTab = collectionTab._id;
@@ -118,14 +106,15 @@ const tabSlice = createSlice({
       }
 
       if (current(state).tabs.length === 0 || !hasCollectionId) {
-        console.log('Creating new Tab');
+        // console.log('Creating new Tab');
         // Creating New Tab 
         const newTab: Tab = {
           _id: existingTabId,
+          url: '',
           name: String(selectedCollectionItem.url),
           sidebar: "history",
           method: selectedCollectionItem.method,
-          // historyData: selectedCollectionItem
+          historyData: selectedCollectionItem
         };
         // console.log(newTab);
 
@@ -142,8 +131,8 @@ const tabSlice = createSlice({
         item._id.startsWith("history")
       );
 
-      console.log('start with history', hasHistoryId);
-      console.log('current tab ', current(state).tabs);
+      // console.log('start with history', hasHistoryId);
+      // console.log('current tab ', current(state).tabs);
 
       if (hasHistoryId) {
         console.log('Updating history tab');
@@ -166,11 +155,12 @@ const tabSlice = createSlice({
       }
 
       if (current(state).tabs.length === 0 || !hasHistoryId) {
-        console.log('Creating new Tab');
+        // console.log('Creating new Tab');
 
         // Creating New Tab
         const newTab: Tab = {
           _id: existingTabId,
+          url: '',
           name: String(selectedHistoryItem.url),
           sidebar: "history",
           method: selectedHistoryItem.method,
@@ -224,7 +214,7 @@ const tabSlice = createSlice({
         // If no tabs are left, we could optionally add a default tab back here
         if (state.tabs.length === 0) {
           return
-          const newTab: Tab = { _id: `default-${Date.now()}`, name: "New Tab", sidebar: "request", method: 'GET' };
+          const newTab: Tab = { _id: `default-${Date.now()}`, name: "New Tab", sidebar: "request", method: 'GET', url: '' };
           state.tabs.push(newTab);
           state.activeTab = newTab._id;
         }

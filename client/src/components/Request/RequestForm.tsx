@@ -12,7 +12,7 @@ import {
 } from "@/types/types";
 import SnippetSlide from "@/components/UI/SnippetSlide";
 import api from "@/lib/api";
-import { ApiHistory } from '@/types/types'
+import { ApiHistory, RequestItem } from '@/types/types';
 // import {
 //   // useDispatch,
 //   useSelector
@@ -22,7 +22,7 @@ import { ApiHistory } from '@/types/types'
 export default function RequestForm({
   defaultData,
 }: {
-  defaultData?: ApiHistory;
+  defaultData?: ApiHistory | RequestItem;
 }) {
   // export default function RequestForm({default}:{default : string}) {
   const [method, setMethod] = useState<MethodsTypes>("GET");
@@ -41,23 +41,14 @@ export default function RequestForm({
   const [fullUrl, setFullUrl] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [openRightSlider, setOpenRightSlider] = useState(false);
-  const [activeLang, setActiveLang] = useState<"curl" | "fetch" | "axios">(
-    "curl",
-  );
-
-  // console.log(defaultData);
-  // useEffect(() => {
-  //   console.log('tabs');
-
-  // }, [tabs]);
-  // console.log(defaultData?.url);
+  const [activeLang, setActiveLang] = useState<"curl" | "fetch" | "axios">("curl",);
 
   useEffect(() => {
     if (defaultData) {
       // console.log(defaultData.method);
       setSelected(defaultData.method);
       setMethod(defaultData.method);
-      if(defaultData?.url){
+      if (defaultData?.url) {
         setFullUrl(defaultData?.url);
       } else {
         setFullUrl(defaultData.url);

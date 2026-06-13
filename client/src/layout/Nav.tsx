@@ -108,7 +108,7 @@ export const NavBar = ({ setSidebarOpen }: NavBarProps) => {
   ]
   const handleAddWorkSpace = async () => {
     try {
-      const response = await api.post("/request/bulk",payload);
+      const response = await api.post("/request/bulk", payload);
       console.log(response);
     } catch (error) {
       console.error(error);
@@ -134,11 +134,13 @@ export const NavBar = ({ setSidebarOpen }: NavBarProps) => {
 
       <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
         <div className="grid flex-1 grid-cols-4 gap-4">
-          <div
-            className="text-center cursor-pointer rounded-md border border-gray-500 dark:border-gray-600 px-2 py-2 text-sm font-semibold text-gray-600 dark:text-gray-300 my-2"
-          >
-            Home
-          </div>
+          <Link to={`/`}>
+            <div
+              className="text-center cursor-pointer rounded-md border border-gray-500 dark:border-gray-600 px-2 py-2 text-sm font-semibold text-gray-600 dark:text-gray-300 my-2"
+            >
+              Home
+            </div>
+          </Link>
           <div
             className="text-center cursor-pointer rounded-md border border-gray-500 dark:border-gray-600 px-2 py-2 text-sm font-semibold text-gray-600 dark:text-gray-300 my-2"
             onClick={() => handleAddWorkSpace()}

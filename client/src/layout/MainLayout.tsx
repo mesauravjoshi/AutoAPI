@@ -32,9 +32,9 @@ export default function MainLayout() {
 
   const { tabs, activeTab } = useSelector((state: RootState) => state.tabs);
   const activeTabData = tabs.find(t => t._id === activeTab);
-  console.log('tabs', tabs);
-  console.log('activeTab', activeTab);
-  console.log('activeTabData', activeTabData);
+  // console.log('tabs', tabs);
+  // console.log('activeTab', activeTab);
+  // console.log('activeTabData', activeTabData);
 
   useEffect(() => {
     console.log('activeTab changed');
