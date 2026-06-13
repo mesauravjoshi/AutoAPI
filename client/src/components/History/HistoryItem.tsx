@@ -86,7 +86,7 @@ export default function HistoryItem({
         </div>
 
         <div className="text-sm opacity-60 shrink-0 flex items-center gap-2 min-w-0">
-          {formatTime(item.testedAt)}
+          {formatTime(item.createdAt)}
           <TrashIcon className="w-4 h-4 cursor-pointer hover:text-red-500 transition-colors z-10"
             onClick={(e) => {
               e.stopPropagation();

@@ -55,10 +55,12 @@ function RequestCard({
   request: RequestItem;
   onDelete: (id: string) => void;
 }) {
-  console.log('request', request);
+  // console.log('request', request);
   const dispatch = useDispatch();
 
   const handleClick = () => {
+    // console.log(request);
+    // return
     dispatch(
       addCollectionTab(request)
     );
@@ -114,7 +116,7 @@ function CollectionAccordion({
   onDeleteCollection: (collection: CollectionItem) => void;
 }) {
   const [open, setOpen] = useState(true);
-  console.log(collection);
+  // console.log(collection);
 
   return (
     <div className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
@@ -188,8 +190,7 @@ export default function CollectionComponent() {
   const { user } = useAuth();
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedCollection, setSelectedCollection] =
-    useState<CollectionItem | null>(null);
+  const [selectedCollection, setSelectedCollection] = useState<CollectionItem | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const handleCreateCollection = async () => {

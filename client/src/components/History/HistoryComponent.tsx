@@ -32,7 +32,7 @@ function getRelativeLabel(dateString: string) {
 
 function groupByDate(items: ApiHistory[]) {
   return items.reduce((acc: Record<string, ApiHistory[]>, item) => {
-    const dateKey = new Date(item.testedAt).toDateString();
+    const dateKey = new Date(item.createdAt).toDateString();
 
     if (!acc[dateKey]) {
       acc[dateKey] = [];

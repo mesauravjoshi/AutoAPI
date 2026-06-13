@@ -1,5 +1,5 @@
 import { current, createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
-import { MethodsTypes, ApiHistory } from '@/types/types'
+import { MethodsTypes, ApiHistory, RequestItem } from '@/types/types'
 import api from "@/lib/api";
 
 export interface Tab {
@@ -21,7 +21,7 @@ const defaultTabs: Tab[] = [
       statusCode: 200,
       responseTime: 23,
       isError: false,
-      testedAt: '',
+      createdAt: '',
     }
   },
 ];
@@ -90,7 +90,7 @@ const tabSlice = createSlice({
   name: "tabs",
   initialState,
   reducers: {
-    addCollectionTab: (state, action: PayloadAction<ApiHistory>) => {
+    addCollectionTab: (state, action: PayloadAction<RequestItem>) => {
       const selectedCollectionItem = action.payload;
       const existingTabId = `collection-${selectedCollectionItem._id}`;
       const hasCollectionId = current(state).tabs.some(item => item._id.startsWith("collection"));
@@ -110,7 +110,7 @@ const tabSlice = createSlice({
           collectionTab.name = String(selectedCollectionItem.url);
           collectionTab.sidebar = "collection";
           collectionTab.method = selectedCollectionItem.method;
-          collectionTab.historyData = selectedCollectionItem;
+          // collectionTab.historyData = selectedCollectionItem;
 
           // make that tab active
           state.activeTab = collectionTab._id;
@@ -125,7 +125,7 @@ const tabSlice = createSlice({
           name: String(selectedCollectionItem.url),
           sidebar: "history",
           method: selectedCollectionItem.method,
-          historyData: selectedCollectionItem
+          // historyData: selectedCollectionItem
         };
         // console.log(newTab);
 

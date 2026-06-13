@@ -18,7 +18,7 @@ const emptyApiHistory: ApiHistory = {
   statusCode: 0,
   responseTime: 0,
   isError: false,
-  testedAt: "",
+  createdAt: "",
 };
 
 export default function MainLayout() {

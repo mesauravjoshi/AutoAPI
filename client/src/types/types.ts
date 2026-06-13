@@ -54,7 +54,21 @@ export interface ApiHistory {
   statusCode: number;
   responseTime: number;
   isError: boolean;
-  testedAt: string;
+  createdAt: string;
 }
 
 export type MethodsTypes = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+
+export interface RequestItem {
+  _id: string;
+  name: string;
+  method: MethodsTypes;
+  url: string;
+  headers: any[];
+  queryParams: any[];
+  body: {
+    type: string;
+  };
+  createdAt?: string;
+  updatedAt?: string;
+}
