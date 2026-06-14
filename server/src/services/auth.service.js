@@ -2,10 +2,11 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "#models/user.js";
-import { Token } from "#models/token.js";
+import Token from "#models/token.js";
+import Workspace from "#models/workspace.js";
 
-export const signup = async ({ username, email, password }) => {
-  if (!username || !email || !password) {
+export const signup = async ({ username, email, password, firstname, lastname }) => {
+  if (!username || !email || !password || !firstname) {
     throw { status: 400, message: "All fields required!" };
   }
 
@@ -17,16 +18,25 @@ export const signup = async ({ username, email, password }) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  await User.create({
+  const newUser = await User.create({
     username,
     email,
+    firstname,
+    lastname,
     password: hashedPassword,
+  });
+
+  await Workspace.create({
+    name: `${firstname}'s Workspace`,
+    ownerId: newUser._id,
+    members: [newUser._id],
   });
 
   return { message: "User created successfully." };
 };
 
 export const login = async ({ email, password }) => {
+  
   if (!email || !password) {
     throw { status: 400, message: "Email and password required." };
   }
@@ -40,7 +50,7 @@ export const login = async ({ email, password }) => {
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
-    throw { status: 401, message: "Invalid email or password." };
+    throw { status: 422 , message: "Invalid email or password." };
   }
 
   const token = jwt.sign(
@@ -56,6 +66,11 @@ export const login = async ({ email, password }) => {
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
   });
 
+  // Find user's workspace
+  const workspace = await Workspace.findOne({
+    ownerId: user._id,
+  });
+
   return {
     message: "Login successful",
     user: {
@@ -64,6 +79,7 @@ export const login = async ({ email, password }) => {
       email: user.email,
     },
     token,
+    workspace
   };
 };
 

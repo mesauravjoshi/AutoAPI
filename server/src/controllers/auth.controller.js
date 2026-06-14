@@ -7,7 +7,7 @@ export const signup = async (req, res) => {
     return res.status(201).json(result);
   } catch (err) {
     return res.status(err.status || 500).json({
-      error: err.message || "Server error",
+      message: err.message || "Server error",
     });
   }
 };
@@ -18,7 +18,7 @@ export const login = async (req, res) => {
     return res.status(200).json(result);
   } catch (err) {
     return res.status(err.status || 500).json({
-      error: err.message,
+      message: err.message,
     });
   }
 };

@@ -8,6 +8,8 @@ export const signupApi = (data: {
   email: string;
   username: string;
   password: string;
+  firstname: string;
+  lastname?: string;
 }) => {
   return api.post("auth/signup", data);
 };

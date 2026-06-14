@@ -187,7 +187,8 @@ export default function CollectionComponent() {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState("");
-  const { user } = useAuth();
+  const { currentWorkspace } = useAuth();
+  // console.log(user);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState<CollectionItem | null>(null);
@@ -199,7 +200,7 @@ export default function CollectionComponent() {
       // The current backend controller expects name, url, and method.
       await api.post("/collection", {
         name: newCollectionName,
-        workspaceId: user?.workspaceId
+        workspaceId: currentWorkspace?._id,
       });
       setIsModalOpen(false);
       setNewCollectionName("");

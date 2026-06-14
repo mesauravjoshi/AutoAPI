@@ -1,40 +1,42 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+// import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { signupApi } from "@/services/authService";
+import toast from "react-hot-toast";
+
+type SignUpFormData = {
+  email: string;
+  firstname: string;
+  lastname: string;
+  username: string;
+  password: string;
+};
 
 export default function SignUp() {
-  const [formData, setFormData] = useState({
-    email: "",
-    username: "",
-    password: "",
+  const { register, handleSubmit, formState: { errors, isSubmitting }, } = useForm<SignUpFormData>({
+    defaultValues: {
+      email: "",
+      username: "",
+      password: "",
+    },
   });
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, name } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  const onSubmit = async (data: SignUpFormData) => {
+    try {
+      const response = await signupApi(data);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+      // console.log(response);
 
-    const signIn = async () => {
-      try {
-        const response = await signupApi(formData);
-        console.log(response);
-        if (response.data) {
-        }
-        // navigate('/login');
-      } catch (error) {
-        console.error(error);
+      if (response.data) {
+        toast.success("Account created successfully!");
+        navigate("/login");
       }
-    };
-
-    signIn();
+    } catch (error: any) {
+      console.error(error.response.data);
+      toast.error(error?.response?.data?.message || error?.response?.data?.error || "Signup failed. Please try again.");
+    }
   };
 
   return (
@@ -49,7 +51,7 @@ export default function SignUp() {
       {/* Card */}
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-120">
         <div className="bg-gray-white dark:bg-gray-800/50 shadow-sm px-6 py-12 outline -outline-offset-1 outline-gray-300 dark:outline-white/10 sm:rounded-lg sm:px-12">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             {/* Email */}
             <div>
               <label className="block text-sm/6 font-medium">
@@ -57,14 +59,53 @@ export default function SignUp() {
               </label>
               <div className="mt-2">
                 <input
-                  name="email"
                   type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
                   autoComplete="email"
+                  {...register("email", {
+                    required: "Email is required",
+                  })}
                   className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 dark:outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
                 />
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.email.message}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2">
+              {/* Firstname */}
+              <div>
+                <label className="block text-sm/6 font-medium">First Name</label>
+                <div className="mt-2">
+                  <input
+                    type="text"
+                    autoComplete="firstname"
+                    {...register("firstname", {
+                      required: "First name is required",
+                    })}
+                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 dark:outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                  />
+                  {errors.firstname && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.firstname.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* lastname */}
+              <div>
+                <label className="block text-sm/6 font-medium">Last name</label>
+                <div className="mt-2">
+                  <input
+                    type="text"
+                    autoComplete="lastname"
+                    {...register("lastname")}
+                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 dark:outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                  />
+                </div>
               </div>
             </div>
 
@@ -73,14 +114,18 @@ export default function SignUp() {
               <label className="block text-sm/6 font-medium">Username</label>
               <div className="mt-2">
                 <input
-                  name="username"
                   type="text"
-                  required
-                  value={formData.username}
-                  onChange={handleChange}
                   autoComplete="username"
+                  {...register("username", {
+                    required: "Username is required",
+                  })}
                   className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 dark:outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
                 />
+                {errors.username && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.username.message}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -89,14 +134,22 @@ export default function SignUp() {
               <label className="block text-sm/6 font-medium">Password</label>
               <div className="mt-2">
                 <input
-                  name="password"
                   type="password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
                   autoComplete="new-password"
+                  {...register("password", {
+                    required: "Password is required",
+                    minLength: {
+                      value: 6,
+                      message: "Password must be at least 6 characters",
+                    },
+                  })}
                   className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 dark:outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
                 />
+                {errors.password && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -104,9 +157,10 @@ export default function SignUp() {
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus:outline-indigo-500"
+                disabled={isSubmitting}
+                className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus:outline-indigo-500 disabled:opacity-50"
               >
-                Sign up
+                {isSubmitting ? "Signing up..." : "Sign up"}
               </button>
             </div>
           </form>
@@ -120,7 +174,7 @@ export default function SignUp() {
             <div className="w-full flex-1 border-t border-gray-400 dark:border-white/10" />
           </div>
 
-          {/* Social Buttons (same as login) */}
+          {/* Social Buttons */}
           <div className="mt-6 grid grid-cols-2 gap-4">
             <Link
               to="#"

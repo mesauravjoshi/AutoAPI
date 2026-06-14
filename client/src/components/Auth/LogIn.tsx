@@ -1,47 +1,44 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useForm } from "react-hook-form"; import { useNavigate, Link } from "react-router-dom";
 import { loginApi } from "@/services/authService";
 import { useAuth } from "@/hooks/useAuth";
+import toast from "react-hot-toast";
+
+type LoginFormData = {
+  email: string;
+  password: string;
+};
 
 const LogIn = () => {
   const { login } = useAuth();
 
   // const { theme, toggleTheme } = useTheme();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting }, } = useForm<LoginFormData>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
+
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, name } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const onSubmit = async (data: LoginFormData) => {
     try {
-      const response = await loginApi(formData);
+      const response = await loginApi(data);
+
       if (response.status === 200) {
-        console.log(response);
-        // return
         login({
           user: response.data.user,
           token: response.data.token,
+          workspace: response.data.workspace,
         });
+        toast.success("Successfully logged in!");
         navigate("/request");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      toast.error(error?.response?.data?.message || error?.response?.data?.error || "Login failed. Please try again.");
     } finally {
-      setFormData({
-        email: "",
-        password: "",
-      });
+      reset();
     }
   };
 
@@ -56,7 +53,7 @@ const LogIn = () => {
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-120">
           <div className="bg-gray-white dark:bg-gray-800/50 shadow-sm px-6 py-12 outline -outline-offset-1 outline-gray-300 dark:outline-white/10 sm:rounded-lg sm:px-12">
-            <form method="POST" className="space-y-6" onSubmit={handleSubmit}>
+            <form method="POST" className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <div>
                 <label htmlFor="email" className="block text-sm/6 font-medium ">
                   Email address
@@ -64,14 +61,17 @@ const LogIn = () => {
                 <div className="mt-2">
                   <input
                     id="email"
-                    name="email"
-                    // type="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
                     autoComplete="email"
+                    {...register("email", {
+                      required: "Email is required",
+                    })}
                     className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 dark:outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
                   />
+                  {errors.email && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -85,14 +85,18 @@ const LogIn = () => {
                 <div className="mt-2">
                   <input
                     id="password"
-                    name="password"
                     type="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
                     autoComplete="current-password"
+                    {...register("password", {
+                      required: "Password is required",
+                    })}
                     className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 dark:outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
                   />
+                  {errors.password && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -146,9 +150,10 @@ const LogIn = () => {
               <div>
                 <button
                   type="submit"
-                  className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                  disabled={isSubmitting}
+                  className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-50"
                 >
-                  Sign in
+                  {isSubmitting ? "Signing in..." : "Sign in"}
                 </button>
               </div>
             </form>
