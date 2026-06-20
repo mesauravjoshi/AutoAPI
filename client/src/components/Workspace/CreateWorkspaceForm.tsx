@@ -2,7 +2,9 @@ import {
   type FC,
 } from "react";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
+import toast from "react-hot-toast";
 import UserMultiSelect from "@/components/Common/MultiSelect";
+import { AxiosError } from "axios";
 
 export interface User {
   id: string;
@@ -21,7 +23,6 @@ export interface CreateWorkspaceFormProps {
   /** Called with the validated form data on submit. */
   onSubmit?: (data: CreateWorkspaceFormValues) => Promise<void> | void;
 }
-
 
 const INPUT_CLASSES =
   "block w-full rounded-md bg-white dark:bg-gray-800 px-3 py-2.5 text-base text-gray-900 dark:text-white outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 dark:focus:outline-indigo-400 sm:text-sm/6 transition-colors";
@@ -43,7 +44,7 @@ const CreateWorkspaceForm: FC<CreateWorkspaceFormProps> = ({
     handleSubmit,
     control,
     reset,
-    formState: { errors, isSubmitting, isSubmitSuccessful },
+    formState: { errors, isSubmitting },
   } = useForm<CreateWorkspaceFormValues>({
     defaultValues: {
       workspaceName: "",
@@ -53,15 +54,25 @@ const CreateWorkspaceForm: FC<CreateWorkspaceFormProps> = ({
   });
 
   const onSubmit: SubmitHandler<CreateWorkspaceFormValues> = async (data) => {
-    // Replace with a real API call, e.g.:
-    // await api.post("/workspaces", data);
-    if (onSubmitProp) {
-      await onSubmitProp(data);
-    } else {
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      console.log("Create workspace payload:", data);
+    try {
+      // Replace with a real API call, e.g.:
+      // await api.post("/workspaces", data);
+      if (onSubmitProp) {
+        await onSubmitProp(data);
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 600));
+        console.log("Create workspace payload:", data);
+      }
+      toast.success("Workspace created successfully.");
+      reset();
+    } catch (error: AxiosError | any) {
+      if (error.response) {
+        const message = error.response.data?.message || "Failed to create workspace.";
+        toast.error(message);
+      } else {
+        toast.error("Failed to create workspace.");
+      }
     }
-    reset();
   };
 
   return (
@@ -145,16 +156,10 @@ const CreateWorkspaceForm: FC<CreateWorkspaceFormProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex justify-center items-center rounded-md bg-indigo-600 dark:bg-indigo-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-500 dark:hover:bg-indigo-400 focus:outline-2 focus:outline-offset-2 focus:outline-indigo-600 dark:focus:outline-indigo-400 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+              className="rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white cursor-pointer"
             >
               {isSubmitting ? "Creating…" : "Create Workspace"}
             </button>
-
-            {isSubmitSuccessful && (
-              <span className="text-sm text-green-600 dark:text-green-400">
-                Workspace created.
-              </span>
-            )}
           </div>
         </form>
       </div>

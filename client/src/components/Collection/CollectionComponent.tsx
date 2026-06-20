@@ -305,7 +305,7 @@ export default function CollectionComponent() {
             className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2.5 outline-none focus:ring-2 focus:ring-blue-500"
           />
           <span
-            className="flex items-center justify-center w-11.5 h-11.5 rounded-xl bg-blue-600 text-white cursor-pointer hover:bg-blue-700 transition font-light text-2xl shadow-sm shrink-0"
+            className="rounded-md bg-indigo-600 px-3 py-1.5 text-lg font-semibold text-white cursor-pointer"
             onClick={() => setIsModalOpen(true)}
             title="Create Collection"
           >

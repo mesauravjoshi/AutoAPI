@@ -12,7 +12,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
 import { logoutService } from "@/services/authService";
-import { WorkspaceModal } from "@/dialog/WorkspaceModal";
+import { WorkspaceModal } from "@/components/Workspace/WorkspaceModal";
 
 interface UserNavigationItem {
   name: string;

@@ -53,7 +53,7 @@ export const WorkspaceModal = ({
 
   return (
     <Dialog open={workspaceOpen} onOpenChange={setWorkspaceOpen}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Current Workspaces</DialogTitle>
           <div className="flex items-center justify-between">
@@ -63,6 +63,11 @@ export const WorkspaceModal = ({
               </DialogDescription>
             </div>
 
+            <Button size="sm" onClick={() => {
+              Navigate('/workspace/list');
+            }}>
+              View all workspace
+            </Button>
             <Button size="sm" onClick={() => {
               Navigate('/workspace');
               setWorkspaceOpen(false);
