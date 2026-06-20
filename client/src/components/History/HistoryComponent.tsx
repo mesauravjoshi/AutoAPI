@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "@/lib/api";
-import { formatDate } from "@/utils/formatDate";
+import { formatDate } from "../../utils/formatDate";
 import {
   ClockIcon
 } from "@heroicons/react/24/outline";

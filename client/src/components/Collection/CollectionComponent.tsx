@@ -11,7 +11,7 @@ import { useDispatch } from "react-redux";
 import { addCollectionTab } from "@/store/Slice/tabSlice";
 import Tooltip from "@/components/Tooltip";
 import { MethodsTypes } from "@/types/types";
-import { methodBadge } from '@/utils/getMethodStyles'
+import { methodBadge } from '../../utils/getMethodStyles'
 import { useAuth } from "@/hooks/useAuth";
 
 interface RequestItem {

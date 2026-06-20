@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 // import axios from "axios";
-import { ValidateURL } from '@/utils/validateURL';
+import { ValidateURL } from '../../utils/validateURL';
 import ApiInput from "@/components/UI/ApiInput";
 import Request from "@/components/UI/Request/Request";
 import Response from "@/components/UI/Response";
