@@ -1,4 +1,4 @@
-export function methodBadge(method: string) {
+export default function methodBadge(method: string) {
   const map: Record<string, string> = {
     GET: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
     POST: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",

@@ -1,5 +1,5 @@
 
-export function formatDate(inputDate: string | Date): string {
+export default function formatDate(inputDate: string | Date): string {
   const date = new Date(inputDate);
   const today = new Date();
   const yesterday = new Date();

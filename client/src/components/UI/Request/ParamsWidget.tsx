@@ -1,5 +1,5 @@
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { QueryString } from '../../../utils/queryString';
+import QueryString from '@/utils/queryString';
 import { ParamItem } from '@/types/types';
 
 interface ParamsWidgetProps {
@@ -32,7 +32,7 @@ const ParamsWidget: React.FC<ParamsWidgetProps> = ({
     //   );
     // const queryString = validParams.length ? `?${validParams.join('&')}` : '';
     console.log(updatedParams);
-    
+
     const queryString = QueryString(updatedParams);
 
     if (indexOf_Q === -1) {
