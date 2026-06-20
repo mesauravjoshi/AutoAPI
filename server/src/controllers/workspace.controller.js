@@ -1,13 +1,38 @@
 import mongoose from "mongoose";
 import Workspace from "#models/workspace.js";
 
+export const getWorkspace = async (req, res) => {
+  try {
+    // assuming ownerId comes from authenticated user
+    const userId = req.user?.id;
+    const workspace = await Workspace.find({
+      ownerId: userId
+    })
+
+    return res.status(201).json({
+      success: true,
+      message: "Workspace find successfully",
+      data: workspace,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
 export const addWorkspace = async (req, res) => {
   try {
     const { name } = req.body;
-
+    
     // assuming ownerId comes from authenticated user
     const ownerId = req.user?.id || req.body.ownerId;
-
+    
+    console.log(name, ownerId);
     if (!name || !ownerId) {
       return res.status(400).json({
         success: false,
@@ -21,7 +46,7 @@ export const addWorkspace = async (req, res) => {
     const workspace = new Workspace({
       name,
       ownerId: ownerObjectId,
-      members: [ownerObjectId], // optional: owner is also a member
+      members: [ownerObjectId],
     });
 
     const savedWorkspace = await workspace.save();

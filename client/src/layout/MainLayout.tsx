@@ -57,46 +57,43 @@ export default function MainLayout() {
           setSidebarOpen={setSidebarOpen}
         />
 
-        <main className="bg-white dark:bg-gray-900">
-          <div className="flex h-screen text-gray-800 dark:text-gray-300">
+        {
+          location.pathname === '/workspace' ? <Outlet /> :
+            <main className="bg-white dark:bg-gray-900 hanuman">
+              <div className="flex h-screen text-gray-800 dark:text-gray-300">
 
-            {/* Sidebar */}
-            {
-              isNotRequestRoute && (
-                <>
-                  <Outlet />
-                </>
-              )
-            }
-
-            {/* Main Section */}
-            <div className="flex-1 flex flex-col">
-
-              {/* Top Header */}
-              <TabComponent />
-              {/* <header className="h-20 border shadow flex items-center px-6">
-                <h1 className="text-xl font-semibold">Header Area</h1>
-              </header> */}
-
-              {/* Content */}
-              <main className="flex-1">
+                {/* Sidebar */}
                 {
-                  tabs.length === 0 ? <EmptyRequest /> :
+                  isNotRequestRoute && (
                     <>
-                      {
-                        location.pathname === '/request' ?
-                          <RequestForm defaultData={emptyApiHistory} /> :
-                          <RequestForm defaultData={activeTabData?.historyData} />
-                      }
+                      <Outlet />
                     </>
+                  )
                 }
-                {/* <div className="rounded-lg shadow h-full">
-                  Main Content Area
-                </div> */}
-              </main>
-            </div>
-          </div>
-        </main>
+
+                {/* Main Section */}
+                <div className="flex-1 flex flex-col">
+
+                  {/* Top Header */}
+                  <TabComponent />
+
+                  {/* Content */}
+                  <main className="flex-1">
+                    {
+                      tabs.length === 0 ? <EmptyRequest /> :
+                        <>
+                          {
+                            location.pathname === '/request' ?
+                              <RequestForm defaultData={emptyApiHistory} /> :
+                              <RequestForm defaultData={activeTabData?.historyData} />
+                          }
+                        </>
+                    }
+                  </main>
+                </div>
+              </div>
+            </main>
+        }
       </div>
     </div>
   );
