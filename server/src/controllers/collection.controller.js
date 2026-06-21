@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Collection from "../models/Collection.js";
-import Request from "../models/Request.js";
+import Collection from "#models/collection.js";
+import Request from "#models/request.js";
 
 export const getCollections = async (req, res) => {
   try {
