@@ -145,9 +145,9 @@ export default function Response({ displayResponse, loading }: ResponseProps) {
 
         {/* Response Content */}
         {displayResponse && (
-          <div className={`transition-all duration-300 ease-in-out max-h-150 opacity-100`}>
+          <div className={`transition-all duration-300 ease-in-out opacity-100`}>
             <div className="relative">
-              <pre className="bg-gray-900 dark:bg-gray-950 text-gray-100 p-5 min-h-100 max-h-125 text-sm font-mono overflow-auto rounded-b-2xl">
+              <pre className="bg-gray-900 dark:bg-gray-950 text-gray-100 p-5 min-h-25 max-h-[50vh] text-sm font-mono overflow-auto rounded-b-2xl whitespace-pre-wrap break-all">
                 <code className="language-json">
                   {(() => {
                     try {

@@ -60,7 +60,7 @@ export default function MainLayout() {
         {
           location.pathname === '/workspace' ? <Outlet /> :
             <main className="bg-white dark:bg-gray-900 hanuman">
-              <div className="flex h-screen text-gray-800 dark:text-gray-300">
+              <div className="flex h-full text-gray-800 dark:text-gray-300">
 
                 {/* Sidebar */}
                 {

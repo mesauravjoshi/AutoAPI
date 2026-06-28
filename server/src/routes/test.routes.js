@@ -11,7 +11,7 @@ router.put("/data", (req, res) => {
 });
 
 router.get("/error_test", (req, res) => {
-  console.log("req hit ...");
+  // console.log("req hit ...");
   res.status(200).json({ message: "Success" });
 });
 

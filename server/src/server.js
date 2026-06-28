@@ -8,7 +8,23 @@ dotenv.config();
 connectDB().catch(err => console.log(err));
 
 // Start server
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running at: http://localhost:${PORT}`);
-});
+
+async function start() {
+  try {
+    await connectDB();
+
+    const server = app.listen(PORT, () => {
+      console.log(`Server running at: http://localhost:${PORT}`);
+    });
+
+    server.on('error', (err) => {
+      console.error('Server error:', err);
+    });
+  } catch (err) {
+    console.error('Startup error:', err);
+  }
+}
+
+start();
