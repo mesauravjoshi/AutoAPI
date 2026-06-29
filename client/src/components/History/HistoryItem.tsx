@@ -37,7 +37,7 @@ export default function HistoryItem({
   onDelete: (id: string) => void;
 }) {
   const dispatch = useDispatch<AppDispatch>()
-  console.log('item',item);
+  // console.log('item',item);
 
   return (
     <div className="group rounded-xl border border-gray-200 dark:border-gray-800 p-2 transition hover:shadow-sm hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer"

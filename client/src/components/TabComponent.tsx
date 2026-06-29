@@ -14,7 +14,7 @@ function classNames(...classes: string[]) {
 export default function TabComponent() {
   const dispatch = useDispatch<AppDispatch>();
   const { tabs, activeTab } = useSelector((state: RootState) => state.tabs);
-  console.log(tabs.length);
+  // console.log(tabs.length);
 
   const handleAddTab = () => {
     dispatch(addTabAsync({

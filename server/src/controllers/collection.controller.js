@@ -5,8 +5,15 @@ import Request from "#models/request.js";
 export const getCollections = async (req, res) => {
   try {
     const userId = req.user.id;
-
+    const { workspaceId } = req.params;
     const collections = await Collection.aggregate([
+      // Filter by workspaceId
+      {
+        $match: {
+          workspaceId: new mongoose.Types.ObjectId(workspaceId),
+        },
+      },
+
       // Join workspace
       {
         $lookup: {

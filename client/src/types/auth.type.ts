@@ -17,6 +17,7 @@ export type AuthContextType = {
   user: UserModelInterface | null;
   token: string | null;
   currentWorkspace: Workspace | null;
+  setCurrentWorkspace: React.Dispatch<React.SetStateAction<Workspace | null>>;
   loading: boolean;
   login: (data: { user: UserModelInterface; token: string; workspace: Workspace }) => void;
   logout: () => void;

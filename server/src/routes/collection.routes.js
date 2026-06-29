@@ -8,7 +8,7 @@ import { protect } from "#middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.get("/collection", protect, getCollections);
+router.get("/collection/:workspaceId", protect, getCollections);
 router.post("/collection", protect, createCollection);
 router.delete("/collection/:id", protect, deleteCollection);
 

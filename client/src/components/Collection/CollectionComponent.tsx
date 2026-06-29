@@ -12,6 +12,9 @@ import { addCollectionTab } from "@/store/Slice/tabSlice";
 import Tooltip from "@/components/Tooltip";
 import { MethodsTypes } from "@/types/types";
 import methodBadge from '@/utils/getMethodStyles'
+// import { useAuth } from "@/hooks/useAuth";
+import { CreateCollectionModal } from "./CreateCollectionModal";
+import { DeleteCollectionModal } from "./DeleteCollectionModal";
 import { useAuth } from "@/hooks/useAuth";
 
 interface RequestItem {
@@ -186,55 +189,26 @@ export default function CollectionComponent() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newCollectionName, setNewCollectionName] = useState("");
   const { currentWorkspace } = useAuth();
-  // console.log(user);
-
+  console.log(currentWorkspace?._id);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState<CollectionItem | null>(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const handleCreateCollection = async () => {
-    if (!newCollectionName.trim()) return;
+  const handleCreateSuccess = async () => {
     try {
-      // The current backend controller expects name, url, and method.
-      await api.post("/collection", {
-        name: newCollectionName,
-        workspaceId: currentWorkspace?._id,
-      });
-      setIsModalOpen(false);
-      setNewCollectionName("");
-
-      // Re-fetch to get properly populated collection (with requests array)
-      const res = await api.get("/collection");
+      const res = await api.get(`/collection`);
       setCollections(res.data.collections);
     } catch (error) {
-      console.error("Failed to create collection:", error);
+      console.error("Failed to fetch collections:", error);
     }
   };
 
-  const handleDeleteCollection = async () => {
-    if (!selectedCollection) return;
-
-    try {
-      setDeleteLoading(true);
-
-      await api.delete(`/collection/${selectedCollection._id}`);
-
-      setCollections((prev) =>
-        prev.filter((c) => c._id !== selectedCollection._id)
-      );
-
-      setDeleteModalOpen(false);
-      setSelectedCollection(null);
-    } catch (error: any) {
-      console.error(
-        "Delete collection failed:",
-        error?.response?.data?.message || error.message
-      );
-    } finally {
-      setDeleteLoading(false);
-    }
+  const handleDeleteSuccess = (deletedId: string) => {
+    setCollections((prev) =>
+      prev.filter((c) => c._id !== deletedId)
+    );
+    setDeleteModalOpen(false);
+    setSelectedCollection(null);
   };
 
   useEffect(() => {
@@ -242,7 +216,7 @@ export default function CollectionComponent() {
       try {
         setLoading(true);
 
-        const res = await api.get("/collection");
+        const res = await api.get(`/collection/${currentWorkspace?._id}`);
 
         setCollections(res.data.collections);
       } catch (error) {
@@ -341,92 +315,21 @@ export default function CollectionComponent() {
         )}
       </div>
 
-      {/* Create Collection Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-xl bg-white p-6 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-xl">
-            <h2 className="text-xl font-semibold mb-4">Create Collection</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Collection Name
-                </label>
-                <input
-                  autoFocus
-                  value={newCollectionName}
-                  onChange={(e) => setNewCollectionName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleCreateCollection();
-                  }}
-                  className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g., User API"
-                />
-              </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  onClick={() => {
-                    setIsModalOpen(false);
-                    setNewCollectionName("");
-                  }}
-                  className="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCreateCollection}
-                  disabled={!newCollectionName.trim()}
-                  className="px-4 py-2 rounded-xl text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition"
-                >
-                  Create
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <CreateCollectionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={handleCreateSuccess}
+      />
 
-      {/* Delete Collection Modal */}
-      {deleteModalOpen && selectedCollection && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-xl p-6">
-            <h2 className="text-xl font-semibold text-red-600 mb-3">
-              Delete Collection
-            </h2>
-
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              Are you sure you want to delete{" "}
-              <span className="font-semibold">
-                {selectedCollection.name}
-              </span>
-              ?
-            </p>
-
-            <p className="text-xs text-gray-500 mt-2">
-              This action cannot be undone.
-            </p>
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => {
-                  setDeleteModalOpen(false);
-                  setSelectedCollection(null);
-                }}
-                className="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleDeleteCollection}
-                disabled={deleteLoading}
-                className="px-4 py-2 rounded-xl text-sm font-medium bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition"
-              >
-                {deleteLoading ? "Deleting..." : "Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteCollectionModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setSelectedCollection(null);
+        }}
+        onSuccess={handleDeleteSuccess}
+        selectedCollection={selectedCollection}
+      />
     </aside>
   );
 }
