@@ -44,6 +44,11 @@ export default function MainLayout() {
   // console.log(location.pathname !== '/request' && location.pathname !== '/');
   const isNotRequestRoute = location.pathname !== '/request' && location.pathname !== '/';
   // console.log(isNotRequestRoute);
+
+  const isAsssideRequired = () => {
+    return location.pathname === '/workspace' || location.pathname === '/workspace/list'
+  }
+
   return (
     <div>
       <Slider
@@ -58,7 +63,7 @@ export default function MainLayout() {
         />
 
         {
-          location.pathname === '/workspace' ? <Outlet /> :
+          isAsssideRequired() ? <Outlet /> :
             <main className="bg-white dark:bg-gray-900 hanuman">
               <div className="flex h-full text-gray-800 dark:text-gray-300">
 

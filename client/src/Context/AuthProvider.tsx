@@ -54,13 +54,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const updateCurrentWorkspace = (workspace: Workspace) => {
+    setCurrentWorkspace(workspace);
+    localStorage.setItem("AutoAPICurrentWorkspace", JSON.stringify(workspace));
+  };
+
   useEffect(() => {
     fetchUserData();
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ user, token, currentWorkspace, loading, login, logout, fetchUserData, setCurrentWorkspace }}
+      value={{ user, token, currentWorkspace, loading, login, logout, fetchUserData, setCurrentWorkspace, updateCurrentWorkspace }}
     >
       {children}
     </AuthContext.Provider>

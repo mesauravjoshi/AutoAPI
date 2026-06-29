@@ -190,7 +190,7 @@ export default function CollectionComponent() {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { currentWorkspace } = useAuth();
-  console.log(currentWorkspace?._id);
+  // console.log(currentWorkspace?._id);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState<CollectionItem | null>(null);
 
@@ -227,7 +227,7 @@ export default function CollectionComponent() {
     };
 
     fetchData();
-  }, []);
+  }, [currentWorkspace]);
 
   const filteredCollections = useMemo(() => {
     if (!search.trim()) return collections;

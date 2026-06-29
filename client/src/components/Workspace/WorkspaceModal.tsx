@@ -26,8 +26,7 @@ export const WorkspaceModal = ({
 }: WorkspaceModalProps) => {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [loading, setLoading] = useState(false);
-  const { currentWorkspace, setCurrentWorkspace } = useAuth();
-  console.log(currentWorkspace);
+  const { updateCurrentWorkspace } = useAuth();
 
   const Navigate = useNavigate();
   useEffect(() => {
@@ -51,7 +50,7 @@ export const WorkspaceModal = ({
 
   const changeWorkspace = (workspace: Workspace) => {
     // console.log(workspace);
-    setCurrentWorkspace(workspace);
+    updateCurrentWorkspace(workspace);
     setWorkspaceOpen(false);
   };
 

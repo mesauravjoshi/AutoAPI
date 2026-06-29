@@ -5,6 +5,7 @@ import Request from "@/pages/Request";
 import History from "@/pages/History";
 import Collection from "@/pages/Collection";
 import Workspace from "@/pages/Workspace";
+import WorkspaceList from "@/pages/WorkspaceList";
 import MainLayout from "@/layout/MainLayout";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "@/routes/ProtectedRoute";
@@ -26,6 +27,7 @@ function Index() {
             <Route path="/environments" element={<History />} />
             <Route path="/collections" element={<Collection />} />
             <Route path="/workspace" element={<Workspace />} />
+            <Route path="/workspace/list" element={<WorkspaceList />} />
           </Route>
         </Route>
 
