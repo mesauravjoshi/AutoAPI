@@ -1,7 +1,7 @@
 export type UserModelInterface = {
   username: string;
   email: string;
-  userId: string;
+  id: string;
 };
 
 export type Workspace = {

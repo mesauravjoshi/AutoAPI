@@ -5,18 +5,28 @@ export const getWorkspace = async (req, res) => {
   try {
     // assuming ownerId comes from authenticated user
     const userId = req.user?.id;
-    const workspace = await Workspace.find({
-      ownerId: userId
+    const workspaces = await Workspace.find({
+      ownerId: userId,
     })
+      .populate({
+        path: "ownerId",
+        select: "_id fullname",
+      })
+      .lean();
+
+    const formattedWorkspaces = workspaces.map((workspace) => ({
+      ...workspace,
+      owner: workspace.ownerId,
+      ownerId: undefined,
+    }));
 
     return res.status(201).json({
       success: true,
       message: "Workspace find successfully",
-      data: workspace,
+      data: formattedWorkspaces,
     });
   } catch (error) {
     console.error(error);
-
     return res.status(500).json({
       success: false,
       message: "Server error",
@@ -28,10 +38,10 @@ export const getWorkspace = async (req, res) => {
 export const addWorkspace = async (req, res) => {
   try {
     const { name } = req.body;
-    
+
     // assuming ownerId comes from authenticated user
     const ownerId = req.user?.id || req.body.ownerId;
-    
+
     console.log(name, ownerId);
     if (!name || !ownerId) {
       return res.status(400).json({

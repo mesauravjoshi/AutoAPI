@@ -67,6 +67,7 @@ export const WorkspaceModal = ({
             </div>
 
             <Button size="sm" onClick={() => {
+              setWorkspaceOpen(false);
               Navigate('/workspace/list');
             }}>
               View all workspace
