@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "@/lib/api";
 import formatDate from "@/utils/formatDate";
-import {
-  ClockIcon
-} from "@heroicons/react/24/outline";
+import { Clock as ClockIcon } from "lucide-react";
 import { ApiHistory } from '@/types/types'
 import AccordionSection from '@/components/History/AccordionSection'
 // import RequestForm from '@/components/Request/RequestForm'

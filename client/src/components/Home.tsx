@@ -1,29 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTheme } from '@/hooks/useTheme';
 
 const Hero: React.FC = () => {
-  const [dark, setDark] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('theme');
-      if (stored === 'dark') return true;
-      if (stored === 'light') return false;
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return false;
-  });
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (dark) {
-      root.classList.add('dark');
-      localStorage.setItem('AutoAPItheme', 'dark');
-    } else {
-      root.classList.remove('dark');
-      localStorage.setItem('AutoAPItheme', 'light');
-    }
-  }, [dark]);
-
-  const toggleDarkMode = () => setDark((prev) => !prev);
+  const { theme, toggleTheme } = useTheme();
+  const dark = theme === 'dark';
+  const toggleDarkMode = toggleTheme;
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">

@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "@/lib/api";
 import {
-  ClockIcon,
-  LinkIcon,
-  TrashIcon,
-  ChevronDownIcon,
-} from "@heroicons/react/24/outline";
+  Clock as ClockIcon,
+  Link as LinkIcon,
+  Trash2 as TrashIcon,
+  ChevronDown as ChevronDownIcon,
+} from "lucide-react";
 import { useDispatch } from "react-redux";
 // import { AppDispatch } from "@/store/Store";
 import { addCollectionTab } from "@/store/Slice/tabSlice";

@@ -1,7 +1,4 @@
-import {
-  PlusIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { Plus as PlusIcon, X as XMarkIcon } from "lucide-react";
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '@/store/Store'
 import { removeTabAsync, setActiveTab, addTabAsync } from '@/store/Slice/tabSlice'

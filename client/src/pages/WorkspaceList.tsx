@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import { Workspace } from "@/types/workspace.type";
+import { BlocksIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
@@ -33,17 +34,24 @@ export default function WorkspaceList() {
       <div className="py-4 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300 relative overflow-hidden">
         <div className="mx-auto py-4 max-w-5xl">
           <div className="mb-6">
-            <div className="flex justify-between">
-              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-                All workspaces
-              </h1>
+            <div className="flex items-start gap-3 mb-6">
+              <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+                <BlocksIcon size={20} strokeWidth={2} />
+              </div>
+              <div>
+                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  All workspaces
+                </h1>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  View and manage all your workspaces.
+                </p>
+              </div>
+            </div>
+            <div className="flex justify-end">
               <p className="text-sm text-gray-900 dark:text-white">
                 Active workspaces: {currentWorkspace ? currentWorkspace.name : "None"}
               </p>
             </div>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              View and manage all your workspaces.
-            </p>
           </div>
 
           <div className="overflow-x-auto bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-lg">

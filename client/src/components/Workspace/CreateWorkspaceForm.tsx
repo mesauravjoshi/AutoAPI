@@ -2,6 +2,7 @@ import {
   type FC,
 } from "react";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
+import { BlocksIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import UserMultiSelect from "@/components/Common/MultiSelect";
 import { AxiosError } from "axios";
@@ -78,13 +79,18 @@ const CreateWorkspaceForm: FC<CreateWorkspaceFormProps> = ({
   return (
     <div className="py-4 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300 relative overflow-hidden">
       <div className="mx-auto py-4 max-w-lg">
-        <div className="mb-6">
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Create workspace
-          </h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Give your workspace a name and add the people who'll use it.
-          </p>
+        <div className="flex items-start gap-3 mb-6">
+          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+            <BlocksIcon size={18} strokeWidth={2} />
+          </div>
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Create workspace
+            </h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              Give your workspace a name and add the people who'll use it.
+            </p>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>

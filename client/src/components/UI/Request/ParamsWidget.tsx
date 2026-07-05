@@ -1,4 +1,4 @@
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { X as XMarkIcon } from 'lucide-react';
 import QueryString from '@/utils/queryString';
 import { ParamItem } from '@/types/types';
 

@@ -1,6 +1,6 @@
 // Request/index.tsx
 import { useState } from 'react'
-import { ChevronDownIcon } from '@heroicons/react/16/solid'
+import { ChevronDown as ChevronDownIcon } from 'lucide-react';
 import BodyWidget from './BodyWidget';
 import HeaderWidget from './HeaderWidget';
 import ParamsWidget from './ParamsWidget';

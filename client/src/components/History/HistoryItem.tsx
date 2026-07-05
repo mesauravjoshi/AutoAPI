@@ -1,9 +1,9 @@
 import {
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-  LinkIcon,
-  TrashIcon
-} from "@heroicons/react/24/outline";
+  CheckCircle as CheckCircleIcon,
+  AlertCircle as ExclamationCircleIcon,
+  Link as LinkIcon,
+  Trash2 as TrashIcon
+} from "lucide-react";
 import { ApiHistory } from '@/types/types';
 import Tooltip from '@/components/Tooltip';
 import { addTabFromHistory } from '@/store/Slice/tabSlice';

@@ -6,15 +6,13 @@ import {
   TransitionChild,
 } from '@headlessui/react'
 import {
-  // Bars3Icon,
-  // BellIcon,
-  Cog6ToothIcon,
-  FolderIcon,
-  HomeIcon,
-  UsersIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline'
-// import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+  Settings as Cog6ToothIcon,
+  Folder as FolderIcon,
+  Home as HomeIcon,
+  PresentationIcon,
+  X as XMarkIcon,
+  HistoryIcon
+} from 'lucide-react';
 // import axios from 'axios'
 // import { setIsSliderOpen } from '@/Store/Slice/SliderSlice'
 import { Link, 
@@ -35,8 +33,8 @@ interface SliderProps {
 
 const navigation: NavigationItem[] = [
   { name: 'Request', href: '/request', icon: HomeIcon, current: true },
-  { name: 'Collections', href: '/collections', icon: UsersIcon, current: false },
-  { name: 'History', href: '/history', icon: UsersIcon, current: false },
+  { name: 'Collections', href: '/collections', icon: PresentationIcon, current: false },
+  { name: 'History', href: '/history', icon: HistoryIcon, current: false },
   { name: 'Environments', href: '/environments', icon: FolderIcon, current: false }
 ]
 

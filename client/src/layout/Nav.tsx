@@ -1,10 +1,6 @@
 import { useEffect } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { Bars3Icon, BellIcon } from "@heroicons/react/24/outline";
-import {
-  ChevronDownIcon,
-  // MagnifyingGlassIcon
-} from "@heroicons/react/20/solid";
+import { Menu as Bars3Icon, Bell as BellIcon, ChevronDown as ChevronDownIcon } from "lucide-react";
 import axios from "axios";
 import { useState } from "react";
 // import { AuthContext } from '@/Context/AuthContext';
