@@ -46,7 +46,7 @@ export default function MainLayout() {
   // console.log(isNotRequestRoute);
 
   const isAsssideRequired = () => {
-    return location.pathname === '/workspace' || location.pathname === '/workspace/list'
+    return location.pathname === '/workspace' || location.pathname === '/workspace/list' || location.pathname === '/environments'
   }
 
   return (

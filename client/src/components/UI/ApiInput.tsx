@@ -1,5 +1,6 @@
 import { useState, RefObject, useEffect, useRef } from "react"
 import { MethodsTypes } from '@/types/types';
+// import UrlEditor from "@/components/Monaco/UrlEditor";
 
 interface ApiInputProps {
   fullUrl: string;
@@ -29,30 +30,30 @@ export default function ApiInput({ fullUrl, setFullUrl, handleSendReq, inputRef,
     setOpen(false);
   };
 
-  const handleBaseUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const url = e.target.value;
-    const indexOf_Q = url.indexOf('?')
+  const handleBaseUrlChange = (event: React.ChangeEvent<HTMLInputElement> | string) => {
+    const url = typeof event === "string" ? event : event.target.value;
+    const indexOf_Q = url.indexOf("?");
 
     if (indexOf_Q > 0) {
       const input = inputRef.current;
       const cursorIndex = input?.selectionStart || 0;
 
-      const parts = url.split('?');
-      const urlArray = [parts[0], '?' + parts[1]];
+      const parts = url.split("?");
+      const urlArray = [parts[0], "?" + parts[1]];
 
-      const firstPart = urlArray.length > 0 ? urlArray[0] : '';
-      const secondPart = urlArray.length > 0 ? urlArray[1] : '';
+      const firstPart = urlArray.length > 0 ? urlArray[0] : "";
+      const secondPart = urlArray.length > 0 ? urlArray[1] : "";
 
       if (cursorIndex > indexOf_Q) {
-        const queryString = secondPart ? secondPart : ''
-        setFullUrl(firstPart + queryString)
+        const queryString = secondPart ? secondPart : "";
+        setFullUrl(firstPart + queryString);
       }
       if (cursorIndex < indexOf_Q) {
-        const URLString = firstPart ? firstPart : ''
-        setFullUrl(URLString + secondPart)
+        const URLString = firstPart ? firstPart : "";
+        setFullUrl(URLString + secondPart);
       }
       if (cursorIndex === indexOf_Q) {
-        setFullUrl(firstPart + secondPart)
+        setFullUrl(firstPart + secondPart);
       }
     } else {
       setFullUrl(url);
@@ -123,6 +124,13 @@ export default function ApiInput({ fullUrl, setFullUrl, handleSendReq, inputRef,
           placeholder="https://api.example.com/resource"
         />
       </div>
+      {/* <div className="grow">
+        <UrlEditor
+          value={fullUrl}
+          onChange={handleBaseUrlChange}
+          placeholder="https://api.example.com/resource"
+        />
+      </div> */}
 
       <button
         className="ml-1.5 rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white cursor-pointer"
