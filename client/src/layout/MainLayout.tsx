@@ -36,10 +36,10 @@ export default function MainLayout() {
   // console.log('activeTab', activeTab);
   // console.log('activeTabData', activeTabData);
 
-  useEffect(() => {
-    console.log('activeTab changed');
+  // useEffect(() => {
+  //   console.log('activeTab changed');
 
-  }, [activeTab])
+  // }, [activeTab])
 
   // console.log(location.pathname !== '/request' && location.pathname !== '/');
   const isNotRequestRoute = location.pathname !== '/request' && location.pathname !== '/';

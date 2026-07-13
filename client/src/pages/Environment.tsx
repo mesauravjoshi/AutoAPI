@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Plus, Trash2, KeyRound, Check } from "lucide-react";
+// import WebSocker from "@/components/WebSocker";
+import Chatt from "@/components/Chatt";
 
 // ---------------------------------------------------------------------------
 // Storage: real localStorage in a normal app. Wrapped in try/catch with an
@@ -89,7 +91,11 @@ export default function EnvironmentPage() {
 
   return (
     <div className="min-h-screen w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
-      <div className="mx-auto max-w-3xl px-6 py-12">
+      <div className="mx-auto max-w-3xl px-6 py-4">
+        <div className="web-socket my-6">
+          <Chatt />
+          {/* <WebSocker /> */}
+        </div>
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-8">
           <div className="flex items-start gap-3">
@@ -105,9 +111,8 @@ export default function EnvironmentPage() {
           </div>
 
           <div
-            className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-opacity duration-300 ${
-              savedPulse ? "opacity-100" : "opacity-0"
-            } bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400`}
+            className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-opacity duration-300 ${savedPulse ? "opacity-100" : "opacity-0"
+              } bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400`}
           >
             <Check size={13} strokeWidth={2.5} />
             Saved
@@ -139,9 +144,8 @@ export default function EnvironmentPage() {
             {rows.map((row, idx) => (
               <div
                 key={row.id}
-                className={`grid grid-cols-[1fr_1fr_40px] items-center gap-0 px-4 py-2 ${
-                  idx !== rows.length - 1 ? "border-b border-gray-100 dark:border-gray-700/50" : ""
-                }`}
+                className={`grid grid-cols-[1fr_1fr_40px] items-center gap-0 px-4 py-2 ${idx !== rows.length - 1 ? "border-b border-gray-100 dark:border-gray-700/50" : ""
+                  }`}
               >
                 <input
                   id={`var-${row.id}`}
