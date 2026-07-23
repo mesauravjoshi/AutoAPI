@@ -109,59 +109,59 @@ export default function RequestForm({
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      // const end = performance.now();
-      // const time = end - start;
-      // if (axios.isAxiosError(error)) {
-      //   // ✅ Server responded with error (4xx, 5xx)
-      //   if (error.response) {
-      //     console.log("Backend error:", error.response);
+      const end = performance.now();
+      const time = end - start;
+      if (axios.isAxiosError(error)) {
+        // ✅ Server responded with error (4xx, 5xx)
+        if (error.response) {
+          console.log("Backend error:", error.response);
 
-      //     setDisplayResponse({
-      //       data: JSON.stringify(error.response.data, null, 2),
-      //       status: error.response.status,
-      //       statusText: error.response.statusText,
-      //       // headers: error.response.headers,
-      //       ok: false,
-      //       time: time,
-      //       size: 0,
-      //       redirected: false,
-      //       url: "",
-      //     });
-      //   }
+          setDisplayResponse({
+            data: JSON.stringify(error.response.data, null, 2),
+            status: error.response.status,
+            statusText: error.response.statusText,
+            // headers: error.response.headers,
+            ok: false,
+            time: time,
+            size: 0,
+            redirected: false,
+            url: "",
+          });
+        }
 
-      //   // ❌ No response (network error, server down)
-      //   else if (error.request) {
-      //     console.log("No response:", error.request);
+        // ❌ No response (network error, server down)
+        else if (error.request) {
+          console.log("No response:", error.request);
 
-      //     setDisplayResponse({
-      //       data: "No response from server",
-      //       status: 0,
-      //       statusText: "Network Error",
-      //       headers: {},
-      //       ok: false,
-      //       time: 0,
-      //       size: 0,
-      //       redirected: false,
-      //       url: "",
-      //     });
-      //   } else {
-      //     console.log("Error:", error.message);
+          setDisplayResponse({
+            data: "No response from server",
+            status: 0,
+            statusText: "Network Error",
+            headers: {},
+            ok: false,
+            time: 0,
+            size: 0,
+            redirected: false,
+            url: "",
+          });
+        } else {
+          console.log("Error:", error.message);
 
-      //     setDisplayResponse({
-      //       data: error.message,
-      //       status: 0,
-      //       statusText: "Error",
-      //       headers: {},
-      //       ok: false,
-      //       time: 0,
-      //       size: 0,
-      //       redirected: false,
-      //       url: "",
-      //     });
-      //   }
-      // } else {
-      //   console.log("Unknown error:", error);
-      // }
+          setDisplayResponse({
+            data: error.message,
+            status: 0,
+            statusText: "Error",
+            headers: {},
+            ok: false,
+            time: 0,
+            size: 0,
+            redirected: false,
+            url: "",
+          });
+        }
+      } else {
+        console.log("Unknown error:", error);
+      }
     }
   };
   // console.log(displayResponse);

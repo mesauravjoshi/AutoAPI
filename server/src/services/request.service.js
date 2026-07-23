@@ -58,7 +58,7 @@ export const executeApiRequest = async ({ userId, url, method, headers, data }) 
 const saveHistory = async ({ userId, url, method, headers, requestBody, responseBody, statusCode, responseTime }) => {
   try {
     console.log('saving data......');
-    
+
     await RequestHistory.create({
       userId,
       url: url,

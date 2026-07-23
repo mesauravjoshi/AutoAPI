@@ -1,8 +1,11 @@
+import { useGoogleLogin } from "@react-oauth/google";
 // import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { signupApi } from "@/services/authService";
 import toast from "react-hot-toast";
+// import axios from "axios";
+import api from "@/lib/api";
 
 type SignUpFormData = {
   email: string;
@@ -38,6 +41,29 @@ export default function SignUp() {
       toast.error(error?.response?.data?.message || error?.response?.data?.error || "Signup failed. Please try again.");
     }
   };
+
+  const googleLogin = useGoogleLogin({
+    flow: "auth-code",
+
+    onSuccess: async (codeResponse) => {
+      try {
+        const res = await api.post(
+          "/auth/google",
+          {
+            code: codeResponse.code,
+          }
+        );
+
+        console.log(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    onError: () => {
+      console.log("Google Login Failed");
+    },
+  });
 
   return (
     <div className="flex min-h-full flex-col justify-center py-6 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
@@ -176,9 +202,14 @@ export default function SignUp() {
 
           {/* Social Buttons */}
           <div className="mt-6 grid grid-cols-2 gap-4">
-            <Link
+            {/* <Link
               to="#"
               className="flex w-full items-center justify-center gap-3 rounded-md bg-white dark:bg-white/10 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs inset-ring inset-ring-gray-300 dark:inset-ring-white/5 hover:bg-gray-50 dark:hover:bg-white/20"
+            > */}
+            <button
+              type="button"
+              onClick={() => googleLogin()}
+              className="flex items-center gap-2 rounded-lg border px-4 py-2"
             >
               <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5">
                 <path
@@ -199,7 +230,9 @@ export default function SignUp() {
                 />
               </svg>
               <span>Google</span>
-            </Link>
+            </button>
+
+            {/* </Link> */}
 
             <Link
               to="#"

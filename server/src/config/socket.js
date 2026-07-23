@@ -12,13 +12,13 @@ export function initializeSocket(httpServer) {
   });
 
   io.on('connection', (socket) => {
-    console.log('User Connected:', socket.id);
+    // console.log('User Connected:', socket.id);
 
     socket.on('join-user', (userId) => {
       if (!userId) return;
 
       socket.join(userId);
-      console.log(`${userId} joined room`);
+      // console.log(`${userId} joined room`);
     });
 
     socket.on('send-message', (data) => {
@@ -41,7 +41,7 @@ export function initializeSocket(httpServer) {
     });
 
     socket.on('disconnect', () => {
-      console.log('User Disconnected:', socket.id);
+      // console.log('User Disconnected:', socket.id);
     });
   });
 
