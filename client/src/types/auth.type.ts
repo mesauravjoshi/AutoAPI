@@ -1,7 +1,14 @@
 export type UserModelInterface = {
-  username: string;
-  email: string;
   id: string;
+  username: string;
+  firstname?: string;
+  lastname?: string;
+  fullname?: string;
+  email: string;
+  picture?: string | null;
+  googleId?: string;
+  provider: "local" | "google";
+  createdAt: string; // ISO date string from API
 };
 
 export type Workspace = {

@@ -1,7 +1,5 @@
-import { useEffect } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { Menu as Bars3Icon, Bell as BellIcon, ChevronDown as ChevronDownIcon } from "lucide-react";
-import axios from "axios";
 import { useState } from "react";
 // import { AuthContext } from '@/Context/AuthContext';
 import { useTheme } from "@/hooks/useTheme";
@@ -26,36 +24,10 @@ const userNavigation: UserNavigationItem[] = [
 
 export const NavBar = ({ setSidebarOpen }: NavBarProps) => {
   const { theme, toggleTheme } = useTheme();
-  const [gravatarUrl, setGravatarUrl] = useState("");
   const { user, logout } = useAuth();
 
   const username = user?.username;
-  const email = user?.email;
-
-  useEffect(() => {
-    const generateGravatar = async () => {
-      if (email) {
-        try {
-          const response = await axios.get(
-            `https://api.hashify.net/hash/md5/hex?value=${email}`,
-          );
-          const hash = response.data?.Digest;
-          if (hash) {
-            // console.log(`https://www.gravatar.com/avatar/${hash}?d=identicon`);
-            setGravatarUrl(
-              `https://www.gravatar.com/avatar/${hash}?d=identicon`,
-            );
-          }
-        } catch (error) {
-          console.error("Failed to fetch MD5 hash for Gravatar:", error);
-        }
-      }
-    };
-    if (email) {
-      // console.log('called');
-      generateGravatar();
-    }
-  }, [email]);
+  // const email = user?.email;
 
   const handleSignOut = async () => {
     try {
@@ -205,7 +177,7 @@ export const NavBar = ({ setSidebarOpen }: NavBarProps) => {
               <img
                 alt="profile img"
                 src={
-                  gravatarUrl || "https://www.gravatar.com/avatar/default?d=mp"
+                  user?.picture || `https://ui-avatars.com/api/?name=${username || 'User'}&background=random&color=fff&size=128`
                 }
                 className="size-8 rounded-full bg-gray-100 dark:bg-gray-800 ring-2 ring-gray-200 dark:ring-gray-700"
               />
