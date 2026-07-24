@@ -86,3 +86,72 @@ export const login = async ({ email, password }) => {
 export const logout = async (token) => {
   await Token.findOneAndDelete({ token });
 };
+
+export const googleLogin = async (payload) => {
+  const { email, sub: googleId, given_name: firstname, family_name: lastname, picture } = payload;
+  
+  if (!email) {
+    throw { status: 400, message: "Email not provided by Google." };
+  }
+
+  let user = await User.findOne({ email });
+
+  if (!user) {
+    const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+    const hashedPassword = await bcrypt.hash(randomPassword, 10);
+    const username = email.split('@')[0] + Math.floor(Math.random() * 10000);
+
+    user = await User.create({
+      username,
+      email,
+      firstname,
+      lastname,
+      password: hashedPassword,
+      googleId,
+      provider: "google",
+      picture
+    });
+
+    await Workspace.create({
+      name: `${firstname || username}'s Workspace`,
+      ownerId: user._id,
+      members: [user._id],
+    });
+  } else if (!user.googleId) {
+    user.googleId = googleId;
+    user.provider = "google";
+    if (picture && !user.picture) {
+      user.picture = picture;
+    }
+    await user.save();
+  }
+
+  const token = jwt.sign(
+    { id: user._id, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN || "1d" }
+  );
+
+  await Token.create({
+    userId: user._id,
+    token,
+    type: "refresh",
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+  });
+
+  const workspace = await Workspace.findOne({
+    ownerId: user._id,
+  });
+
+  return {
+    message: "Google login successful",
+    user: {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      picture: user.picture,
+    },
+    token,
+    workspace
+  };
+};

@@ -33,7 +33,8 @@ const userSchema = new mongoose.Schema({
   googleId: String,
   provider: {
     type: String,
-    default: "google"
+    enum: ["local", "google"],
+    default: "local"
   }
 });
 

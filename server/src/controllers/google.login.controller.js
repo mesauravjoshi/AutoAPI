@@ -1,5 +1,6 @@
 import { OAuth2Client } from "google-auth-library";
 import dotenv from 'dotenv';
+import * as authService from "#services/auth.service.js";
 dotenv.config();
 
 // const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -22,18 +23,19 @@ export const googleLogin = async (req, res) => {
 
     const payload = ticket.getPayload();
 
-    console.log(payload);
+    const result = await authService.googleLogin(payload);
 
-    res.json({
+    res.status(200).json({
       success: true,
-      user: payload,
+      ...result
     });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    const status = error.status || 500;
+    res.status(status).json({
       success: false,
-      message: error.message,
+      message: error.message || "Server error",
     });
   }
 };

@@ -2,6 +2,8 @@ import { useForm } from "react-hook-form"; import { useNavigate, Link } from "re
 import { loginApi } from "@/services/authService";
 import { useAuth } from "@/hooks/useAuth";
 import toast from "react-hot-toast";
+import { useGoogleLogin } from "@react-oauth/google";
+import api from "@/lib/api";
 
 type LoginFormData = {
   email: string;
@@ -20,6 +22,34 @@ const LogIn = () => {
   });
 
   const navigate = useNavigate();
+
+  const googleLogin = useGoogleLogin({
+    flow: "auth-code",
+    onSuccess: async (codeResponse) => {
+      try {
+        const res = await api.post("/auth/google", {
+          code: codeResponse.code,
+        });
+
+        if (res.data.success) {
+          login({
+            user: res.data.user,
+            token: res.data.token,
+            workspace: res.data.workspace,
+          });
+          toast.success("Successfully logged in with Google!");
+          navigate("/request");
+        }
+      } catch (error: any) {
+        console.error(error);
+        toast.error("Google login failed.");
+      }
+    },
+    onError: () => {
+      console.log("Google Login Failed");
+      toast.error("Google login failed.");
+    },
+  });
 
   const onSubmit = async (data: LoginFormData) => {
     try {
@@ -168,9 +198,9 @@ const LogIn = () => {
               </div>
 
               <div className="mt-6 grid grid-cols-2 gap-4">
-                <Link
-                  to="#"
-                  className="flex w-full items-center justify-center gap-3 rounded-md bg-white dark:bg-white/10 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs inset-ring inset-ring-gray-300 dark:inset-ring-white/5 hover:bg-gray-50 dark:hover:bg-white/20 focus-visible:inset-ring-transparent"
+                <div
+                  className="flex w-full items-center justify-center gap-3 rounded-md bg-white dark:bg-white/10 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs inset-ring inset-ring-gray-300 dark:inset-ring-white/5 hover:bg-gray-50 dark:hover:bg-white/20 focus-visible:inset-ring-transparent cursor-pointer"
+                  onClick={() => googleLogin()}
                 >
                   <svg
                     viewBox="0 0 24 24"
@@ -195,7 +225,7 @@ const LogIn = () => {
                     />
                   </svg>
                   <span className="text-sm/6 font-semibold">Google</span>
-                </Link>
+                </div>
 
                 <Link
                   to="#"

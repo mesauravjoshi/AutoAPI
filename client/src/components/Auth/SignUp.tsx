@@ -6,6 +6,7 @@ import { signupApi } from "@/services/authService";
 import toast from "react-hot-toast";
 // import axios from "axios";
 import api from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
 
 type SignUpFormData = {
   email: string;
@@ -25,6 +26,7 @@ export default function SignUp() {
   });
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const onSubmit = async (data: SignUpFormData) => {
     try {
@@ -54,14 +56,24 @@ export default function SignUp() {
           }
         );
 
-        console.log(res.data);
-      } catch (error) {
+        if (res.data.success) {
+          login({
+            user: res.data.user,
+            token: res.data.token,
+            workspace: res.data.workspace,
+          });
+          toast.success("Successfully logged in with Google!");
+          navigate("/request");
+        }
+      } catch (error: any) {
         console.error(error);
+        toast.error("Google login failed.");
       }
     },
 
     onError: () => {
       console.log("Google Login Failed");
+      toast.error("Google login failed.");
     },
   });
 
@@ -206,10 +218,9 @@ export default function SignUp() {
               to="#"
               className="flex w-full items-center justify-center gap-3 rounded-md bg-white dark:bg-white/10 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs inset-ring inset-ring-gray-300 dark:inset-ring-white/5 hover:bg-gray-50 dark:hover:bg-white/20"
             > */}
-            <button
-              type="button"
+            <div
+              className="flex w-full items-center justify-center gap-3 rounded-md bg-white dark:bg-white/10 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs inset-ring inset-ring-gray-300 dark:inset-ring-white/5 hover:bg-gray-50 dark:hover:bg-white/20 cursor-pointer"
               onClick={() => googleLogin()}
-              className="flex items-center gap-2 rounded-lg border px-4 py-2"
             >
               <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5">
                 <path
@@ -230,7 +241,7 @@ export default function SignUp() {
                 />
               </svg>
               <span>Google</span>
-            </button>
+            </div>
 
             {/* </Link> */}
 
