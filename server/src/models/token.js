@@ -10,11 +10,12 @@ const tokenSchema = new mongoose.Schema(
     },
     token: {
       type: String,
-      // enum: ["access", "refresh"],
       required: true,
     },
     type: {
       type: String,
+      enum: ["refresh", "access"],
+      default: "refresh",
       required: true,
     },
     expiresAt: {
@@ -24,6 +25,9 @@ const tokenSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+// Auto-remove expired tokens
+tokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 const Token = mongoose.model("Token", tokenSchema);
 

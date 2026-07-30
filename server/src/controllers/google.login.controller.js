@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import * as authService from "#services/auth.service.js";
 dotenv.config();
 
-// const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
@@ -25,9 +24,20 @@ export const googleLogin = async (req, res) => {
 
     const result = await authService.googleLogin(payload);
 
-    res.status(200).json({
+    // Set refresh token in httpOnly cookie (same as regular login)
+    res.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    return res.status(200).json({
       success: true,
-      ...result
+      message: "Google login successful",
+      user: result.user,
+      workspace: result.workspace,
+      token: result.accessToken,
     });
 
   } catch (error) {

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { AuthContext } from "@/Context/AuthContext";
 import { UserModelInterface, Workspace } from "@/types/auth.type";
+import { refreshTokenApi } from "@/services/authService";
 
 type AuthProviderProps = {
   children: ReactNode;
@@ -29,25 +30,39 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setCurrentWorkspace(null);
     localStorage.removeItem("AutoAPIUserData");
     localStorage.removeItem("AutoAPIAuthToken");
-
-    // window.location.href = "/signup";
+    localStorage.removeItem("AutoAPICurrentWorkspace");
   };
 
   const fetchUserData = async () => {
     const authUser = localStorage.getItem("AutoAPIUserData");
-    const tclAuthToken = localStorage.getItem("AutoAPIAuthToken");
-    const currentWorkspace = localStorage.getItem("AutoAPICurrentWorkspace");
+    const storedToken = localStorage.getItem("AutoAPIAuthToken");
+    const storedWorkspace = localStorage.getItem("AutoAPICurrentWorkspace");
 
     try {
-      if (authUser && tclAuthToken) {
+      if (authUser && storedToken) {
+        // Silently get a fresh access token using the httpOnly refresh token cookie.
+        // This ensures the user isn't stuck with an expired token after returning to the app.
+        try {
+          const { data } = await refreshTokenApi();
+          const freshToken: string = data.token;
+
+          // Update localStorage and state with the fresh token
+          localStorage.setItem("AutoAPIAuthToken", freshToken);
+          setToken(freshToken);
+        } catch {
+          // Refresh failed — the refresh token has expired or been revoked.
+          // Log the user out cleanly.
+          logout();
+          return;
+        }
+
         setUser(JSON.parse(authUser));
-        setToken(tclAuthToken);
-        if (currentWorkspace) {
-          setCurrentWorkspace(JSON.parse(currentWorkspace));
+        if (storedWorkspace) {
+          setCurrentWorkspace(JSON.parse(storedWorkspace));
         }
       }
     } catch (error) {
-      console.error("Error parsing authUser:", error);
+      console.error("Error restoring session:", error);
       logout();
     } finally {
       setLoading(false);

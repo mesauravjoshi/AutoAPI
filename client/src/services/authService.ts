@@ -14,7 +14,11 @@ export const signupApi = (data: {
   return api.post("auth/signup", data);
 };
 
+export const refreshTokenApi = () => {
+  // Uses httpOnly cookie automatically — no body needed
+  return api.post("auth/refresh-token", {}, { withCredentials: true });
+};
+
 export const logoutService = () => {
-  // console.log('service line 22');
   return api.post("auth/logout");
 };

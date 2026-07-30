@@ -4,7 +4,7 @@ import { useState } from "react";
 // import { AuthContext } from '@/Context/AuthContext';
 import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/hooks/useAuth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { logoutService } from "@/services/authService";
 import { WorkspaceModal } from "@/components/Workspace/WorkspaceModal";
 
@@ -25,7 +25,7 @@ const userNavigation: UserNavigationItem[] = [
 export const NavBar = ({ setSidebarOpen }: NavBarProps) => {
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
-
+  const navigate = useNavigate();
   const username = user?.username;
   // const email = user?.email;
 
@@ -35,53 +35,13 @@ export const NavBar = ({ setSidebarOpen }: NavBarProps) => {
       // console.log(response);
       if (response.data) {
         logout();
+        navigate(`/`)
       }
     } catch (error) {
       console.error(error);
     }
   };
-  // const payload = [
-  //   {
-  //     "name": "Get Users",
-  //     "method": "GET",
-  //     "url": "https://api.example.com/users",
-  //     "collectionId": {
-  //       "$oid": "69fa45710aab17d14a1c0861"
-  //     }
-  //   },
-  //   {
-  //     "name": "Create User",
-  //     "method": "POST",
-  //     "url": "https://api.example.com/users",
-  //     "collectionId": {
-  //       "$oid": "69fa45710aab17d14a1c0861"
-  //     }
-  //   },
-  //   {
-  //     "name": "Update User",
-  //     "method": "PUT",
-  //     "url": "https://api.example.com/users/1",
-  //     "collectionId": {
-  //       "$oid": "69fa45710aab17d14a1c0862"
-  //     }
-  //   },
-  //   {
-  //     "name": "Delete User",
-  //     "method": "DELETE",
-  //     "url": "https://api.example.com/users/1",
-  //     "collectionId": {
-  //       "$oid": "69fa45710aab17d14a1c0862"
-  //     }
-  //   }
-  // ]
-  // const handleAddWorkSpace = async () => {
-  //   try {
-  //     const response = await api.post("/request/bulk", payload);
-  //     console.log(response);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
   return (
     <div className="sticky top-0 z-40 flex h-12 shrink-0 items-center gap-x-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8 transition-colors duration-300">

@@ -5,6 +5,33 @@ import User from "#models/user.js";
 import Token from "#models/token.js";
 import Workspace from "#models/workspace.js";
 
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+const generateAccessToken = (user) =>
+  jwt.sign(
+    { id: user._id, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN || "15m" }
+  );
+
+const generateRefreshToken = (user) =>
+  jwt.sign(
+    { id: user._id },
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d" }
+  );
+
+const saveRefreshToken = async (userId, token) => {
+  await Token.create({
+    userId,
+    token,
+    type: "refresh",
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+  });
+};
+
+// ─── Signup ──────────────────────────────────────────────────────────────────
+
 export const signup = async ({ username, email, password, firstname, lastname }) => {
   if (!username || !email || !password || !firstname) {
     throw { status: 400, message: "All fields required!" };
@@ -35,8 +62,9 @@ export const signup = async ({ username, email, password, firstname, lastname })
   return { message: "User created successfully." };
 };
 
+// ─── Login ───────────────────────────────────────────────────────────────────
+
 export const login = async ({ email, password }) => {
-  
   if (!email || !password) {
     throw { status: 400, message: "Email and password required." };
   }
@@ -44,52 +72,87 @@ export const login = async ({ email, password }) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw { status: 409, message: "Invalid email or password." };
+    throw { status: 401, message: "Invalid email or password." };
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
-    throw { status: 422 , message: "Invalid email or password." };
+    throw { status: 401, message: "Invalid email or password." };
   }
 
-  const token = jwt.sign(
-    { id: user._id, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || "1d" }
-  );
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
 
-  await Token.create({
-    userId: user._id,
-    token,
-    type: "refresh",
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-  });
+  // Remove any previous refresh tokens for this user (single-session)
+  await Token.deleteMany({ userId: user._id, type: "refresh" });
 
-  // Find user's workspace
-  const workspace = await Workspace.findOne({
-    ownerId: user._id,
-  });
+  // Save the new refresh token
+  await saveRefreshToken(user._id, refreshToken);
+
+  const workspace = await Workspace.findOne({ ownerId: user._id });
 
   return {
-    message: "Login successful",
     user: {
       id: user._id,
       username: user.username,
       email: user.email,
+      picture: user.picture || null,
     },
-    token,
-    workspace
+    accessToken,
+    refreshToken,
+    workspace,
   };
 };
 
-export const logout = async (token) => {
-  await Token.findOneAndDelete({ token });
+// ─── Refresh Token ───────────────────────────────────────────────────────────
+
+export const refreshToken = async (token) => {
+  if (!token) {
+    throw { status: 401, message: "Refresh token missing." };
+  }
+
+  let decoded;
+  try {
+    decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+  } catch (err) {
+    throw { status: 401, message: "Invalid or expired refresh token." };
+  }
+
+  // Check token exists in DB
+  const storedToken = await Token.findOne({
+    userId: decoded.id,
+    token,
+    type: "refresh",
+  });
+
+  if (!storedToken) {
+    throw { status: 401, message: "Refresh token revoked." };
+  }
+
+  const user = await User.findById(decoded.id);
+
+  if (!user) {
+    throw { status: 401, message: "User not found." };
+  }
+
+  const newAccessToken = generateAccessToken(user);
+
+  return { accessToken: newAccessToken };
 };
+
+// ─── Logout ──────────────────────────────────────────────────────────────────
+
+export const logout = async (userId) => {
+  // Delete all refresh tokens for this user
+  await Token.deleteMany({ userId, type: "refresh" });
+};
+
+// ─── Google Login ─────────────────────────────────────────────────────────────
 
 export const googleLogin = async (payload) => {
   const { email, sub: googleId, given_name: firstname, family_name: lastname, picture } = payload;
-  
+
   if (!email) {
     throw { status: 400, message: "Email not provided by Google." };
   }
@@ -126,32 +189,24 @@ export const googleLogin = async (payload) => {
     await user.save();
   }
 
-  const token = jwt.sign(
-    { id: user._id, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || "1d" }
-  );
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
 
-  await Token.create({
-    userId: user._id,
-    token,
-    type: "refresh",
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-  });
+  // Remove previous refresh tokens and save new one
+  await Token.deleteMany({ userId: user._id, type: "refresh" });
+  await saveRefreshToken(user._id, refreshToken);
 
-  const workspace = await Workspace.findOne({
-    ownerId: user._id,
-  });
+  const workspace = await Workspace.findOne({ ownerId: user._id });
 
   return {
-    message: "Google login successful",
     user: {
       id: user._id,
       username: user.username,
       email: user.email,
       picture: user.picture,
     },
-    token,
-    workspace
+    accessToken,
+    refreshToken,
+    workspace,
   };
 };
