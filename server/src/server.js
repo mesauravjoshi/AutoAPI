@@ -3,13 +3,13 @@ import app from './app.js';
 import { connectDB } from '#config/db.js';
 import { createServer } from 'http';
 // import { Server } from 'socket.io';
-import { initializeSocket } from './config/socket.js';
+// import { initializeSocket } from './config/socket.js';
 
 dotenv.config();
 
 const httpServer = createServer(app);
 
-initializeSocket(httpServer);
+// initializeSocket(httpServer);
 
 const PORT = process.env.PORT || 3000;
 

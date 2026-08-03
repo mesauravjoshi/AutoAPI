@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Plus, Trash2, KeyRound, Check } from "lucide-react";
 // import WebSocker from "@/components/WebSocker";
-import Chatt from "@/components/Chatt";
+// import Chatt from "@/components/Chatt";
 
 // ---------------------------------------------------------------------------
 // Storage: real localStorage in a normal app. Wrapped in try/catch with an
@@ -93,7 +93,7 @@ export default function EnvironmentPage() {
     <div className="min-h-screen w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
       <div className="mx-auto max-w-3xl px-6 py-4">
         <div className="web-socket my-6">
-          <Chatt />
+          {/* <Chatt /> */}
           {/* <WebSocker /> */}
         </div>
         {/* Header */}

@@ -29,8 +29,7 @@
     "google-auth-library": "^10.9.0",
     "jsonwebtoken": "^9.0.2",
     "module-alias": "^2.3.4",
-    "mongoose": "^8.15.0",
-    "socket.io": "^4.8.3"
+    "mongoose": "^8.15.0"
   },
   "devDependencies": {
     "@types/node": "^26.1.1"
