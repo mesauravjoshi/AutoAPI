@@ -53,16 +53,18 @@ api.interceptors.response.use(
     };
 
     const is401 = error.response?.status === 401;
-    const isRefreshRoute =
-      originalRequest.url?.includes("auth/refresh-token") ||
-      originalRequest.url?.includes("auth/login");
+    const isAuthEndpoint =
+      originalRequest.url?.includes("auth/login") ||
+      originalRequest.url?.includes("auth/signup") ||
+      originalRequest.url?.includes("auth/refresh-token");
 
-    // Don't try to refresh on login/refresh routes — hard logout instead
-    if (is401 && isRefreshRoute) {
-      clearAuthAndRedirect();
+    // Auth endpoints: just reject and let the calling component handle it.
+    // No redirect, no localStorage clearing — nothing was ever "logged in".
+    if (is401 && isAuthEndpoint) {
       return Promise.reject(error);
     }
 
+    // Everything else: this is a real "your session died" 401 → try refresh, then hard logout
     // Retry once with a new access token on 401
     if (is401 && !originalRequest._retry) {
       if (isRefreshing) {

@@ -75,6 +75,14 @@ export const login = async ({ email, password }) => {
     throw { status: 401, message: "Invalid email or password." };
   }
 
+  if (!user.password || user.provider === "google") {
+    throw {
+      status: 409, // or 400 — some teams use a dedicated code
+      message: "This account uses Google Sign-In. Please continue with Google.",
+      code: "OAUTH_ONLY_ACCOUNT",
+    };
+  }
+
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
