@@ -14,12 +14,7 @@ import SnippetSlide from "@/components/UI/SnippetSlide";
 import api from "@/lib/api";
 import { ApiHistory, RequestItem } from '@/types/types';
 import { isLocalApiUrl } from "@/utils/isLocalApiUrl";
-
-// import {
-//   // useDispatch,
-//   useSelector
-// } from "react-redux";
-// import { RootState } from '@/store/Store'
+import { localHostAgent } from "@/utils/localHostAgent";
 
 export default function RequestForm({
   defaultData,
@@ -174,94 +169,7 @@ export default function RequestForm({
 
     const isLocal = isLocalApiUrl(fullUrl);
     if (isLocal && isValid) {
-      const localAgent = async () => {
-
-        const start = performance.now();
-        try {
-          setLoading(true);
-          const headers = buildHeaders();
-
-          const response = await axios({ url: fullUrl, method, headers, data: body });
-
-          const end = performance.now();
-          const time = end - start;
-          const toString = JSON.stringify(response.data, null, 2);
-          setDisplayResponse({
-            data: toString,
-            status: response.status,
-            statusText: response.statusText,
-            headers: {
-              "content-type": response.headers["content-type"],
-            },
-            time: time,
-            size: response.headers["content-length"]
-              ? Number(response.headers["content-length"])
-              : new Blob([JSON.stringify(response.data)]).size,
-            url: response.request?.responseURL,
-
-            ok: response.status >= 200 && response.status < 300,
-            redirected: false,
-          });
-
-          setLoading(false);
-        } catch (error) {
-          setLoading(false);
-          const end = performance.now();
-          const time = end - start;
-          if (axios.isAxiosError(error)) {
-            if (error.response) {
-              // console.log("Backend error:", error.response);
-
-              setDisplayResponse({
-                data: JSON.stringify(error.response.data, null, 2),
-                status: error.response.status,
-                statusText: error.response.statusText,
-                // headers: error.response.headers,
-                ok: false,
-                time: time,
-                size: 0,
-                redirected: false,
-                url: "",
-              });
-            }
-
-            // ❌ No response (network error, server down)
-            else if (error.request) {
-              // console.log("No response:", error.request);
-
-              setDisplayResponse({
-                data: "No response from server",
-                status: 0,
-                statusText: "Network Error",
-                headers: {},
-                ok: false,
-                time: 0,
-                size: 0,
-                redirected: false,
-                url: "",
-              });
-            } else {
-              // console.log("Error:", error.message);
-
-              setDisplayResponse({
-                data: error.message,
-                status: 0,
-                statusText: "Error",
-                headers: {},
-                ok: false,
-                time: 0,
-                size: 0,
-                redirected: false,
-                url: "",
-              });
-            }
-          } else {
-            console.log("Unknown error:", error);
-          }
-        }
-      }
-      localAgent()
-
+      localHostAgent({ fullUrl, method, header, body, setLoading, setDisplayResponse });
     } else {
       if (isValid) fetchAPI();
     }

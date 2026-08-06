@@ -1,4 +1,4 @@
-import RequestHistory  from "#models/history.js";
+import RequestHistory from "#models/history.js";
 
 /**
  * GET /api/history

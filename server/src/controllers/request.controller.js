@@ -72,3 +72,28 @@ export const bulkCreateRequests = async (req, res) => {
     });
   }
 };
+
+export const sendLocalAgentRequest = async (req, res) => {
+  try {
+    const { url, method, headers, body } = req.body;
+
+    if (!url || !method) {
+      return res.status(400).json({ error: "url and method are required." });
+    }
+
+    const { responseData, statusCode } = await executeApiRequest({
+      userId: req.user.id,
+      url,
+      method,
+      headers,
+      data: body,
+    });
+    return res.status(statusCode).json(responseData);
+
+  } catch (error) {
+    const status = error.statusCode ?? 500;
+    const message = error.message ?? "An unexpected error occurred.";
+
+    return res.status(status).json({ error: message });
+  }
+};
