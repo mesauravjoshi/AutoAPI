@@ -104,6 +104,8 @@ export const login = async ({ email, password }) => {
     user: {
       id: user._id,
       username: user.username,
+      firstname: user.firstname,
+      lastname: user.lastname,
       email: user.email,
       picture: user.picture || null,
     },
@@ -169,7 +171,7 @@ export const googleLogin = async (payload) => {
 
   if (!user) {
     const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(randomPassword, 10);
+    // const hashedPassword = await bcrypt.hash(randomPassword, 10);
     const username = email.split('@')[0] + Math.floor(Math.random() * 10000);
 
     user = await User.create({
@@ -177,7 +179,7 @@ export const googleLogin = async (payload) => {
       email,
       firstname,
       lastname,
-      password: hashedPassword,
+      password: null,
       googleId,
       provider: "google",
       picture
@@ -216,5 +218,163 @@ export const googleLogin = async (payload) => {
     accessToken,
     refreshToken,
     workspace,
+  };
+};
+
+// ─── Profile Services ─────────────────────────────────────────────────────────
+
+/**
+ * Returns whether the user has a real (manually set) password.
+ * Google-only users have a random hashed password but provider = "google",
+ * so we surface hasPassword = false for them unless they've created one.
+ */
+export const getPasswordStatus = async (userId) => {
+  const user = await User.findById(userId);
+  if (!user) throw { status: 404, message: "User not found." };
+
+  // A user "has a password" only when provider is local OR they have
+  // explicitly created a password after OAuth signup.
+  const hasPassword = user.provider === "local" || user.hasLocalPassword === true;
+  return { hasPassword };
+};
+
+/**
+ * Creates a password for a Google-only account (no existing local password).
+ */
+export const createPassword = async (userId, { newPassword, confirmPassword }) => {
+  if (!newPassword || !confirmPassword) {
+    throw { status: 400, message: "All fields are required." };
+  }
+  if (newPassword !== confirmPassword) {
+    throw { status: 400, message: "Passwords do not match." };
+  }
+  if (newPassword.length < 8) {
+    throw { status: 400, message: "Password must be at least 8 characters." };
+  }
+
+  const user = await User.findById(userId);
+  if (!user) throw { status: 404, message: "User not found." };
+
+  if (user.provider === "local") {
+    throw { status: 409, message: "Account already has a password. Use Change Password instead." };
+  }
+
+  const hashed = await bcrypt.hash(newPassword, 10);
+  user.password = hashed;
+  user.hasLocalPassword = true;
+  await user.save();
+
+  return { message: "Password created successfully." };
+};
+
+/**
+ * Changes password for a user who already has a local password.
+ */
+export const changePassword = async (userId, { currentPassword, newPassword, confirmPassword }) => {
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    throw { status: 400, message: "All fields are required." };
+  }
+  if (newPassword !== confirmPassword) {
+    throw { status: 400, message: "New passwords do not match." };
+  }
+  if (newPassword.length < 8) {
+    throw { status: 400, message: "Password must be at least 8 characters." };
+  }
+
+  const user = await User.findById(userId);
+  if (!user) throw { status: 404, message: "User not found." };
+
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
+    throw { status: 401, message: "Current password is incorrect." };
+  }
+
+  const hashed = await bcrypt.hash(newPassword, 10);
+  user.password = hashed;
+  await user.save();
+
+  return { message: "Password changed successfully." };
+};
+
+/**
+ * Updates firstname, lastname, and/or username. fullname is auto-computed by the pre-save hook.
+ */
+export const updateProfile = async (userId, { firstname, lastname, username }) => {
+  if (!firstname && !lastname && !username) {
+    throw { status: 400, message: "At least one field is required." };
+  }
+
+  const user = await User.findById(userId);
+  if (!user) throw { status: 404, message: "User not found." };
+
+  // Check username uniqueness if changing it
+  if (username && username !== user.username) {
+    const taken = await User.findOne({ username });
+    if (taken) throw { status: 409, message: "Username is already taken." };
+    user.username = username;
+  }
+
+  if (firstname !== undefined) user.firstname = firstname;
+  if (lastname !== undefined) user.lastname = lastname;
+
+  await user.save(); // triggers fullname pre-save hook
+
+  return {
+    message: "Profile updated successfully.",
+    user: {
+      id: user._id,
+      username: user.username,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      fullname: user.fullname,
+      email: user.email,
+      picture: user.picture || null,
+      provider: user.provider,
+    },
+  };
+};
+
+/**
+ * Updates the user's email. Requires password verification for security.
+ */
+export const updateEmail = async (userId, { newEmail, password }) => {
+  if (!newEmail || !password) {
+    throw { status: 400, message: "New email and current password are required." };
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(newEmail)) {
+    throw { status: 400, message: "Invalid email address." };
+  }
+
+  const user = await User.findById(userId);
+  if (!user) throw { status: 404, message: "User not found." };
+
+  if (newEmail === user.email) {
+    throw { status: 409, message: "New email is the same as the current email." };
+  }
+
+  // Verify identity via password
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw { status: 401, message: "Password is incorrect." };
+  }
+
+  // Check new email isn't taken
+  const emailTaken = await User.findOne({ email: newEmail });
+  if (emailTaken) throw { status: 409, message: "Email is already in use." };
+
+  user.email = newEmail;
+  await user.save();
+
+  return {
+    message: "Email updated successfully.",
+    user: {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      picture: user.picture || null,
+      provider: user.provider,
+    },
   };
 };

@@ -1,5 +1,5 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { Menu as Bars3Icon, Bell as BellIcon, ChevronDown as ChevronDownIcon } from "lucide-react";
+import { Menu as Bars3Icon, Bell as BellIcon, ChevronDown as ChevronDownIcon, LogOut as LogOutIcon } from "lucide-react";
 import { useState } from "react";
 // import { AuthContext } from '@/Context/AuthContext';
 import { useTheme } from "@/hooks/useTheme";
@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import { logoutService } from "@/services/authService";
 import { WorkspaceModal } from "@/components/Workspace/WorkspaceModal";
+import { SignOutModal } from "@/components/Auth/SignOutModal";
 
 interface UserNavigationItem {
   name: string;
@@ -19,7 +20,7 @@ interface NavBarProps {
 }
 
 const userNavigation: UserNavigationItem[] = [
-  { name: "Your profile", href: "#" },
+  { name: "Your profile", href: "/profile" },
 ];
 
 export const NavBar = ({ setSidebarOpen }: NavBarProps) => {
@@ -43,6 +44,7 @@ export const NavBar = ({ setSidebarOpen }: NavBarProps) => {
   };
 
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
+  const [signOutOpen, setSignOutOpen] = useState(false);
   return (
     <div className="sticky top-0 z-40 flex h-12 shrink-0 items-center gap-x-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8 transition-colors duration-300">
       <button
@@ -172,9 +174,10 @@ export const NavBar = ({ setSidebarOpen }: NavBarProps) => {
 
               <MenuItem>
                 <button
-                  onClick={() => handleSignOut()}
-                  className="w-full text-left px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  onClick={() => setSignOutOpen(true)}
+                  className="w-full text-left px-3 py-1.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-sm font-medium transition-colors flex items-center gap-2 cursor-pointer"
                 >
+                  <LogOutIcon className="size-4" />
                   Sign out
                 </button>
               </MenuItem>
@@ -186,6 +189,11 @@ export const NavBar = ({ setSidebarOpen }: NavBarProps) => {
       <WorkspaceModal
         workspaceOpen={workspaceOpen}
         setWorkspaceOpen={setWorkspaceOpen}
+      />
+      <SignOutModal
+        open={signOutOpen}
+        onOpenChange={setSignOutOpen}
+        onConfirm={handleSignOut}
       />
     </div>
   );

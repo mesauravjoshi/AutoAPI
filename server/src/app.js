@@ -11,6 +11,7 @@ import tabRoutes from "#routes/tab.routes.js";
 import collectionRoutes from "#routes/collection.routes.js";
 import workspaceRoutes from "#routes/workspace.routes.js";
 import usersRoutes from "#routes/users.routes.js";
+import profileRoutes from "#routes/profile.routes.js";
 
 const app = express();
 
@@ -32,5 +33,6 @@ app.use("/api", tabRoutes);
 app.use("/api", collectionRoutes);
 app.use("/api", workspaceRoutes);
 app.use("/api", usersRoutes);
+app.use("/api", profileRoutes);
 
 export default app;

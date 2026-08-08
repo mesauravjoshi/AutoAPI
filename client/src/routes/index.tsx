@@ -8,6 +8,7 @@ import Workspace from "@/pages/Workspace";
 import WorkspaceList from "@/pages/WorkspaceList";
 import Environment from "@/pages/Environment";
 import MainLayout from "@/layout/MainLayout";
+import Profile from "@/pages/Profile";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "@/routes/ProtectedRoute";
 
@@ -29,8 +30,12 @@ function Index() {
             <Route path="/collections" element={<Collection />} />
             <Route path="/workspace" element={<Workspace />} />
             <Route path="/workspace/list" element={<WorkspaceList />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
         </Route>
+        {/* <Route element={<ProtectedRoute />}>
+          <Route path="/profile" element={<Profile />} />
+        </Route> */}
 
         <Route path="*" element={<div>Not found</div>} />
       </Routes>

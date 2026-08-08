@@ -30,4 +30,5 @@ export type AuthContextType = {
   login: (data: { user: UserModelInterface; token: string; workspace: Workspace }) => void;
   logout: () => void;
   fetchUserData: () => Promise<void>;
+  updateUser: (patch: Partial<UserModelInterface>) => void;
 };

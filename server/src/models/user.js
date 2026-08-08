@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   password: {
-    type: String,
+    type: String || null,
     required: true
   },
   createdAt: {
@@ -35,6 +35,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["local", "google"],
     default: "local"
+  },
+  // true only when a Google-signup user has explicitly created a local password
+  hasLocalPassword: {
+    type: Boolean,
+    default: false,
   }
 });
 
