@@ -1,13 +1,18 @@
 import axios from "axios";
 import RequestHistory from "#models/history.js";
 
-export const executeApiRequest = async ({ userId, url, method, headers, data }) => {
+export const executeApiRequest = async ({ userId, url, method, headers, body }) => {
   // console.log('lllll');
 
   const startTime = Date.now();
+  // console.log(url, method, headers);
+
+  // console.log('body', typeof JSON.parse(body));
 
   try {
-    const response = await axios({ url, method, headers, data });
+    const response = await axios({ url, method, headers, data: JSON.parse(body) });
+    // console.log('response', response);
+
     const responseTime = Date.now() - startTime;
 
     await saveHistory({
@@ -15,7 +20,7 @@ export const executeApiRequest = async ({ userId, url, method, headers, data }) 
       url,
       method,
       headers,
-      requestBody: data,
+      requestBody: body,
       responseBody: response.data,
       statusCode: response.status,
       responseTime,
@@ -24,9 +29,11 @@ export const executeApiRequest = async ({ userId, url, method, headers, data }) 
     return { responseData: response.data, statusCode: response.status };
   } catch (err) {
     const responseTime = Date.now() - startTime;
+    console.log('req . service ', err);
 
     // axios wraps HTTP error responses inside err.response
     const axiosResponse = err.response;
+    console.log('axiosResponseeeee', axiosResponse);
 
     await saveHistory({
       userId,

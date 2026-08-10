@@ -196,7 +196,7 @@ export default function CollectionComponent() {
 
   const handleCreateSuccess = async () => {
     try {
-      const res = await api.get(`/collection`);
+      const res = await api.get(`/collection/${currentWorkspace?._id}`);
       setCollections(res.data.collections);
     } catch (error) {
       console.error("Failed to fetch collections:", error);

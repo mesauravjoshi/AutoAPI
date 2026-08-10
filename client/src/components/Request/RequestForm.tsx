@@ -68,6 +68,7 @@ export default function RequestForm({
     try {
       setLoading(true);
       const headers = buildHeaders();
+      console.log(body);
 
       const payload = {
         method,
@@ -178,7 +179,7 @@ export default function RequestForm({
 
   return (
     <div className="py-4 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300 relative overflow-hidden">
-      <div className=" mx-auto py-4">
+      <div className=" mx-auto py-1">
         <ApiInput
           fullUrl={fullUrl}
           setFullUrl={setFullUrl}
