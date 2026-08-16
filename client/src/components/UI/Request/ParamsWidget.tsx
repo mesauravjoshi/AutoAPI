@@ -31,7 +31,7 @@ const ParamsWidget: React.FC<ParamsWidgetProps> = ({
     //     `${encodeURIComponent(param.key.length > 0 ? param.key : 'a')}=${encodeURIComponent(param.value)}`
     //   );
     // const queryString = validParams.length ? `?${validParams.join('&')}` : '';
-    console.log(updatedParams);
+    // console.log(updatedParams);
 
     const queryString = QueryString(updatedParams);
 
@@ -71,7 +71,7 @@ const ParamsWidget: React.FC<ParamsWidgetProps> = ({
   };
 
   return (
-    <div className="mt-4">
+    <div className="mt-2 overflow-auto min-h-45.5 max-h-45.5">
       {/* <h3 className="text-lg font-medium text-white mb-3">Query Parameters</h3> */}
 
       <div className="grid grid-cols-12 gap-2 items-center mb-2">

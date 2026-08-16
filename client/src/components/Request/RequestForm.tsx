@@ -26,7 +26,7 @@ export default function RequestForm({
   const [selected, setSelected] = useState<MethodsTypes>("GET");
   const [displayResponse, setDisplayResponse] = useState<DisplayResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [body, setBody] = useState("");
+  const [body, setBody] = useState<string | FormData>("");
   const [header, setHeader] = useState<HeaderItem[]>([
     { key: "Content-Type", value: "application/json", enabled: true },
     { key: "", value: "", enabled: true },
@@ -178,7 +178,7 @@ export default function RequestForm({
   };
 
   return (
-    <div className="py-4 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300 relative overflow-hidden">
+    <div className="pt-2 pb-4 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300 relative overflow-hidden">
       <div className=" mx-auto py-1">
         <ApiInput
           fullUrl={fullUrl}

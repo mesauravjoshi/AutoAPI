@@ -7,10 +7,11 @@ export const executeApiRequest = async ({ userId, url, method, headers, body }) 
   const startTime = Date.now();
   // console.log(url, method, headers);
 
+  console.log('body', body);
   // console.log('body', typeof JSON.parse(body));
 
   try {
-    const response = await axios({ url, method, headers, data: JSON.parse(body) });
+    const response = await axios({ url, method, headers, data: body });
     // console.log('response', response);
 
     const responseTime = Date.now() - startTime;
@@ -29,18 +30,19 @@ export const executeApiRequest = async ({ userId, url, method, headers, body }) 
     return { responseData: response.data, statusCode: response.status };
   } catch (err) {
     const responseTime = Date.now() - startTime;
-    console.log('req . service ', err);
+    // console.log('req . service ', err);
+    // console.log('errrrrrr', err);
 
     // axios wraps HTTP error responses inside err.response
     const axiosResponse = err.response;
-    console.log('axiosResponseeeee', axiosResponse);
+    // console.log('axiosResponseeeee', axiosResponse);
 
     await saveHistory({
       userId,
       url,
       method,
       headers,
-      requestBody: data,
+      requestBody: body,
       responseBody: axiosResponse?.data ?? null,
       statusCode: axiosResponse?.status ?? 0,
       responseTime,

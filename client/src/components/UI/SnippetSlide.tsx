@@ -13,7 +13,7 @@ interface SnippetSlideProps {
   method: ExtendedMethodsTypes;
   fullUrl: string;
   headers: Record<string, string>;
-  body: string;
+  body: string | FormData;
 }
 
 const SnippetSlide: React.FC<SnippetSlideProps> = ({

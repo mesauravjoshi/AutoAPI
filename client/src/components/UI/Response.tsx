@@ -63,7 +63,7 @@ export default function Response({ displayResponse, loading }: ResponseProps) {
   return (
     <div className="w-full">
       {/* Header with gradient accent */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center my-4">
         <div className="flex items-center gap-2">
           <div className="w-1 h-6 bg-linear-to-b from-blue-500 to-purple-500 rounded-full"></div>
           <h2 className="text-gray-900 dark:text-white font-semibold text-lg">Response</h2>

@@ -12,7 +12,7 @@ export interface HistoryPayload {
   method: MethodsTypes;
   url: string;
   headers: Record<string, string>;
-  body: string;
+  body: string | FormData;
   status: number;
   statusText: string;
   responseData: string;
@@ -25,7 +25,7 @@ export interface LocalHostAgentProps {
   fullUrl: string;
   method: MethodsTypes;
   header: HeaderItem[];
-  body: string;
+  body: string | FormData;
   setLoading: (loading: boolean) => void;
   setDisplayResponse: (response: DisplayResponse | null) => void;
 }

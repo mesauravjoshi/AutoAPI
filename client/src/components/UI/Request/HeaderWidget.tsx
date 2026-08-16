@@ -26,7 +26,7 @@ const HeaderWidget: React.FC<ParamsWidgetProps> = ({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 overflow-auto min-h-45.5 max-h-45.5 mt-2">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead>

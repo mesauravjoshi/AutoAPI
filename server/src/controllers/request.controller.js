@@ -27,10 +27,12 @@ export const sendRequest = async (req, res) => {
 
     return res.status(statusCode).json(responseData);
   } catch (error) {
-    console.log('error from req controller', error);
+    // console.log('error from req controller', error);
 
     // Structured error from service layer
     const status = error.statusCode ?? 500;
+    // console.log('error', error);
+
     const message = error.upstream ? error.upstream : "An unexpected error occurred.";
 
     return res.status(status).json({ error: message });

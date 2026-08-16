@@ -1,14 +1,16 @@
 // Request/index.tsx
 import { useState } from 'react'
 import { ChevronDown as ChevronDownIcon } from 'lucide-react';
-import BodyWidget from './BodyWidget';
-import HeaderWidget from './HeaderWidget';
-import ParamsWidget from './ParamsWidget';
+import BodyWidget from '@/components/UI/Request/BodyWidget';
+import HeaderWidget from '@/components/UI/Request/HeaderWidget';
+import ParamsWidget from '@/components/UI/Request/ParamsWidget';
+import AuthenticationWidget from '@/components/UI/Request/AuthenticationWidget';
 import { HeaderItem, ParamItem } from '@/types/types';
 
 interface RequestProps {
-  body: string;
-  setBody: (body: string) => void;
+  body: string | FormData;
+  // const [body, setBody] = useState<string | FormData>("");
+  setBody: (body: string | FormData) => void;
   header: HeaderItem[];
   setHeader: React.Dispatch<React.SetStateAction<HeaderItem[]>>;
   params: ParamItem[];
@@ -50,7 +52,7 @@ export default function Request({
       case 'Header':
         return <HeaderWidget header={header} setHeader={setHeader} />;
       case 'Authentication':
-        return <div className='text-gray-700 dark:text-gray-300'>Authentication Widget Here</div>;
+        return <AuthenticationWidget header={header} setHeader={setHeader} />;
       case 'Params':
         return <ParamsWidget
           params={params}
@@ -83,30 +85,30 @@ export default function Request({
         />
       </div>
 
-      <div className='rounded-lg mt-2 overflow-auto min-h-45.5 max-h-45.5'>
-        <div className="hidden sm:block">
-          <div className="border-b border-gray-200 dark:border-gray-700">
-            <nav aria-label="Tabs" className="-mb-px flex space-x-8">
-              {tabs.map((tab, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentTab(tab.name)}
-                  className={classNames(
-                    currentTab === tab.name
-                      ? 'border-indigo-500 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-300',
-                    'border-b-2 px-1 py-1 text-sm font-medium whitespace-nowrap cursor-pointer transition-colors'
-                  )}
-                >
-                  {tab.name}
-                </button>
-              ))}
-            </nav>
-          </div>
+      <div className="hidden sm:block">
+        <div className="border-b border-gray-200 dark:border-gray-700">
+          <nav aria-label="Tabs" className="-mb-px flex space-x-8">
+            {tabs.map((tab, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentTab(tab.name)}
+                className={classNames(
+                  currentTab === tab.name
+                    ? 'border-indigo-500 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-300',
+                  'border-b-2 px-1 py-1 text-sm font-medium whitespace-nowrap cursor-pointer transition-colors'
+                )}
+              >
+                {tab.name}
+              </button>
+            ))}
+          </nav>
         </div>
-        <div className="mt-4">
-          {renderTabContent()}
-        </div>
+      </div>
+      <div className='rounded-lg'>
+        {/* <div className=""> */}
+        {renderTabContent()}
+        {/* </div> */}
       </div>
     </div>
   )
