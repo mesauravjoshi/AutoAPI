@@ -8,9 +8,8 @@ import AuthenticationWidget from '@/components/UI/Request/AuthenticationWidget';
 import { HeaderItem, ParamItem } from '@/types/types';
 
 interface RequestProps {
-  body: string | FormData;
-  // const [body, setBody] = useState<string | FormData>("");
-  setBody: (body: string | FormData) => void;
+  body: string | FormData | URLSearchParams | undefined;
+  setBody: (body: string | FormData | URLSearchParams | undefined) => void;
   header: HeaderItem[];
   setHeader: React.Dispatch<React.SetStateAction<HeaderItem[]>>;
   params: ParamItem[];

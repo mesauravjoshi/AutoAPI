@@ -13,7 +13,7 @@ interface SnippetSlideProps {
   method: ExtendedMethodsTypes;
   fullUrl: string;
   headers: Record<string, string>;
-  body: string | FormData;
+  body: string | FormData | URLSearchParams | undefined;
 }
 
 const SnippetSlide: React.FC<SnippetSlideProps> = ({
@@ -102,8 +102,8 @@ ${method !== "get" && method !== "delete" ? `  -d '${bodyData}'` : ""}`;
               key={lang}
               onClick={() => setActiveLang(lang as SnippetAPICallTypes)}
               className={`text-sm/6 px-3 py-1 rounded-md transition ${activeLang === lang
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
                 }`}
             >
               {lang}

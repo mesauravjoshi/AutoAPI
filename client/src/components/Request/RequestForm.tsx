@@ -26,7 +26,7 @@ export default function RequestForm({
   const [selected, setSelected] = useState<MethodsTypes>("GET");
   const [displayResponse, setDisplayResponse] = useState<DisplayResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [body, setBody] = useState<string | FormData>("");
+  const [body, setBody] = useState<string | FormData | URLSearchParams | undefined>(undefined);
   const [header, setHeader] = useState<HeaderItem[]>([
     { key: "Content-Type", value: "application/json", enabled: true },
     { key: "", value: "", enabled: true },

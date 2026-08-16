@@ -45,7 +45,7 @@ const HeaderWidget: React.FC<ParamsWidgetProps> = ({
                     className="block w-full rounded-md bg-white dark:bg-gray-800 px-3 py-1.5 text-sm text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
                     value={item.key}
                     onChange={(e) => updateHeader(index, 'key', e.target.value)}
-                    placeholder="Content-Type"
+                    placeholder="Key"
                   />
                 </td>
                 <td className="py-2 pr-2">
@@ -54,7 +54,7 @@ const HeaderWidget: React.FC<ParamsWidgetProps> = ({
                     className="block w-full rounded-md bg-white dark:bg-gray-800 px-3 py-1.5 text-sm text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
                     value={item.value}
                     onChange={(e) => updateHeader(index, 'value', e.target.value)}
-                    placeholder="application/json"
+                    placeholder="Value"
                   />
                 </td>
                 <td className="py-2">
