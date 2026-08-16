@@ -1,3 +1,4 @@
+import { defaultAuthState, AuthState } from '@/components/UI/Request/AuthenticationWidget';
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import ValidateURL from '@/utils/validateURL';
@@ -28,10 +29,11 @@ export default function RequestForm({
   const [loading, setLoading] = useState(false);
   const [body, setBody] = useState<string | FormData | URLSearchParams | undefined>(undefined);
   const [header, setHeader] = useState<HeaderItem[]>([
-    { key: "Content-Type", value: "application/json", enabled: true },
-    { key: "", value: "", enabled: true },
+    // { key: "Content-Type", value: "application/json", enabled: true },
+    // { key: "", value: "", enabled: true },
   ]);
-
+  const [auth, setAuth] = useState<AuthState>(defaultAuthState);
+  // ...pass auth={auth} setAuth={setAuth} into <Request />
   const [params, setParams] = useState<ParamItem[]>([
     { id: Date.now(), key: "", value: "", enabled: true },
   ]);
@@ -68,7 +70,7 @@ export default function RequestForm({
     try {
       setLoading(true);
       const headers = buildHeaders();
-      console.log(body);
+      // console.log(body);
 
       const payload = {
         method,
@@ -201,6 +203,8 @@ export default function RequestForm({
           fullUrl={fullUrl}
           setFullUrl={setFullUrl}
           inputRef={inputRef}
+          auth={auth}
+          setAuth={setAuth}
         />
 
         <Response displayResponse={displayResponse} loading={loading} />

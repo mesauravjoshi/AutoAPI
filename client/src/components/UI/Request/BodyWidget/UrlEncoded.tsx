@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { GripVertical, Trash2, Plus } from "lucide-react";
 import type { BodyEditorProps, BodyTypeConfig } from ".";
+import Checkbox from '@/components/UI/Common/Checkbox';
 
 /* Self-contained, same as FormData.tsx — deliberately not sharing the
    row-table hook with FormData.tsx so this file has zero cross-editor
@@ -23,10 +24,8 @@ const createUrlEncodedRow = (): UrlEncodedRow => ({
 const isRowEmpty = (r: UrlEncodedRow) => !r.key && !r.value;
 
 const dragRowClasses = (isDragging: boolean, isOver: boolean, enabled: boolean) =>
-  `group grid items-center gap-2 px-2 py-1 border-b last:border-b-0 border-gray-100 dark:border-gray-700/70 transition-colors duration-150 ${
-    isDragging ? "opacity-40" : ""
-  } ${isOver ? "border-t-2 border-t-indigo-500" : ""} ${
-    !enabled ? "bg-gray-50/50 dark:bg-gray-900/30" : "hover:bg-gray-50 dark:hover:bg-gray-700/30"
+  `group grid items-center gap-2 px-2 py-1 border-b last:border-b-0 border-gray-100 dark:border-gray-700/70 transition-colors duration-150 ${isDragging ? "opacity-40" : ""
+  } ${isOver ? "border-t-2 border-t-indigo-500" : ""} ${!enabled ? "bg-gray-50/50 dark:bg-gray-900/30" : "hover:bg-gray-50 dark:hover:bg-gray-700/30"
   }`;
 
 function useRowsController(rows: UrlEncodedRow[], onChange: (rows: UrlEncodedRow[]) => void) {
@@ -124,22 +123,19 @@ function UrlEncodedEditor({ value, onChange }: BodyEditorProps<UrlEncodedRow[]>)
               className={`${dragRowClasses(isDragging, isOver, row.enabled)} grid-cols-[28px_28px_1fr_1fr_32px]`}
             >
               <span
-                className={`flex items-center justify-center h-full text-gray-300 dark:text-gray-600 ${
-                  isLast && isEmpty
-                    ? "invisible"
-                    : "cursor-grab active:cursor-grabbing hover:text-gray-500 dark:hover:text-gray-400"
-                }`}
+                className={`flex items-center justify-center h-full text-gray-300 dark:text-gray-600 ${isLast && isEmpty
+                  ? "invisible"
+                  : "cursor-grab active:cursor-grabbing hover:text-gray-500 dark:hover:text-gray-400"
+                  }`}
               >
                 <GripVertical size={14} />
               </span>
 
               <span className="flex items-center justify-center">
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={row.enabled}
-                  onChange={(e) => updateRow(row.id, { enabled: e.target.checked })}
+                  onChange={(checked) => updateRow(row.id, { enabled: checked })}
                   disabled={isLast && isEmpty}
-                  className="h-3.5 w-3.5 rounded border-gray-300 dark:border-gray-600 accent-indigo-600 focus:ring-indigo-500 focus:ring-offset-0 disabled:opacity-30"
                 />
               </span>
 
@@ -148,9 +144,8 @@ function UrlEncodedEditor({ value, onChange }: BodyEditorProps<UrlEncodedRow[]>)
                 value={row.key}
                 onChange={(e) => updateRow(row.id, { key: e.target.value })}
                 placeholder="Key"
-                className={`w-full bg-transparent px-1.5 py-1 text-sm font-mono text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none rounded ${
-                  !row.enabled ? "text-gray-400 dark:text-gray-500 line-through decoration-gray-300" : ""
-                }`}
+                className={`w-full bg-transparent px-1.5 py-1 text-sm font-mono text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none rounded ${!row.enabled ? "text-gray-400 dark:text-gray-500 line-through decoration-gray-300" : ""
+                  }`}
               />
 
               <input
@@ -158,9 +153,8 @@ function UrlEncodedEditor({ value, onChange }: BodyEditorProps<UrlEncodedRow[]>)
                 value={row.value}
                 onChange={(e) => updateRow(row.id, { value: e.target.value })}
                 placeholder="Value"
-                className={`w-full bg-transparent px-1.5 py-1 text-sm font-mono text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none rounded ${
-                  !row.enabled ? "text-gray-400 dark:text-gray-500 line-through decoration-gray-300" : ""
-                }`}
+                className={`w-full bg-transparent px-1.5 py-1 text-sm font-mono text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none rounded ${!row.enabled ? "text-gray-400 dark:text-gray-500 line-through decoration-gray-300" : ""
+                  }`}
               />
 
               <span className="flex items-center justify-center">

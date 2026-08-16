@@ -4,7 +4,7 @@ import { ChevronDown as ChevronDownIcon } from 'lucide-react';
 import BodyWidget from '@/components/UI/Request/BodyWidget';
 import HeaderWidget from '@/components/UI/Request/HeaderWidget';
 import ParamsWidget from '@/components/UI/Request/ParamsWidget';
-import AuthenticationWidget from '@/components/UI/Request/AuthenticationWidget';
+import AuthenticationWidget, { AuthState } from '@/components/UI/Request/AuthenticationWidget';
 import { HeaderItem, ParamItem } from '@/types/types';
 
 interface RequestProps {
@@ -17,6 +17,8 @@ interface RequestProps {
   fullUrl: string;
   setFullUrl: (url: string) => void;
   inputRef: React.RefObject<HTMLInputElement | null>;
+  auth: AuthState;                                          // NEW
+  setAuth: React.Dispatch<React.SetStateAction<AuthState>>;  // NEW
 }
 
 const tabs = [
@@ -31,15 +33,8 @@ function classNames(...classes: (string | boolean | undefined)[]): string {
 }
 
 export default function Request({
-  body,
-  setBody,
-  header,
-  setHeader,
-  params,
-  setParams,
-  fullUrl,
-  setFullUrl,
-  inputRef
+  body, setBody, header, setHeader, params, setParams,
+  fullUrl, setFullUrl, inputRef, auth, setAuth,             // NEW
 }: RequestProps) {
 
   const [currentTab, setCurrentTab] = useState('Body');
@@ -51,15 +46,9 @@ export default function Request({
       case 'Header':
         return <HeaderWidget header={header} setHeader={setHeader} />;
       case 'Authentication':
-        return <AuthenticationWidget header={header} setHeader={setHeader} />;
+        return <AuthenticationWidget header={header} setHeader={setHeader} auth={auth} setAuth={setAuth} />;
       case 'Params':
-        return <ParamsWidget
-          params={params}
-          setParams={setParams}
-          setFullUrl={setFullUrl}
-          fullUrl={fullUrl}
-          inputRef={inputRef}
-        />
+        return <ParamsWidget params={params} setParams={setParams} setFullUrl={setFullUrl} fullUrl={fullUrl} inputRef={inputRef} />
       default:
         return null;
     }

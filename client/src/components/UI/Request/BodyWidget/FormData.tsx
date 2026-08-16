@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback } from "react";
 import { GripVertical, Trash2, Plus, File as FileIcon, X } from "lucide-react";
+import Checkbox from "@/components/UI/Common/Checkbox";
 import type { BodyEditorProps, BodyTypeConfig } from ".";
 
 /* ------------------------------------------------------------------ */
@@ -150,12 +151,11 @@ function FormDataEditor({ value, onChange }: BodyEditorProps<FormDataRow[]>) {
 
               {/* Enable */}
               <span className="flex items-center justify-center">
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={row.enabled}
-                  onChange={(e) => updateRow(row.id, { enabled: e.target.checked })}
+                  onChange={(checked) => updateRow(row.id, { enabled: checked })}
                   disabled={isLast && isEmpty}
-                  className="h-3.5 w-3.5 rounded border-gray-300 dark:border-gray-600 accent-indigo-600 focus:ring-indigo-500 focus:ring-offset-0 disabled:opacity-30"
+                  className="h-3.5 w-3.5 rounded border-gray-300 dark:border-gray-600"
                 />
               </span>
 

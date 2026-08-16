@@ -1,6 +1,7 @@
 import { X as XMarkIcon } from 'lucide-react';
 import QueryString from '@/utils/queryString';
 import { ParamItem } from '@/types/types';
+import Checkbox from '@/components/UI/Common/Checkbox';
 
 interface ParamsWidgetProps {
   params: ParamItem[];
@@ -90,11 +91,10 @@ const ParamsWidget: React.FC<ParamsWidgetProps> = ({
       {params.map((param, index) => (
         <div key={param.id} className="grid grid-cols-12 gap-2 items-center mb-2">
           <div className="col-span-1 flex justify-center">
-            <input
-              type="checkbox"
+            <Checkbox
               checked={param.enabled}
               onChange={() => toggleParam(param.id)}
-              className="h-4 w-4 rounded border-white/10 bg-white/5 text-indigo-600 focus:ring-indigo-600 focus:ring-offset-gray-900"
+              className="h-4 w-4 rounded border-white/10 bg-white/5"
             />
           </div>
 

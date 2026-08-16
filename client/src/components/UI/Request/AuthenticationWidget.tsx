@@ -3,12 +3,28 @@ import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, Eye, EyeOff, ShieldOff } from 'lucide-react';
 import { HeaderItem } from '@/types/types';
 
-interface ParamsWidgetProps {
-  header: HeaderItem[];
-  setHeader: React.Dispatch<React.SetStateAction<HeaderItem[]>>;
+export type AuthType = 'No Auth' | 'Basic Auth' | 'Bearer Token';
+
+export interface AuthState {
+  type: AuthType;
+  username: string;
+  password: string;
+  token: string;
 }
 
-type AuthType = 'No Auth' | 'Basic Auth' | 'Bearer Token';
+export const defaultAuthState: AuthState = {
+  type: 'No Auth',
+  username: '',
+  password: '',
+  token: '',
+};
+
+interface AuthenticationWidgetProps {
+  header: HeaderItem[];
+  setHeader: React.Dispatch<React.SetStateAction<HeaderItem[]>>;
+  auth: AuthState;
+  setAuth: React.Dispatch<React.SetStateAction<AuthState>>;
+}
 
 const AUTH_METHODS: AuthType[] = ['No Auth', 'Basic Auth', 'Bearer Token'];
 
@@ -16,16 +32,11 @@ function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-const AuthenticationWidget: React.FC<ParamsWidgetProps> = ({ setHeader }) => {
-  const [authType, setAuthType] = useState<AuthType>('No Auth');
+const AuthenticationWidget: React.FC<AuthenticationWidgetProps> = ({ setHeader, auth, setAuth }) => {
   const [open, setOpen] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [token, setToken] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -36,34 +47,39 @@ const AuthenticationWidget: React.FC<ParamsWidgetProps> = ({ setHeader }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // keep the shared header list in sync with the computed Authorization value
+  // keep the shared header list in sync with the computed Authorization value.
+  // `auth` now lives in the parent (Request), so this effect re-derives the
+  // header entry on every render — but the *value itself* survives this
+  // widget unmounting, because it's no longer local state.
   useEffect(() => {
     let authValue: string | null = null;
 
-    if (authType === 'Basic Auth' && (username || password)) {
-      authValue = `Basic ${btoa(`${username}:${password}`)}`;
-    } else if (authType === 'Bearer Token' && token) {
-      authValue = `Bearer ${token}`;
+    if (auth.type === 'Basic Auth' && (auth.username || auth.password)) {
+      authValue = `Basic ${btoa(`${auth.username}:${auth.password}`)}`;
+    } else if (auth.type === 'Bearer Token' && auth.token) {
+      authValue = `Bearer ${auth.token}`;
     }
 
     setHeader((prev) => {
-      const withoutAuth = prev.filter((h) => h.key.toLowerCase() !== 'authorization');
+      // match by `source`, not by key name — so a header a user manually
+      // names "Authorization" is never silently overwritten by this effect
+      const withoutAuth = prev.filter((h) => h.source !== 'auth');
       if (!authValue) return withoutAuth;
       return [
         ...withoutAuth,
-        { id: crypto.randomUUID(), key: 'Authorization', value: authValue, enabled: true } as HeaderItem,
+        { id: crypto.randomUUID(), key: 'Authorization', value: authValue, enabled: true, source: 'auth' },
       ];
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authType, username, password, token]);
+  }, [auth.type, auth.username, auth.password, auth.token]);
 
   const handleSelect = (m: AuthType) => {
-    setAuthType(m);
+    setAuth((prev) => ({ ...prev, type: m }));
     setOpen(false);
   };
 
   return (
-    <div className="flex items-stretch rounded-lg border border-gray-200 dark:border-gray-700   shadow-sm  min-h-45.5 max-h-45.5">
+    <div className="flex items-stretch rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm min-h-45.5 max-h-45.5">
       {/* Left: auth type dropdown */}
       <div className="shrink-0 w-44 px-4 py-4">
         <label className="block text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
@@ -81,13 +97,10 @@ const AuthenticationWidget: React.FC<ParamsWidgetProps> = ({ setHeader }) => {
                 : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:border-gray-400 dark:hover:border-gray-500'
             )}
           >
-            <span>{authType}</span>
+            <span>{auth.type}</span>
             <ChevronDown
               size={14}
-              className={classNames(
-                'text-gray-400 transition-transform duration-150',
-                open ? 'rotate-180' : ''
-              )}
+              className={classNames('text-gray-400 transition-transform duration-150', open ? 'rotate-180' : '')}
             />
           </button>
 
@@ -99,7 +112,7 @@ const AuthenticationWidget: React.FC<ParamsWidgetProps> = ({ setHeader }) => {
                   onClick={() => handleSelect(m)}
                   className={classNames(
                     'px-3 py-2 text-sm cursor-pointer transition-colors duration-100',
-                    authType === m
+                    auth.type === m
                       ? 'bg-indigo-600 text-white'
                       : 'text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-gray-700'
                   )}
@@ -111,7 +124,7 @@ const AuthenticationWidget: React.FC<ParamsWidgetProps> = ({ setHeader }) => {
           )}
         </div>
 
-        {authType !== 'No Auth' && (
+        {auth.type !== 'No Auth' && (
           <p className="mt-3 text-[11px] leading-relaxed text-gray-400 dark:text-gray-500">
             Adds an <code className="font-mono text-gray-500 dark:text-gray-400">Authorization</code> header to this
             request.
@@ -119,12 +132,10 @@ const AuthenticationWidget: React.FC<ParamsWidgetProps> = ({ setHeader }) => {
         )}
       </div>
 
-      {/* Divider */}
       <div className="w-px bg-gray-200 dark:bg-gray-700 my-4" />
 
-      {/* Right: dynamic auth fields */}
       <div className="flex-1 px-5 py-4 min-w-0">
-        {authType === 'No Auth' && (
+        {auth.type === 'No Auth' && (
           <div className="flex flex-col items-center justify-center h-full py-6 text-center gap-2">
             <ShieldOff size={22} className="text-gray-300 dark:text-gray-600" />
             <p className="text-sm text-gray-400 dark:text-gray-500 max-w-xs">
@@ -133,7 +144,7 @@ const AuthenticationWidget: React.FC<ParamsWidgetProps> = ({ setHeader }) => {
           </div>
         )}
 
-        {authType === 'Basic Auth' && (
+        {auth.type === 'Basic Auth' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
             <div>
               <label className="block text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5">
@@ -141,8 +152,8 @@ const AuthenticationWidget: React.FC<ParamsWidgetProps> = ({ setHeader }) => {
               </label>
               <input
                 type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={auth.username}
+                onChange={(e) => setAuth((prev) => ({ ...prev, username: e.target.value }))}
                 placeholder="Enter username"
                 className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900/40 px-3 py-2 text-sm font-mono text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
               />
@@ -155,8 +166,8 @@ const AuthenticationWidget: React.FC<ParamsWidgetProps> = ({ setHeader }) => {
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={auth.password}
+                  onChange={(e) => setAuth((prev) => ({ ...prev, password: e.target.value }))}
                   placeholder="Enter password"
                   className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900/40 px-3 py-2 pr-9 text-sm font-mono text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
                 />
@@ -173,15 +184,15 @@ const AuthenticationWidget: React.FC<ParamsWidgetProps> = ({ setHeader }) => {
           </div>
         )}
 
-        {authType === 'Bearer Token' && (
+        {auth.type === 'Bearer Token' && (
           <div className="max-w-md">
             <label className="block text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5">
               Token
             </label>
             <input
               type="text"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
+              value={auth.token}
+              onChange={(e) => setAuth((prev) => ({ ...prev, token: e.target.value }))}
               placeholder="Enter token"
               className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900/40 px-3 py-2 text-sm font-mono text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all duration-150"
             />

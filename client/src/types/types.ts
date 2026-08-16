@@ -1,7 +1,9 @@
 export interface HeaderItem {
+  id: string;
   key: string;
   value: string;
-  enabled?: boolean;
+  enabled: boolean;
+  source?: 'user' | 'default' | 'auth'; // NEW — who added this row
 }
 
 export interface ParamItem {
