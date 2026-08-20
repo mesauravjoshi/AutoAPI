@@ -7,7 +7,7 @@ export const executeApiRequest = async ({ userId, url, method, headers, body }) 
   const startTime = Date.now();
   // console.log(url, method, headers);
 
-  // console.log('body', body);
+  console.log('body', body);
   // console.log('body', typeof JSON.parse(body));
 
   try {

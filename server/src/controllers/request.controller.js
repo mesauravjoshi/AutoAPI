@@ -19,8 +19,8 @@ export const sendRequest = async (req, res) => {
   } else if (body?.type === "urlSearchParams") {
     requestBody = new URLSearchParams(body.data);
   } else {
-    requestBody = body?.data;
-  }
+    requestBody = JSON.parse(body?.data);
+  } // here need to update -> based on body type update requestBody type for string : string for  JSON :object, XML to XML like in postman
   // console.log('requestBod', requestBody);
 
   if (!url || !method) {
