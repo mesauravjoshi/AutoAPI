@@ -70,13 +70,30 @@ export default function RequestForm({
     try {
       setLoading(true);
       const headers = buildHeaders();
-      // console.log(body);
+      let serializedBody;
+
+      if (body instanceof FormData) {
+        serializedBody = {
+          type: "formData",
+          data: Array.from(body.entries()),
+        };
+      } else if (body instanceof URLSearchParams) {
+        serializedBody = {
+          type: "urlSearchParams",
+          data: body.toString(),
+        };
+      } else {
+        serializedBody = {
+          type: "string",
+          data: body,
+        };
+      }
 
       const payload = {
+        url: fullUrl,
         method,
         headers,
-        body,
-        url: fullUrl,
+        body: serializedBody,
       };
 
       const response = await api.post(`/request`, payload);

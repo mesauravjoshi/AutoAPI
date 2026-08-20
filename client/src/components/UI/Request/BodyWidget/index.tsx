@@ -73,6 +73,8 @@ export default function BodyWidget({ body, setBody }: BodyWidgetProps) {
   // the type-correct empty shape (empty FormData / empty URLSearchParams
   // / undefined) — see FormData.tsx, UrlEncoded.tsx, Raw.tsx.
   useEffect(() => {
+    // console.log();
+    
     setBody(config.serialize(value));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, bodyType]);

@@ -42,7 +42,7 @@ export const addWorkspace = async (req, res) => {
     // assuming ownerId comes from authenticated user
     const ownerId = req.user?.id || req.body.ownerId;
 
-    console.log(name, ownerId);
+    // console.log(name, ownerId);
     if (!name || !ownerId) {
       return res.status(400).json({
         success: false,

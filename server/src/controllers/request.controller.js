@@ -8,7 +8,20 @@ import mongoose from "mongoose";
  */
 export const sendRequest = async (req, res) => {
   const { url, method, headers, body } = req.body;
-  // console.log(url, method, headers, data);
+  let requestBody;
+
+  if (body?.type === "formData") {
+    requestBody = new FormData();
+
+    for (const [key, value] of body.data) {
+      requestBody.append(key, value);
+    }
+  } else if (body?.type === "urlSearchParams") {
+    requestBody = new URLSearchParams(body.data);
+  } else {
+    requestBody = body?.data;
+  }
+  // console.log('requestBod', requestBody);
 
   if (!url || !method) {
     return res.status(400).json({ error: "url and method are required." });
@@ -21,7 +34,7 @@ export const sendRequest = async (req, res) => {
       url,
       method,
       headers,
-      body,
+      body: requestBody,
     });
     // console.log('responseData', responseData);
 

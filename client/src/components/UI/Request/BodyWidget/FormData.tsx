@@ -86,8 +86,10 @@ function useRowsController(rows: FormDataRow[], onChange: (rows: FormDataRow[]) 
 /* ------------------------------------------------------------------ */
 
 function serializeFormData(rows: FormDataRow[]): FormData {
+  
   const fd = new FormData();
   rows.forEach((r) => {
+    // console.log(r.key, r.value);
     if (!r.enabled || !r.key) return;
     if (r.type === "file") {
       if (r.file) fd.append(r.key, r.file, r.file.name);
@@ -95,6 +97,8 @@ function serializeFormData(rows: FormDataRow[]): FormData {
       fd.append(r.key, r.value);
     }
   });
+  console.log(...fd);
+  
   return fd;
 }
 
