@@ -15,9 +15,11 @@ import {
 } from 'lucide-react';
 // import axios from 'axios'
 // import { setIsSliderOpen } from '@/Store/Slice/SliderSlice'
-import { Link, 
+import {
+  Link,
   // useParams ,
-  useLocation } from 'react-router-dom';
+  useLocation
+} from 'react-router-dom';
 
 interface NavigationItem {
   name: string
@@ -41,6 +43,15 @@ const navigation: NavigationItem[] = [
 function classNames(...classes: (string | boolean | undefined)[]): string {
   return classes.filter(Boolean).join(' ')
 }
+
+// Shared style tokens (AutoAPI theme reference)
+const NAV_ACTIVE =
+  'bg-linear-to-r from-blue-600 to-purple-600 text-white shadow-md shadow-blue-500/20'
+const NAV_INACTIVE =
+  'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
+const NAV_ICON_ACTIVE = 'text-white'
+const NAV_ICON_INACTIVE =
+  'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200'
 
 export default function Slider({ sidebarOpen, setSidebarOpen }: SliderProps) {
   // const dispatch = useDispatch()
@@ -73,11 +84,15 @@ export default function Slider({ sidebarOpen, setSidebarOpen }: SliderProps) {
               </div>
             </TransitionChild>
             {/* Sidebar component for mobile */}
-            <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:bg-gray-900 px-6 pb-4 ring-1 ring-gray-200 dark:ring-gray-800">
+            <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:bg-gray-900 px-6 pb-4 ring-1 ring-gray-200 dark:ring-gray-700">
               <div className="flex h-16 shrink-0 items-center">
-                <div className="text-2xl font-extrabold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  AutoAPI
-                </div>
+                <Link to="/" className="flex items-center">
+                  <img
+                    src="/autoapi-web-logo.svg"
+                    alt="AutoAPI"
+                    className="h-5 w-auto"
+                  />
+                </Link>
               </div>
               <nav className="flex flex-1 flex-col">
                 <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -89,18 +104,14 @@ export default function Slider({ sidebarOpen, setSidebarOpen }: SliderProps) {
                             to={item.href}
                             onClick={() => setSidebarOpen(false)}
                             className={classNames(
-                              pathName === item.href
-                                ? 'bg-blue-50 dark:bg-gray-800 text-blue-700 dark:text-white'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white',
+                              pathName === item.href ? NAV_ACTIVE : NAV_INACTIVE,
                               'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors duration-200'
                             )}
                           >
                             <item.icon
                               aria-hidden="true"
                               className={classNames(
-                                pathName === item.href
-                                  ? 'text-blue-600 dark:text-white'
-                                  : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200',
+                                pathName === item.href ? NAV_ICON_ACTIVE : NAV_ICON_INACTIVE,
                                 'size-6 shrink-0'
                               )}
                             />
@@ -116,7 +127,7 @@ export default function Slider({ sidebarOpen, setSidebarOpen }: SliderProps) {
                   <li className="mt-auto">
                     <Link
                       to="#"
-                      className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
+                      className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200"
                     >
                       <Cog6ToothIcon
                         aria-hidden="true"
@@ -134,12 +145,14 @@ export default function Slider({ sidebarOpen, setSidebarOpen }: SliderProps) {
 
       {/* Static sidebar for desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-42 lg:flex-col">
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:bg-gray-900 px-4 pb-4 border-r border-gray-200 dark:border-gray-800">
+        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:bg-gray-900 px-4 pb-4 border-r border-gray-200 dark:border-gray-700">
           <div className="flex h-16 shrink-0 items-center">
-            <Link to={`/`}>
-              <div className="text-2xl font-extrabold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                AutoAPI
-              </div>
+            <Link to="/" className="flex items-center">
+              <img
+                src="/autoapi-web-logo.svg"
+                alt="AutoAPI"
+                className="h-5"
+              />
             </Link>
           </div>
           <nav className="flex flex-1 flex-col">
@@ -151,18 +164,14 @@ export default function Slider({ sidebarOpen, setSidebarOpen }: SliderProps) {
                       <Link
                         to={item.href}
                         className={classNames(
-                          pathName === item.href
-                            ? 'bg-blue-50 dark:bg-gray-800 text-blue-700 dark:text-white'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white',
+                          pathName === item.href ? NAV_ACTIVE : NAV_INACTIVE,
                           'group flex gap-x-3 rounded-md p-2 text-sm font-semibold transition-colors duration-200'
                         )}
                       >
                         <item.icon
                           aria-hidden="true"
                           className={classNames(
-                            pathName === item.href
-                              ? 'text-blue-600 dark:text-white'
-                              : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200',
+                            pathName === item.href ? NAV_ICON_ACTIVE : NAV_ICON_INACTIVE,
                             'size-5 shrink-0'
                           )}
                         />
@@ -178,7 +187,7 @@ export default function Slider({ sidebarOpen, setSidebarOpen }: SliderProps) {
               <li className="mt-auto">
                 <Link
                   to="#"
-                  className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
+                  className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200"
                 >
                   <Cog6ToothIcon
                     aria-hidden="true"

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" role="img" aria-label="AutoAPI">
+  <title>AutoAPI</title>
+  <defs>
+    <linearGradient id="autoapiMarkGradient" x1="16" y1="702" x2="722" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1B5CFB"/>
+      <stop offset="55%" stop-color="#7C3BFB"/>
+      <stop offset="100%" stop-color="#9A17FA"/>
+    </linearGradient>
+  </defs>
+  <path transform="translate(135.00,862.93) scale(1.033994,-1.033994) translate(-16.00,0.00)" fill="url(#autoapiMarkGradient)" d="M499 124H237L195 0H16L270 702H468L722 0H541ZM455 256 368 513 282 256Z"/>
+</svg>

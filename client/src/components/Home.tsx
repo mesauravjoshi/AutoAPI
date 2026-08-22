@@ -13,9 +13,13 @@ const Hero: React.FC = () => {
         {/* Navigation Bar */}
         <nav className="flex flex-wrap items-center justify-between py-4 md:py-6 gap-4">
           {/* Logo */}
-          <div className="text-2xl font-extrabold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            AutoAPI
-          </div>
+          <Link to="/" className="flex items-center">
+            <img
+              src="/autoapi-web-logo.svg"
+              alt="AutoAPI"
+              className="h-5 sm:h-6 md:h-6 lg:h-7 xl:h-8 w-auto"
+            />
+          </Link>
 
           {/* Navigation Links */}
           <div className="hidden sm:flex items-center space-x-6 md:space-x-8 text-sm font-medium">
