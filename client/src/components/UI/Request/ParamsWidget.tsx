@@ -1,4 +1,4 @@
-import { X as XMarkIcon } from 'lucide-react';
+import { X as XMarkIcon, Plus as PlusIcon } from 'lucide-react';
 import QueryString from '@/utils/queryString';
 import { ParamItem } from '@/types/types';
 import Checkbox from '@/components/UI/Common/Checkbox';
@@ -10,6 +10,9 @@ interface ParamsWidgetProps {
   setFullUrl: (url: string) => void;
   inputRef: React.RefObject<HTMLInputElement | null>;
 }
+
+const INPUT_CLASS =
+  'block w-full rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-400 transition-colors font-mono';
 
 const ParamsWidget: React.FC<ParamsWidgetProps> = ({
   params,
@@ -73,19 +76,26 @@ const ParamsWidget: React.FC<ParamsWidgetProps> = ({
 
   return (
     <div className="mt-2 overflow-auto min-h-45.5 max-h-45.5">
-      {/* <h3 className="text-lg font-medium text-white mb-3">Query Parameters</h3> */}
-
       <div className="grid grid-cols-12 gap-2 items-center mb-2">
         <div className="col-span-1 flex justify-center">
-          <span className="text-sm font-medium text-white">Enabled</span>
+          <span className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Enabled</span>
         </div>
         <div className="col-span-4">
-          <span className="text-sm font-medium text-white">Key</span>
+          <span className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Key</span>
         </div>
         <div className="col-span-6">
-          <span className="text-sm font-medium text-white">Value</span>
+          <span className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Value</span>
         </div>
-        <div className="col-span-1 text-white " onClick={addNewParam}>+ Add</div>
+        <div className="col-span-1 flex justify-center">
+          <button
+            type="button"
+            onClick={addNewParam}
+            aria-label="Add parameter"
+            className="flex items-center justify-center rounded-full p-1 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors cursor-pointer"
+          >
+            <PlusIcon className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       {params.map((param, index) => (
@@ -94,7 +104,7 @@ const ParamsWidget: React.FC<ParamsWidgetProps> = ({
             <Checkbox
               checked={param.enabled}
               onChange={() => toggleParam(param.id)}
-              className="h-4 w-4 rounded border-white/10 bg-white/5"
+              className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-blue-600 focus:ring-blue-600 dark:focus:ring-blue-400"
             />
           </div>
 
@@ -103,7 +113,7 @@ const ParamsWidget: React.FC<ParamsWidgetProps> = ({
               type="text"
               value={param.key}
               onChange={(e) => handleParamChange(index, 'key', e.target.value)}
-              className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500"
+              className={INPUT_CLASS}
               placeholder="Key"
             />
           </div>
@@ -113,7 +123,7 @@ const ParamsWidget: React.FC<ParamsWidgetProps> = ({
               type="text"
               value={param.value}
               onChange={(e) => handleParamChange(index, 'value', e.target.value)}
-              className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500"
+              className={INPUT_CLASS}
               placeholder="Value"
             />
           </div>
@@ -122,9 +132,9 @@ const ParamsWidget: React.FC<ParamsWidgetProps> = ({
             <button
               onClick={() => deleteParam(param.id)}
               disabled={params.length <= 1}
-              className={`rounded-full p-1 ${params.length > 1
-                ? 'text-red-400 hover:bg-white/10 hover:text-red-300'
-                : 'text-gray-500 cursor-not-allowed'
+              className={`rounded-full p-1 transition-colors ${params.length > 1
+                ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer'
+                : 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
                 }`}
             >
               <XMarkIcon className="h-5 w-5" />
@@ -132,14 +142,6 @@ const ParamsWidget: React.FC<ParamsWidgetProps> = ({
           </div>
         </div>
       ))}
-
-      {/* <button
-        onClick={addNewParam}
-        className="mt-3 flex items-center gap-1 rounded-md bg-white/10 px-3 py-1.5 text-sm font-medium text-white hover:bg-white/20"
-      >
-        <PlusIcon className="h-4 w-4" />
-        Add Parameter
-      </button> */}
     </div>
   )
 }

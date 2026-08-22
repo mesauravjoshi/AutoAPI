@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { AuthContext } from "@/Context/AuthContext";
 import { UserModelInterface, Workspace } from "@/types/auth.type";
 import { refreshTokenApi } from "@/services/authService";
+import { AxiosError } from "axios";
 
 type AuthProviderProps = {
   children: ReactNode;
@@ -49,11 +50,40 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           // Update localStorage and state with the fresh token
           localStorage.setItem("AutoAPIAuthToken", freshToken);
           setToken(freshToken);
-        } catch {
-          // Refresh failed — the refresh token has expired or been revoked.
-          // Log the user out cleanly.
-          logout();
-          return;
+        } catch (err) {
+          const error = err as AxiosError<any>;
+
+          // Server responded with an error status
+          if (error.response) {
+            const status = error.response.status;
+            const message =
+              error.response.data?.message || "Something went wrong";
+
+            console.error("API Error:", status, message);
+
+            if (status === 401) {
+              console.log("Refresh token expired");
+              logout();
+              return;
+            }
+
+            if (status === 403) {
+              console.log("Access forbidden");
+              logout();
+              return;
+            }
+
+            return;
+          }
+
+          // Request made but no response received
+          if (error.request) {
+            console.error("Network Error:", error.message);
+            return;
+          }
+
+          // Something else happened
+          console.error("Unexpected Error:", error.message);
         }
 
         setUser(JSON.parse(authUser));

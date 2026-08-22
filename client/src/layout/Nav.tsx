@@ -1,5 +1,13 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { Menu as Bars3Icon, Bell as BellIcon, ChevronDown as ChevronDownIcon, LogOut as LogOutIcon } from "lucide-react";
+import {
+  Menu as Bars3Icon,
+  Bell as BellIcon,
+  ChevronDown as ChevronDownIcon,
+  LogOut as LogOutIcon,
+  Home as HomeIcon,
+  LayoutGrid as WorkspaceIcon,
+  User as UserIcon,
+} from "lucide-react";
 import { useState } from "react";
 // import { AuthContext } from '@/Context/AuthContext';
 import { useTheme } from "@/hooks/useTheme";
@@ -12,6 +20,7 @@ import { SignOutModal } from "@/components/Auth/SignOutModal";
 interface UserNavigationItem {
   name: string;
   href: string;
+  icon: React.ComponentType<React.ComponentProps<"svg">>;
 }
 
 interface NavBarProps {
@@ -20,8 +29,12 @@ interface NavBarProps {
 }
 
 const userNavigation: UserNavigationItem[] = [
-  { name: "Your profile", href: "/profile" },
+  { name: "Your profile", href: "/profile", icon: UserIcon },
 ];
+
+// Material Design "filled tonal button" pill style — used for Home / Workspace
+const MD_TONAL_BUTTON =
+  "inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 active:bg-blue-200/70 dark:active:bg-blue-900/70 transition-colors duration-200 cursor-pointer";
 
 export const NavBar = ({ setSidebarOpen }: NavBarProps) => {
   const { theme, toggleTheme } = useTheme();
@@ -62,22 +75,20 @@ export const NavBar = ({ setSidebarOpen }: NavBarProps) => {
         className="h-6 w-px bg-gray-300 dark:bg-gray-700 lg:hidden"
       />
 
-      <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-        <div className="grid flex-1 grid-cols-4 gap-4">
-          <Link to={`/`}>
-            <div
-              className="text-center cursor-pointer rounded-md border border-gray-500 dark:border-gray-600 px-2 py-2 text-sm font-semibold text-gray-600 dark:text-gray-300 my-2"
-            >
-              Home
-            </div>
+      <div className="flex flex-1 min-w-0 gap-x-4 self-stretch lg:gap-x-6">
+        <div className="flex flex-1 min-w-0 items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar">
+          <Link to="/" className={MD_TONAL_BUTTON}>
+            <HomeIcon className="size-3.5 sm:size-4" aria-hidden="true" />
+            Home
           </Link>
-          <div
-            className="text-center cursor-pointer rounded-md border border-gray-500 dark:border-gray-600 px-2 py-2 text-sm font-semibold text-gray-600 dark:text-gray-300 my-2"
+          <button
+            type="button"
             onClick={() => setWorkspaceOpen(true)}
+            className={MD_TONAL_BUTTON}
           >
+            <WorkspaceIcon className="size-3.5 sm:size-4" aria-hidden="true" />
             Workspace
-          </div>
-
+          </button>
         </div>
         <div className="flex items-center gap-x-4 lg:gap-x-6">
           <button
@@ -159,14 +170,15 @@ export const NavBar = ({ setSidebarOpen }: NavBarProps) => {
             </MenuButton>
             <MenuItems
               transition
-              className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-800 py-2 shadow-lg ring-1 ring-gray-900/10 dark:ring-gray-700 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+              className="absolute right-0 z-10 mt-2.5 w-40 origin-top-right rounded-md bg-white dark:bg-gray-800 py-2 shadow-lg ring-1 ring-gray-900/10 dark:ring-gray-700 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
             >
               {userNavigation.map((item) => (
                 <MenuItem key={item.name}>
                   <Link
                     to={item.href}
-                    className="block px-3 py-1 text-sm/6 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm/6 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                   >
+                    <item.icon className="size-4 text-gray-500 dark:text-gray-400" aria-hidden="true" />
                     {item.name}
                   </Link>
                 </MenuItem>

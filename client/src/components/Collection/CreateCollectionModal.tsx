@@ -1,14 +1,15 @@
 // import { Button } from "@/components/UI/button";
 import { useState } from "react";
+import { FolderPlus } from "lucide-react";
 import api from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  // DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/UI/dialog";
 
 type CreateCollectionModalProps = {
@@ -23,10 +24,12 @@ export const CreateCollectionModal = ({
   onSuccess,
 }: CreateCollectionModalProps) => {
   const [newCollectionName, setNewCollectionName] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { currentWorkspace } = useAuth();
 
   const handleCreateCollection = async () => {
-    if (!newCollectionName.trim()) return;
+    if (!newCollectionName.trim() || isSubmitting) return;
+    setIsSubmitting(true);
     try {
       await api.post("/collection", {
         name: newCollectionName,
@@ -37,19 +40,31 @@ export const CreateCollectionModal = ({
       onSuccess();
     } catch (error) {
       console.error("Failed to create collection:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent showCloseButton={false} className="sm:max-w-md">
+      <DialogContent showCloseButton className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Create Collection</DialogTitle>
+          <div className="flex items-center gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-blue-600 to-purple-600 shadow-md shadow-blue-500/20">
+              <FolderPlus className="size-5 text-white" />
+            </span>
+            <div>
+              <DialogTitle>Create Collection</DialogTitle>
+              <DialogDescription>
+                Group related requests together for easy access.
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               Collection Name
             </label>
             <input
@@ -59,17 +74,17 @@ export const CreateCollectionModal = ({
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleCreateCollection();
               }}
-              className="block w-full rounded-md bg-white dark:bg-gray-800 px-3 py-2.5 text-base text-gray-900 dark:text-white outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 dark:focus:outline-indigo-400 sm:text-sm/6 transition-colors"
+              className="block w-full rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3.5 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-400 focus:border-transparent transition-colors"
               placeholder="e.g., User API"
             />
           </div>
 
-          <div className="flex justify-end gap-3 mt-6">
+          <div className="flex justify-end gap-2 pt-1">
             <DialogClose asChild>
               <button
                 type="button"
                 onClick={() => setNewCollectionName("")}
-                className="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition"
+                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -78,10 +93,10 @@ export const CreateCollectionModal = ({
             <button
               type="button"
               onClick={handleCreateCollection}
-              disabled={!newCollectionName.trim()}
-              className="rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white cursor-pointer"
+              disabled={!newCollectionName.trim() || isSubmitting}
+              className="rounded-lg bg-linear-to-r from-blue-600 to-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none cursor-pointer"
             >
-              Create
+              {isSubmitting ? "Creating…" : "Create"}
             </button>
           </div>
         </div>

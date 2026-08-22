@@ -79,7 +79,7 @@ const AuthenticationWidget: React.FC<AuthenticationWidgetProps> = ({ setHeader, 
   };
 
   return (
-    <div className="flex items-stretch rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm min-h-45.5 max-h-45.5">
+    <div className="flex items-stretch rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm min-h-45.5 max-h-45.5 mt-2">
       {/* Left: auth type dropdown */}
       <div className="shrink-0 w-44 px-4 py-4">
         <label className="block text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
