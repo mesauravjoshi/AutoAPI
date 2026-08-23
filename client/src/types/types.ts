@@ -3,7 +3,7 @@ export interface HeaderItem {
   key: string;
   value: string;
   enabled: boolean;
-  source?: 'user' | 'default' | 'auth'; // NEW — who added this row
+  source?: 'user' | 'default' | 'auth' | 'body'; // NEW — who added this row
 }
 
 export interface ParamItem {
