@@ -42,7 +42,7 @@ export default function Request({
   const renderTabContent = () => {
     switch (currentTab) {
       case 'Body':
-        return <BodyWidget body={body} setBody={setBody} />;
+        return <BodyWidget body={body} setBody={setBody} header={header} setHeader={setHeader} />;
       case 'Header':
         return <HeaderWidget header={header} setHeader={setHeader} />;
       case 'Authentication':

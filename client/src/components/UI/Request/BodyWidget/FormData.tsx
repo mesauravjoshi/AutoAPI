@@ -30,10 +30,8 @@ const createFormDataRow = (): FormDataRow => ({
 const isRowEmpty = (r: FormDataRow) => !r.key && !r.value && !r.file;
 
 const dragRowClasses = (isDragging: boolean, isOver: boolean, enabled: boolean) =>
-  `group grid items-center gap-2 px-2 py-1 border-b last:border-b-0 border-gray-100 dark:border-gray-700/70 transition-colors duration-150 ${
-    isDragging ? "opacity-40" : ""
-  } ${isOver ? "border-t-2 border-t-indigo-500" : ""} ${
-    !enabled ? "bg-gray-50/50 dark:bg-gray-900/30" : "hover:bg-gray-50 dark:hover:bg-gray-700/30"
+  `group grid items-center gap-2 px-2 py-1 border-b last:border-b-0 border-gray-100 dark:border-gray-700/70 transition-colors duration-150 ${isDragging ? "opacity-40" : ""
+  } ${isOver ? "border-t-2 border-t-indigo-500" : ""} ${!enabled ? "bg-gray-50/50 dark:bg-gray-900/30" : "hover:bg-gray-50 dark:hover:bg-gray-700/30"
   }`;
 
 function useRowsController(rows: FormDataRow[], onChange: (rows: FormDataRow[]) => void) {
@@ -86,7 +84,7 @@ function useRowsController(rows: FormDataRow[], onChange: (rows: FormDataRow[]) 
 /* ------------------------------------------------------------------ */
 
 function serializeFormData(rows: FormDataRow[]): FormData {
-  
+
   const fd = new FormData();
   rows.forEach((r) => {
     // console.log(r.key, r.value);
@@ -97,7 +95,7 @@ function serializeFormData(rows: FormDataRow[]): FormData {
       fd.append(r.key, r.value);
     }
   });
-  
+
   return fd;
 }
 
@@ -143,11 +141,10 @@ function FormDataEditor({ value, onChange }: BodyEditorProps<FormDataRow[]>) {
             >
               {/* Drag handle */}
               <span
-                className={`flex items-center justify-center h-full text-gray-300 dark:text-gray-600 ${
-                  isLast && isEmpty
+                className={`flex items-center justify-center h-full text-gray-300 dark:text-gray-600 ${isLast && isEmpty
                     ? "invisible"
                     : "cursor-grab active:cursor-grabbing hover:text-gray-500 dark:hover:text-gray-400"
-                }`}
+                  }`}
               >
                 <GripVertical size={14} />
               </span>
@@ -168,9 +165,8 @@ function FormDataEditor({ value, onChange }: BodyEditorProps<FormDataRow[]>) {
                 value={row.key}
                 onChange={(e) => updateRow(row.id, { key: e.target.value })}
                 placeholder="Key"
-                className={`w-full bg-transparent px-1.5 py-1 text-sm font-mono text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none rounded ${
-                  !row.enabled ? "text-gray-400 dark:text-gray-500 line-through decoration-gray-300" : ""
-                }`}
+                className={`w-full bg-transparent px-1.5 py-1 text-sm font-mono text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none rounded ${!row.enabled ? "text-gray-400 dark:text-gray-500 line-through decoration-gray-300" : ""
+                  }`}
               />
 
               {/* Type selector — form-data only */}
@@ -223,9 +219,8 @@ function FormDataEditor({ value, onChange }: BodyEditorProps<FormDataRow[]>) {
                   value={row.value}
                   onChange={(e) => updateRow(row.id, { value: e.target.value })}
                   placeholder="Value"
-                  className={`w-full bg-transparent px-1.5 py-1 text-sm font-mono text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none rounded ${
-                    !row.enabled ? "text-gray-400 dark:text-gray-500 line-through decoration-gray-300" : ""
-                  }`}
+                  className={`w-full bg-transparent px-1.5 py-1 text-sm font-mono text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none rounded ${!row.enabled ? "text-gray-400 dark:text-gray-500 line-through decoration-gray-300" : ""
+                    }`}
                 />
               )}
 
@@ -266,4 +261,5 @@ export const formDataConfig: BodyTypeConfig<FormDataRow[]> = {
   createInitialValue: () => [createFormDataRow()],
   serialize: serializeFormData,
   Editor: FormDataEditor,
+  getContentType: () => null,
 };

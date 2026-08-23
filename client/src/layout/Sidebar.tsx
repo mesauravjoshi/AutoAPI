@@ -122,7 +122,7 @@ export default function Slider({ sidebarOpen, setSidebarOpen }: SliderProps) {
                     </ul>
                   </li>
                   <li>
-                    <div className="text-xs/6 font-semibold text-gray-500 dark:text-gray-400">Your teams</div>
+                    {/* <div className="text-xs/6 font-semibold text-gray-500 dark:text-gray-400">Your teams</div> */}
                   </li>
                   <li className="mt-auto">
                     <Link

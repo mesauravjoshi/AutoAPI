@@ -1,7 +1,8 @@
 // AuthenticationWidget.tsx
-import { useEffect, useRef, useState } from 'react';
-import { ChevronDown, Eye, EyeOff, ShieldOff } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Eye, EyeOff, ShieldOff } from 'lucide-react';
 import { HeaderItem } from '@/types/types';
+import CustomSelect from "@/components/UI/Customselect";
 
 export type AuthType = 'No Auth' | 'Basic Auth' | 'Bearer Token';
 
@@ -28,29 +29,9 @@ interface AuthenticationWidgetProps {
 
 const AUTH_METHODS: AuthType[] = ['No Auth', 'Basic Auth', 'Bearer Token'];
 
-function classNames(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(' ');
-}
-
 const AuthenticationWidget: React.FC<AuthenticationWidgetProps> = ({ setHeader, auth, setAuth }) => {
-  const [open, setOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  // keep the shared header list in sync with the computed Authorization value.
-  // `auth` now lives in the parent (Request), so this effect re-derives the
-  // header entry on every render — but the *value itself* survives this
-  // widget unmounting, because it's no longer local state.
   useEffect(() => {
     let authValue: string | null = null;
 
@@ -73,11 +54,6 @@ const AuthenticationWidget: React.FC<AuthenticationWidgetProps> = ({ setHeader, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth.type, auth.username, auth.password, auth.token]);
 
-  const handleSelect = (m: AuthType) => {
-    setAuth((prev) => ({ ...prev, type: m }));
-    setOpen(false);
-  };
-
   return (
     <div className="flex items-stretch rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm min-h-45.5 max-h-45.5 mt-2">
       {/* Left: auth type dropdown */}
@@ -86,43 +62,17 @@ const AuthenticationWidget: React.FC<AuthenticationWidgetProps> = ({ setHeader, 
           Auth Type
         </label>
 
-        <div className="relative z-50" ref={dropdownRef}>
-          <button
-            type="button"
-            onClick={() => setOpen(!open)}
-            className={classNames(
-              'flex items-center justify-between w-full cursor-pointer rounded-md border px-3 py-2 text-sm font-medium transition-all duration-150',
-              open
-                ? 'border-indigo-500 ring-2 ring-indigo-500/20 text-indigo-600 dark:text-indigo-300'
-                : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:border-gray-400 dark:hover:border-gray-500'
-            )}
-          >
-            <span>{auth.type}</span>
-            <ChevronDown
-              size={14}
-              className={classNames('text-gray-400 transition-transform duration-150', open ? 'rotate-180' : '')}
-            />
-          </button>
-
-          {open && (
-            <div className="absolute top-11 left-0 w-44 rounded-md bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 z-50 py-1 overflow-hidden">
-              {AUTH_METHODS.map((m) => (
-                <div
-                  key={m}
-                  onClick={() => handleSelect(m)}
-                  className={classNames(
-                    'px-3 py-2 text-sm cursor-pointer transition-colors duration-100',
-                    auth.type === m
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-gray-700'
-                  )}
-                >
-                  {m}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <CustomSelect
+          value={auth.type}
+          onChange={(m) => setAuth((prev) => ({ ...prev, type: m }))}
+          options={AUTH_METHODS}
+          buttonClassName="flex items-center justify-between w-full rounded-md border px-3 py-2 text-sm font-medium transition-all duration-150 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:border-gray-400 dark:hover:border-gray-500"
+          buttonOpenClassName="border-indigo-500 ring-2 ring-indigo-500/20 text-indigo-600 dark:text-indigo-300"
+          dropdownClassName="top-11 left-0 w-44 rounded-md bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 py-1 overflow-hidden"
+          optionClassName="px-3 py-2 text-sm cursor-pointer transition-colors duration-100"
+          optionSelectedClassName="bg-indigo-600 text-white"
+          optionUnselectedClassName="text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-gray-700"
+        />
 
         {auth.type !== 'No Auth' && (
           <p className="mt-3 text-[11px] leading-relaxed text-gray-400 dark:text-gray-500">

@@ -1,6 +1,7 @@
-import { useState, RefObject, useEffect, useRef } from "react"
+import { RefObject } from "react"
 import { MethodsTypes } from '@/types/types';
 // import UrlEditor from "@/components/Monaco/UrlEditor";
+import CustomSelect from "@/components/UI/Customselect";
 
 interface ApiInputProps {
   fullUrl: string;
@@ -15,19 +16,12 @@ interface ApiInputProps {
 
 const methods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
 
-function classNames(...classes: (string | boolean | undefined)[]): string {
-  return classes.filter(Boolean).join(' ')
-}
-
 export default function ApiInput({ fullUrl, setFullUrl, handleSendReq, inputRef, setMethod, setOpenRightSlider, selected, setSelected }: ApiInputProps) {
-  const [open, setOpen] = useState(false);
   // const [selected, setSelected] = useState("GET");
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const handleSelect = (m: MethodsTypes) => {
     setSelected(m);
     setMethod(m.toLowerCase() as MethodsTypes);
-    setOpen(false);
   };
 
   const handleBaseUrlChange = (event: React.ChangeEvent<HTMLInputElement> | string) => {
@@ -60,56 +54,21 @@ export default function ApiInput({ fullUrl, setFullUrl, handleSendReq, inputRef,
     }
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
   return (
     <div className="flex relative">
 
-      <div className="relative" ref={dropdownRef}>
-
-        {/* button */}
-        <div
-          onClick={() => setOpen(!open)}
-          className="cursor-pointer rounded-md border border-gray-500 dark:border-gray-600  px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-300 h-full"
-        >
-          {selected}
-        </div>
-
-        {/* dropdown */}
-        {open && (
-          <div className="absolute top-11 left-0 w-28 rounded-md bg-white dark:bg-gray-800 shadow-lg border border-gray-300 dark:border-gray-700 z-100">
-            {methods.map((m) => (
-              <div
-                key={m}
-                onClick={() => handleSelect(m as MethodsTypes)}
-                className={classNames(`px-3 py-2 text-sm cursor-pointer hover:bg-indigo-500 hover:text-white
-                  ${selected === m
-                    ? "bg-indigo-600 text-white"
-                    : "text-gray-700 dark:text-gray-200"
-                  }
-                `)}
-              >
-                {m}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <CustomSelect
+        value={selected}
+        onChange={(m) => handleSelect(m as MethodsTypes)}
+        options={methods}
+        wrapperClassName=""
+        buttonClassName="rounded-md border border-gray-500 dark:border-gray-600 px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-300 h-full"
+        dropdownClassName="top-11 left-0 w-28 rounded-md bg-white dark:bg-gray-800 shadow-lg border border-gray-300 dark:border-gray-700"
+        optionClassName="px-3 py-2 text-sm cursor-pointer hover:bg-indigo-500 hover:text-white"
+        optionSelectedClassName="bg-indigo-600 text-white"
+        optionUnselectedClassName="text-gray-700 dark:text-gray-200"
+        renderTrigger={({ selected }) => <>{selected?.value}</>}
+      />
 
       {/* input */}
       <div className="grow">
@@ -124,13 +83,6 @@ export default function ApiInput({ fullUrl, setFullUrl, handleSendReq, inputRef,
           placeholder="https://api.example.com/resource"
         />
       </div>
-      {/* <div className="grow">
-        <UrlEditor
-          value={fullUrl}
-          onChange={handleBaseUrlChange}
-          placeholder="https://api.example.com/resource"
-        />
-      </div> */}
 
       <button
         className="ml-1.5 rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white cursor-pointer"

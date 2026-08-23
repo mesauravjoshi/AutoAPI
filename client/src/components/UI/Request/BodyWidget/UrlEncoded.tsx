@@ -193,4 +193,5 @@ export const urlEncodedConfig: BodyTypeConfig<UrlEncodedRow[]> = {
   createInitialValue: () => [createUrlEncodedRow()],
   serialize: serializeUrlEncoded,
   Editor: UrlEncodedEditor,
+  getContentType: () => "application/x-www-form-urlencoded",
 };

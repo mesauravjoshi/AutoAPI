@@ -2,13 +2,12 @@ import axios from "axios";
 import RequestHistory from "#models/history.js";
 
 export const executeApiRequest = async ({ userId, url, method, headers, body }) => {
-  // console.log('lllll');
 
   const startTime = Date.now();
   // console.log(url, method, headers);
 
   console.log('body', body);
-  // console.log('body', typeof JSON.parse(body));
+  console.log('body', typeof body);
 
   try {
     const response = await axios({ url, method, headers, data: body });
