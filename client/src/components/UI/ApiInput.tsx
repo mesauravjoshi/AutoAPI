@@ -92,7 +92,7 @@ export default function ApiInput({ fullUrl, setFullUrl, handleSendReq, inputRef,
 
         {/* dropdown */}
         {open && (
-          <div className="absolute top-11 left-0 w-28 rounded-md bg-white dark:bg-gray-800 shadow-lg border border-gray-300 dark:border-gray-700 z-50">
+          <div className="absolute top-11 left-0 w-28 rounded-md bg-white dark:bg-gray-800 shadow-lg border border-gray-300 dark:border-gray-700 z-100">
             {methods.map((m) => (
               <div
                 key={m}

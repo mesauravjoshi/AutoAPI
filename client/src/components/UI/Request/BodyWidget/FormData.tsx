@@ -97,7 +97,6 @@ function serializeFormData(rows: FormDataRow[]): FormData {
       fd.append(r.key, r.value);
     }
   });
-  console.log(...fd);
   
   return fd;
 }

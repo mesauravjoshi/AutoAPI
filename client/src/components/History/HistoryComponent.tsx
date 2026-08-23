@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "@/lib/api";
-import formatDate from "@/utils/formatDate";
 import { Clock as ClockIcon } from "lucide-react";
 import { ApiHistory } from '@/types/types'
 import AccordionSection from '@/components/History/AccordionSection'
@@ -25,7 +24,14 @@ function getRelativeLabel(dateString: string) {
   if (sameDay(d, today)) return "Today";
   if (sameDay(d, yesterday)) return "Yesterday";
 
-  return formatDate(dateString); // 12 Jun 2026
+  const isCurrentYear = d.getFullYear() === today.getFullYear();
+
+  // e.g. "12 Jun" for the current year, "12 Jun 2025" for a previous year
+  return d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: isCurrentYear ? undefined : "numeric",
+  });
 }
 
 function groupByDate(items: ApiHistory[]) {
@@ -124,6 +130,25 @@ export default function HistoryComponent() {
     }
   };
 
+  const handleRemoveBulkHistory = async (ids: string[]) => {
+    if (!ids.length) return;
+
+    try {
+      const res = await api.delete("/history/bulk", { data: { ids } });
+
+      console.log(res.data.message); // "N history item(s) deleted successfully"
+
+      // Remove all deleted items from UI in one pass
+      setHistory((prev) => prev.filter((item) => !ids.includes(item._id)));
+
+    } catch (error: any) {
+      console.error(
+        "Bulk delete failed:",
+        error?.response?.data?.message || error.message
+      );
+    }
+  };
+
   return (
     <aside className="w-[30%] h-screen border-r text-sm border-gray-200 dark:border-gray-800">
       <div className="h-full overflow-y-auto p-3">
@@ -154,6 +179,7 @@ export default function HistoryComponent() {
                 title={getRelativeLabel(date)}
                 items={items}
                 onDelete={handleRemoveHistory}
+                onBulkDelete={handleRemoveBulkHistory}
               // setSelectedHistory={setSelectedHistory}
               />
             ))}

@@ -109,6 +109,7 @@ function RequestCard({
   );
 }
 
+
 function CollectionAccordion({
   collection,
   onDelete,
@@ -119,13 +120,18 @@ function CollectionAccordion({
   onDeleteCollection: (collection: CollectionItem) => void;
 }) {
   const [open, setOpen] = useState(true);
-  // console.log(collection);
 
   return (
     <div className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
-      <button
+      {/* Header row — a div (not a button) since it contains its own interactive button */}
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => setOpen(!open)}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") setOpen(!open);
+        }}
+        className="group w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition cursor-pointer"
       >
         <div className="flex items-center gap-3">
           <span className="font-semibold">{collection.name}</span>
@@ -135,18 +141,26 @@ function CollectionAccordion({
           </span>
         </div>
 
-        <ChevronDownIcon
-          className={`w-5 h-5 transition-transform duration-300 ${open ? "rotate-180" : ""
-            }`}
-        />
-        <TrashIcon
-          className="size-4 cursor-pointer hover:text-red-500 transition-colors z-10"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDeleteCollection(collection);
-          }}
-        />
-      </button>
+        <div className="flex items-center gap-1">
+          {/* Delete collection — only visible on row hover */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDeleteCollection(collection);
+            }} aria-label={`Delete ${collection.name} collection`}
+            title="Delete collection"
+            className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-200 p-1.5 rounded-md text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400"
+          >
+            <TrashIcon className="size-4" />
+          </button>
+
+          <ChevronDownIcon
+            className={`w-5 h-5 shrink-0 transition-transform duration-300 ${open ? "rotate-180" : ""
+              }`}
+          />
+        </div>
+      </div>
 
       <div
         className={`transition-all duration-300 overflow-hidden ${open ? "max-h-125 overflow-y-auto" : "max-h-0"
@@ -168,6 +182,8 @@ function CollectionAccordion({
           )}
         </div>
       </div>
+
+
     </div>
   );
 }

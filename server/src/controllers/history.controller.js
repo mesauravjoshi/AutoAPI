@@ -56,3 +56,27 @@ export const historyDelete = async (req, res) => {
     });
   }
 };
+
+export const historyBulkDelete = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    const userId = req.user._id; // set by protect middleware — never trust a client-supplied userId
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: "ids must be a non-empty array" });
+    }
+
+    const result = await RequestHistory.deleteMany({
+      _id: { $in: ids },
+      userId,
+      // workspaceId: req.user.activeWorkspaceId, // uncomment if history is workspace-scoped
+    });
+
+    return res.status(200).json({
+      message: `${result.deletedCount} history item(s) deleted successfully`,
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to delete history", error: error.message });
+  }
+};

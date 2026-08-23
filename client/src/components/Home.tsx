@@ -26,7 +26,11 @@ const Hero: React.FC = () => {
             <Link to="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition">Home</Link>
             <Link to="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition">Docs</Link>
             <Link to="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition">About</Link>
-            <Link to="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition">Github</Link>
+            <Link
+              to="https://github.com/mesauravjoshi/autoAPI/"
+              rel="noopener noreferrer"
+              target="_blank"
+              className="hover:text-blue-600 dark:hover:text-blue-400 transition">Github</Link>
           </div>
 
           {/* Dark Mode Toggle */}

@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form"; import { useNavigate, Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useNavigate, Link } from "react-router-dom";
 import { loginApi } from "@/services/authService";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import toast from "react-hot-toast";
 import { useGoogleLogin } from "@react-oauth/google";
 import api from "@/lib/api";
 import Checkbox from "@/components/UI/Common/Checkbox";
+import { Sun, Moon } from "lucide-react";
 
 type LoginFormData = {
   email: string;
@@ -14,9 +17,9 @@ type LoginFormData = {
 
 const LogIn = () => {
   const { login } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [rememberMe, setRememberMe] = useState(false);
 
-  // const { theme, toggleTheme } = useTheme();
   const { register, handleSubmit, reset, formState: { errors, isSubmitting }, } = useForm<LoginFormData>({
     defaultValues: {
       email: "",
@@ -76,19 +79,54 @@ const LogIn = () => {
   };
 
   return (
-    <>
-      <div className="flex min-h-full flex-col justify-center py-6 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="mt-6 text-center text-2xl/9 font-bold tracking-tight ">
-            Sign in to your account
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+      {/* Ambient gradient backdrop */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-32 -left-24 h-96 w-96 rounded-full bg-blue-400/30 dark:bg-blue-600/20 blur-3xl" />
+        <div className="absolute top-1/3 -right-24 h-96 w-96 rounded-full bg-purple-400/30 dark:bg-purple-600/20 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-blue-300/20 dark:bg-purple-500/10 blur-3xl" />
+      </div>
+
+      {/* Top bar: logo + theme toggle */}
+      <div className="relative z-10 flex items-center justify-between px-6 py-6 sm:px-10">
+        <Link to="/" className="flex items-center">
+          <img
+            src="/autoapi-web-logo.svg"
+            alt="AutoAPI"
+            className="h-5 sm:h-6 md:h-6 lg:h-7 xl:h-8 w-auto "
+          />
+        </Link>
+
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label="Toggle dark mode"
+          className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+        >
+          {theme === "dark" ? (
+            <Sun className="h-4.5 w-4.5 text-gray-300" />
+          ) : (
+            <Moon className="h-4.5 w-4.5 text-gray-700" />
+          )}
+        </button>
+      </div>
+
+      {/* Main content */}
+      <div className="relative z-10 flex flex-1 flex-col justify-center px-4 py-6 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Welcome back
           </h2>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+            Sign in to continue to your workspace
+          </p>
         </div>
 
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-120">
-          <div className="bg-gray-white dark:bg-gray-800/50 shadow-sm px-6 py-12 outline -outline-offset-1 outline-gray-300 dark:outline-white/10 sm:rounded-lg sm:px-12">
-            <form method="POST" className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-120">
+          <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/60 backdrop-blur-xl shadow-2xl px-6 py-10 sm:px-10">
+            <form method="POST" className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
               <div>
-                <label htmlFor="email" className="block text-sm/6 font-medium ">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Email address
                 </label>
                 <div className="mt-2">
@@ -98,7 +136,7 @@ const LogIn = () => {
                     {...register("email", {
                       required: "Email is required",
                     })}
-                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 dark:outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                    className="block w-full rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 px-3.5 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition-colors duration-200"
                   />
                   {errors.email && (
                     <p className="mt-1 text-sm text-red-500">
@@ -111,7 +149,7 @@ const LogIn = () => {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm/6 font-medium "
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   Password
                 </label>
@@ -123,7 +161,7 @@ const LogIn = () => {
                     {...register("password", {
                       required: "Password is required",
                     })}
-                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 dark:outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                    className="block w-full rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 px-3.5 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition-colors duration-200"
                   />
                   {errors.password && (
                     <p className="mt-1 text-sm text-red-500">
@@ -134,21 +172,21 @@ const LogIn = () => {
               </div>
 
               <div className="flex items-center justify-between">
-                <div className="flex gap-3">
+                <div className="flex items-center gap-3">
                   <Checkbox
                     id="remember-me"
                     checked={rememberMe}
                     onChange={setRememberMe}
                   />
-                  <label htmlFor="remember-me" className="block text-sm/6">
+                  <label htmlFor="remember-me" className="block text-sm text-gray-600 dark:text-gray-300">
                     Remember me
                   </label>
                 </div>
 
-                <div className="text-sm/6">
+                <div className="text-sm">
                   <Link
                     to="#"
-                    className="font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
+                    className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
                   >
                     Forgot password?
                   </Link>
@@ -159,7 +197,7 @@ const LogIn = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-50"
+                  className="flex w-full justify-center rounded-lg bg-linear-to-r from-blue-600 to-purple-600 px-3 py-2.5 text-sm font-semibold text-white shadow-md hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? "Signing in..." : "Sign in"}
                 </button>
@@ -167,17 +205,17 @@ const LogIn = () => {
             </form>
 
             <div>
-              <div className="mt-10 flex items-center gap-x-6">
-                <div className="w-full flex-1 border-t border-gray-400 dark:border-white/10" />
-                <p className="text-sm/6 font-medium text-nowrap">
+              <div className="mt-8 flex items-center gap-x-4">
+                <div className="w-full flex-1 border-t border-gray-200 dark:border-gray-700" />
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 text-nowrap">
                   Or continue with
                 </p>
-                <div className="w-full flex-1 border-t border-gray-400 dark:border-white/10" />
+                <div className="w-full flex-1 border-t border-gray-200 dark:border-gray-700" />
               </div>
 
-              <div className="mt-6 grid grid-cols-2 gap-4">
+              <div className="mt-6 gap-4">
                 <div
-                  className="flex w-full items-center justify-center gap-3 rounded-md bg-white dark:bg-white/10 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs inset-ring inset-ring-gray-300 dark:inset-ring-white/5 hover:bg-gray-50 dark:hover:bg-white/20 focus-visible:inset-ring-transparent cursor-pointer"
+                  className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 cursor-pointer"
                   onClick={() => googleLogin()}
                 >
                   <svg
@@ -202,43 +240,25 @@ const LogIn = () => {
                       fill="#34A853"
                     />
                   </svg>
-                  <span className="text-sm/6 font-semibold">Google</span>
+                  <span>Google</span>
                 </div>
 
-                <Link
-                  to="#"
-                  className="flex w-full items-center justify-center gap-3 rounded-md bg-white dark:bg-white/10 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-xs inset-ring inset-ring-gray-300 dark:inset-ring-white/5 hover:bg-gray-50 dark:hover:bg-white/20 focus-visible:inset-ring-transparent"
-                >
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    aria-hidden="true"
-                    className="size-5 fill-white"
-                  >
-                    <path
-                      d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"
-                      clipRule="evenodd"
-                      fillRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-sm/6 font-semibold">GitHub</span>
-                </Link>
               </div>
             </div>
           </div>
 
-          <p className="mt-10 text-center text-sm/6 text-gray-400">
-            Don't have account?{" "}
+          <p className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+            Don't have an account?{" "}
             <Link
               to="/signup"
-              className="font-semibold text-indigo-400 hover:text-indigo-300"
+              className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
             >
               Sign up
             </Link>
           </p>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
