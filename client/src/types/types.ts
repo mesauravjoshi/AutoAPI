@@ -13,7 +13,7 @@ export interface ParamItem {
   enabled: boolean;
 }
 
-interface Headers {
+export interface Headers {
   'content-type'?: string;
   'authorization'?: string;
   'accept'?: string;
@@ -23,6 +23,8 @@ interface Headers {
   'host'?: string;
   'accept-encoding'?: string;
   'connection'?: string;
+  'set-cookie'?: string;
+  'Set-Cookie'?: string;
 
   // allow any other headers
   // [key: string]: string | undefined;
@@ -30,9 +32,10 @@ interface Headers {
 
 export interface DisplayResponse {
   data: string;
+  dataUrl?: string;        // base64/blob URL — required for image, video, pdf, zip previews
   status: number;
   statusText: string;
-  headers?: Headers;
+  headers: Headers;
 
   time: number;
   size: number;

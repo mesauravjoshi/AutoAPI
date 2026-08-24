@@ -2,60 +2,48 @@ import axios from "axios";
 import RequestHistory from "#models/history.js";
 
 export const executeApiRequest = async ({ userId, url, method, headers, body }) => {
-
   const startTime = Date.now();
-  // console.log(url, method, headers);
-
-  console.log('body', body);
-  console.log('body', typeof body);
 
   try {
-    const response = await axios({ url, method, headers, data: body });
-    // console.log('response', response);
+    const response = await axios({
+      url,
+      method,
+      headers,
+      data: body,
+      validateStatus: () => true, // treat all HTTP responses as "success" for us
+    });
 
     const responseTime = Date.now() - startTime;
 
     await saveHistory({
-      userId,
-      url,
-      method,
-      headers,
+      userId, url, method, headers,
       requestBody: body,
       responseBody: response.data,
       statusCode: response.status,
       responseTime,
     });
 
-    return { responseData: response.data, statusCode: response.status };
+    return {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+      data: response.data,
+      responseTime,
+    };
   } catch (err) {
+    // This now ONLY fires for actual network-level failures
     const responseTime = Date.now() - startTime;
-    // console.log('req . service ', err);
-    // console.log('errrrrrr', err);
-
-    // axios wraps HTTP error responses inside err.response
-    const axiosResponse = err.response;
-    // console.log('axiosResponseeeee', axiosResponse);
 
     await saveHistory({
-      userId,
-      url,
-      method,
-      headers,
+      userId, url, method, headers,
       requestBody: body,
-      responseBody: axiosResponse?.data ?? null,
-      statusCode: axiosResponse?.status ?? 0,
+      responseBody: null,
+      statusCode: 0,
       responseTime,
     });
 
-    // Re-throw a clean, enriched error for the controller
-    const serviceError = new Error(
-      axiosResponse
-        ? `Upstream API returned ${axiosResponse.status}`
-        : "API request failed — network or DNS error"
-    );
-    serviceError.statusCode = axiosResponse?.status ?? 502;
-    serviceError.upstream = axiosResponse?.data ?? null;
-
+    const serviceError = new Error("Could not reach the target API — network or DNS error");
+    serviceError.statusCode = 502; // Bad Gateway — accurate: YOUR server failed to proxy
     throw serviceError;
   }
 };

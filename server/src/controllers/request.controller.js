@@ -8,6 +8,11 @@ import mongoose from "mongoose";
  */
 export const sendRequest = async (req, res) => {
   const { url, method, headers, body } = req.body;
+
+  if (!url || !method) {
+    return res.status(400).json({ error: "url and method are required." });
+  }
+
   let requestBody;
 
   if (body?.type === "formData") {
@@ -20,35 +25,23 @@ export const sendRequest = async (req, res) => {
     requestBody = new URLSearchParams(body.data);
   } else {
     requestBody = body?.data;
-  } // here need to update -> based on body type update requestBody type for string : string for  JSON :object, XML to XML like in postman
-  // console.log('requestBod', requestBody);
-
-  if (!url || !method) {
-    return res.status(400).json({ error: "url and method are required." });
   }
-  // console.log(req.body);
-
+  // here need to update -> based on body type update requestBody type for string : string for  JSON :object, XML to XML like in postman
   try {
-    const { responseData, statusCode } = await executeApiRequest({
+    const result = await executeApiRequest({
       userId: req.user.id,
-      url,
-      method,
-      headers,
+      url, method, headers,
       body: requestBody,
     });
-    // console.log('responseData', responseData);
 
-    return res.status(statusCode).json(responseData);
+    // ALWAYS 200 here — your proxy succeeded.
+    // The target's real status/headers/body live inside `result`.
+    return res.status(200).json(result);
+
   } catch (error) {
-    // console.log('error from req controller', error);
-
-    // Structured error from service layer
+    // Only true proxy failures land here (network/DNS/timeout)
     const status = error.statusCode ?? 500;
-    // console.log('error', error);
-
-    const message = error.upstream ? error.upstream : "An unexpected error occurred.";
-
-    return res.status(status).json({ error: message });
+    return res.status(status).json({ error: error.message });
   }
 };
 

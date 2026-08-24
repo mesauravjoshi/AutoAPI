@@ -97,25 +97,24 @@ export default function RequestForm({
       };
 
       const response = await api.post(`/request`, payload);
-      // console.log(response);
-
       const end = performance.now();
       const time = end - start;
-      const toString = JSON.stringify(response.data, null, 2);
-      setDisplayResponse({
-        data: toString,
-        status: response.status,
-        statusText: response.statusText,
-        headers: {
-          "content-type": response.headers["content-type"],
-        },
-        time: time,
-        size: response.headers["content-length"]
-          ? Number(response.headers["content-length"])
-          : new Blob([JSON.stringify(response.data)]).size,
-        url: response.request?.responseURL,
 
-        ok: response.status >= 200 && response.status < 300,
+      // response.status here is YOUR backend's status (basically always 200 now).
+      // The real target-API result lives inside response.data.
+      const result = response.data; // { status, statusText, headers, data, responseTime }
+
+      const dataString = JSON.stringify(result.data, null, 2);
+
+      setDisplayResponse({
+        data: dataString,
+        status: result.status,           // <-- the TARGET API's real status (e.g. 401)
+        statusText: result.statusText,
+        headers: result.headers ?? {},
+        time: time,
+        size: new Blob([JSON.stringify(result.data)]).size,
+        url: fullUrl,
+        ok: result.status >= 200 && result.status < 300,
         redirected: false,
       });
 
@@ -124,8 +123,11 @@ export default function RequestForm({
       setLoading(false);
       const end = performance.now();
       const time = end - start;
+
+      // At this point, axios threw — meaning YOUR backend itself failed
+      // (network/DNS error reaching target -> 502, validation error -> 400,
+      // auth error -> 401 on YOUR api, etc). This is NOT the target API's status.
       if (axios.isAxiosError(error)) {
-        // ✅ Server responded with error (4xx, 5xx)
         if (error.response) {
           console.log("Backend error:", error.response);
 
@@ -133,17 +135,14 @@ export default function RequestForm({
             data: JSON.stringify(error.response.data, null, 2),
             status: error.response.status,
             statusText: error.response.statusText,
-            // headers: error.response.headers,
+            headers: {},
             ok: false,
             time: time,
             size: 0,
             redirected: false,
             url: "",
           });
-        }
-
-        // ❌ No response (network error, server down)
-        else if (error.request) {
+        } else if (error.request) {
           console.log("No response:", error.request);
 
           setDisplayResponse({
