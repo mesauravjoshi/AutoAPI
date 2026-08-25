@@ -44,6 +44,12 @@ api.interceptors.request.use(
 );
 
 // ─── Response Interceptor ─────────────────────────────────────────────────────
+//
+// NOTE: A 401 here always means AutoAPI's own session died — never that the
+// third-party API a user is testing via /api/request requires auth. That
+// endpoint always resolves with HTTP 200 and carries the target API's real
+// status (including 401) inside the JSON body, so it can never land in this
+// interceptor as a transport-level error. No extra endpoint check needed.
 
 api.interceptors.response.use(
   (response) => response,
@@ -64,22 +70,19 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Everything else: this is a real "your session died" 401 → try refresh, then hard logout
-    // Retry once with a new access token on 401
+    // Any other 401 → real AutoAPI session expiry → try refresh once, then hard logout
     if (is401 && !originalRequest._retry) {
       if (isRefreshing) {
-        // Queue this request while refresh is in-flight
+        // Queue this request while a refresh is already in-flight
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
-        })
-          .then((token) => {
-            if (originalRequest.headers) {
-              (originalRequest.headers as Record<string, string>).Authorization =
-                `Bearer ${token}`;
-            }
-            return api(originalRequest);
-          })
-          .catch((err) => Promise.reject(err));
+        }).then((token) => {
+          if (originalRequest.headers) {
+            (originalRequest.headers as Record<string, string>).Authorization =
+              `Bearer ${token}`;
+          }
+          return api(originalRequest);
+        });
       }
 
       originalRequest._retry = true;

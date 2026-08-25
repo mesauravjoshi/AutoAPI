@@ -22,8 +22,9 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   password: {
-    type: String || null,
-    required: true
+    type: String,
+    required: false,   // Google-only users legitimately have no password
+    default: null
   },
   createdAt: {
     type: Date,

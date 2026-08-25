@@ -70,21 +70,26 @@ export const login = async ({ email, password }) => {
   }
 
   const user = await User.findOne({ email });
+  console.log(user);
 
   if (!user) {
     throw { status: 401, message: "Invalid email or password." };
   }
 
-  if (!user.password || user.provider === "google") {
+  // Can this account actually log in with a password?
+  const hasUsablePassword =
+    user.password && (user.provider === "local" || user.hasLocalPassword === true);
+  console.log(hasUsablePassword);
+
+  if (!hasUsablePassword) {
     throw {
-      status: 409, // or 400 — some teams use a dedicated code
+      status: 409,
       message: "This account uses Google Sign-In. Please continue with Google.",
       code: "OAUTH_ONLY_ACCOUNT",
     };
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
-
   if (!isMatch) {
     throw { status: 401, message: "Invalid email or password." };
   }
@@ -255,8 +260,12 @@ export const createPassword = async (userId, { newPassword, confirmPassword }) =
   const user = await User.findById(userId);
   if (!user) throw { status: 404, message: "User not found." };
 
-  if (user.provider === "local") {
-    throw { status: 409, message: "Account already has a password. Use Change Password instead." };
+  // Block if a password already exists — local signup OR previously-created local password
+  if (user.provider === "local" || user.hasLocalPassword) {
+    throw {
+      status: 409,
+      message: "Account already has a password. Use Change Password instead.",
+    };
   }
 
   const hashed = await bcrypt.hash(newPassword, 10);
