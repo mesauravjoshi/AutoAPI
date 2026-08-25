@@ -70,7 +70,7 @@ export const login = async ({ email, password }) => {
   }
 
   const user = await User.findOne({ email });
-  console.log(user);
+  // console.log(user);
 
   if (!user) {
     throw { status: 401, message: "Invalid email or password." };
@@ -79,7 +79,7 @@ export const login = async ({ email, password }) => {
   // Can this account actually log in with a password?
   const hasUsablePassword =
     user.password && (user.provider === "local" || user.hasLocalPassword === true);
-  console.log(hasUsablePassword);
+  // console.log(hasUsablePassword);
 
   if (!hasUsablePassword) {
     throw {
