@@ -1,18 +1,15 @@
-import { useState, useMemo, ReactNode } from 'react';
+import { useState, useMemo } from 'react';
 import {
-  Download,
-  Copy,
-  Check,
-  Loader2,
-  ImageOff,
-  VideoOff,
-  FileWarning,
-  FileArchive,
   Inbox,
-  Cookie as CookieIcon,
+  Download,
+  Loader2,
 } from 'lucide-react';
 import { DisplayResponse, Headers } from '@/types/types';
-
+import { Button } from "@/components/UI/button";
+import BodyPanel from '@/components/UI/Response/Panels/BodyPanel';
+import CookiesPanel from '@/components/UI/Response/Panels/CookiesPanel';
+import HeadersPanel from '@/components/UI/Response/Panels/HeadersPanel';
+// import 
 interface ResponseProps {
   displayResponse: DisplayResponse | null;
   loading: boolean;
@@ -28,14 +25,26 @@ const TABS: { id: TabId; label: string }[] = [
 
 type StatusColor = 'green' | 'yellow' | 'red' | 'gray';
 
-const formatStatus = (status: number): { text: string; color: StatusColor } => {
+const formatStatus = (
+  status: number,
+  statusText?: string
+): { text: string; color: StatusColor } => {
   if (!status) return { text: 'No status', color: 'gray' };
-  if (status >= 200 && status < 300) return { text: `${status} OK`, color: 'green' };
-  if (status >= 300 && status < 400) return { text: `${status} Redirect`, color: 'yellow' };
-  if (status >= 400 && status < 500) return { text: `${status} Client Error`, color: 'red' };
-  return { text: `${status} Server Error`, color: 'red' };
-};
 
+  const label = statusText?.trim() || (
+    status >= 200 && status < 300 ? 'OK' :
+      status >= 300 && status < 400 ? 'Redirect' :
+        status >= 400 && status < 500 ? 'Client Error' :
+          'Server Error'
+  );
+
+  const text = `${status} ${label}`;
+
+  if (status >= 200 && status < 300) return { text, color: 'green' };
+  if (status >= 300 && status < 400) return { text, color: 'yellow' };
+  if (status >= 400 && status < 500) return { text, color: 'red' };
+  return { text, color: 'red' };
+};
 // Explicit maps — Tailwind can't resolve `bg-${color}-400` template strings at build time.
 const statusPillMap: Record<StatusColor, string> = {
   green: 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800',
@@ -51,16 +60,21 @@ const statusDotMap: Record<StatusColor, string> = {
   gray: 'bg-gray-400',
 };
 
-type BodyKind = 'json' | 'image' | 'video' | 'pdf' | 'binary' | 'text';
+type BodyKind = 'json' | 'image' | 'video' | 'pdf' | 'binary' | 'text' | 'html';
 
 const getContentType = (headers: Headers): string => (headers['content-type'] ?? '').toLowerCase();
 
 const getBodyKind = (contentType: string): BodyKind => {
+  // console.log(contentType);
+
   if (!contentType) return 'text';
+
   if (contentType.includes('application/json')) return 'json';
+  if (contentType.includes('text/html')) return 'html';
   if (contentType.startsWith('image/')) return 'image';
   if (contentType.startsWith('video/')) return 'video';
   if (contentType.includes('application/pdf')) return 'pdf';
+
   if (
     contentType.includes('zip') ||
     contentType.includes('octet-stream') ||
@@ -69,6 +83,7 @@ const getBodyKind = (contentType: string): BodyKind => {
   ) {
     return 'binary';
   }
+
   return 'text';
 };
 
@@ -130,12 +145,14 @@ const getCookies = (displayResponse: DisplayResponse): ParsedCookie[] => {
 };
 
 export default function Response({ displayResponse, loading }: ResponseProps) {
+  console.log(displayResponse);
+
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>('body');
 
   const contentType = displayResponse ? getContentType(displayResponse.headers) : '';
   const bodyKind = getBodyKind(contentType);
-  const statusInfo = displayResponse ? formatStatus(displayResponse.status) : formatStatus(0);
+  const statusInfo = displayResponse ? formatStatus(displayResponse.status, displayResponse.statusText) : formatStatus(0);
 
   const headerEntries = useMemo((): [string, string][] => {
     if (!displayResponse) return [];
@@ -151,12 +168,21 @@ export default function Response({ displayResponse, loading }: ResponseProps) {
 
   const prettyBody = useMemo(() => {
     if (!displayResponse) return '';
-    if (bodyKind !== 'json') return displayResponse.data;
-    try {
-      return JSON.stringify(JSON.parse(displayResponse.data), null, 2);
-    } catch {
-      return displayResponse.data;
+    if (bodyKind === 'json') {
+      try {
+        return JSON.stringify(JSON.parse(displayResponse.data), null, 2);
+      } catch {
+        return displayResponse.data;
+      }
     }
+    if (bodyKind === 'html') {
+      try {
+        return formatHtml(displayResponse.data);
+      } catch {
+        return displayResponse.data;
+      }
+    }
+    return displayResponse.data;
   }, [displayResponse, bodyKind]);
 
   const handleCopy = () => {
@@ -207,14 +233,12 @@ export default function Response({ displayResponse, loading }: ResponseProps) {
           <h2 className="text-gray-900 dark:text-white font-semibold text-lg">Response</h2>
         </div>
         {displayResponse && activeTab === 'body' && (
-          <button
-            type="button"
-            className="inline-flex items-center gap-x-1.5 rounded-lg bg-linear-to-r from-blue-600 to-purple-600 px-3 py-1.5 text-sm font-semibold text-white shadow-md hover:shadow-xl transition-all duration-200"
+          <Button
             onClick={handleDownload}
           >
             <Download className="w-4 h-4" />
             Save
-          </button>
+          </Button>
         )}
       </div>
 
@@ -358,209 +382,35 @@ export default function Response({ displayResponse, loading }: ResponseProps) {
   );
 }
 
-/* ---------- Body panel: content-type aware ---------- */
+const VOID_TAGS = new Set([
+  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+  'link', 'meta', 'param', 'source', 'track', 'wbr',
+]);
 
-function BodyPanel({
-  bodyKind,
-  prettyBody,
-  dataUrl,
-  contentType,
-  size,
-  copied,
-  onCopy,
-  onDownload,
-}: {
-  bodyKind: BodyKind;
-  prettyBody: string;
-  dataUrl?: string;
-  contentType: string;
-  size: number;
-  copied: boolean;
-  onCopy: () => void;
-  onDownload: () => void;
-}) {
-  // Terminal-style console — dark regardless of app theme (matches Postman/DevTools convention).
-  const ConsoleShell = ({ children }: { children: ReactNode }) => (
-    <div className="relative">
-      <div className="flex items-center gap-1.5 px-4 py-2.5 bg-gray-900 dark:bg-gray-950 border-b border-gray-800">
-        <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-        <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-        <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
-        <span className="ml-2 text-[11px] text-gray-500 font-mono">{contentType || 'text/plain'}</span>
-      </div>
-      {children}
-    </div>
-  );
+const formatHtml = (html: string): string => {
+  const tokens = html
+    .trim()
+    .replace(/>\s+</g, '><') // collapse whitespace between tags
+    .split(/(<[^>]+>)/g)
+    .filter((t) => t.trim().length > 0);
 
-  if (bodyKind === 'json' || bodyKind === 'text') {
-    return (
-      <ConsoleShell>
-        <div className="relative">
-          <pre className="bg-gray-900 dark:bg-gray-950 text-gray-100 p-5 min-h-25 max-h-[50vh] text-sm font-mono overflow-auto whitespace-pre-wrap break-all">
-            <code>{prettyBody}</code>
-          </pre>
-          <button
-            onClick={onCopy}
-            className="absolute top-3 right-3 flex items-center gap-2 bg-gray-800/90 backdrop-blur-sm hover:bg-gray-700 text-white text-xs px-3 py-1.5 rounded-lg transition-all duration-200 shadow-lg border border-gray-600/50"
-          >
-            {copied ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-green-400" />
-                <span>Copied!</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3.5 h-3.5" />
-                <span>Copy</span>
-              </>
-            )}
-          </button>
-        </div>
-      </ConsoleShell>
-    );
-  }
+  let formatted = '';
+  let indentLevel = 0;
 
-  if (bodyKind === 'image') {
-    return (
-      <ConsoleShell>
-        <div
-          className="flex items-center justify-center p-8 min-h-50 max-h-[55vh] overflow-auto"
-          style={{
-            backgroundImage: 'repeating-conic-gradient(#2a2a2e 0% 25%, #1f1f23 0% 50%)',
-            backgroundSize: '16px 16px',
-          }}
-        >
-          {dataUrl ? (
-            <img src={dataUrl} alt="Response preview" className="max-h-[48vh] max-w-full object-contain rounded-lg shadow-lg" />
-          ) : (
-            <UnavailablePreview icon={<ImageOff className="w-8 h-8 text-gray-600" />} label="Image preview unavailable" />
-          )}
-        </div>
-      </ConsoleShell>
-    );
-  }
+  tokens.forEach((token) => {
+    if (token.startsWith('</')) {
+      indentLevel = Math.max(indentLevel - 1, 0);
+      formatted += '  '.repeat(indentLevel) + token + '\n';
+    } else if (token.startsWith('<')) {
+      const tagName = token.match(/^<([a-zA-Z0-9-]+)/)?.[1]?.toLowerCase() ?? '';
+      const isVoidOrDecl =
+        token.startsWith('<!') || token.endsWith('/>') || VOID_TAGS.has(tagName);
+      formatted += '  '.repeat(indentLevel) + token + '\n';
+      if (!isVoidOrDecl) indentLevel++;
+    } else {
+      formatted += '  '.repeat(indentLevel) + token.trim() + '\n';
+    }
+  });
 
-  if (bodyKind === 'video') {
-    return (
-      <ConsoleShell>
-        <div className="flex items-center justify-center p-6 bg-black min-h-50 max-h-[55vh]">
-          {dataUrl ? (
-            <video src={dataUrl} controls className="max-h-[48vh] max-w-full rounded-lg" />
-          ) : (
-            <UnavailablePreview icon={<VideoOff className="w-8 h-8 text-gray-600" />} label="Video preview unavailable" />
-          )}
-        </div>
-      </ConsoleShell>
-    );
-  }
-
-  if (bodyKind === 'pdf') {
-    return (
-      <ConsoleShell>
-        {dataUrl ? (
-          <iframe src={dataUrl} className="w-full h-[55vh] bg-white" title="PDF response preview" />
-        ) : (
-          <div className="p-8 min-h-40 flex items-center justify-center">
-            <UnavailablePreview icon={<FileWarning className="w-8 h-8 text-gray-600" />} label="PDF preview unavailable" />
-          </div>
-        )}
-      </ConsoleShell>
-    );
-  }
-
-  // binary / zip / anything else — no inline preview, offer a clean download card
-  return (
-    <ConsoleShell>
-      <div className="flex flex-col items-center justify-center gap-3 py-12 px-6 bg-gray-900 dark:bg-gray-950">
-        <div className="w-14 h-14 rounded-xl bg-gray-800 flex items-center justify-center">
-          <FileArchive className="w-7 h-7 text-gray-400" />
-        </div>
-        <p className="text-gray-300 text-sm font-medium">{contentType || 'Binary file'}</p>
-        <p className="text-gray-500 text-xs">{formatBytes(size)} · no inline preview for this file type</p>
-        <button
-          onClick={onDownload}
-          disabled={!dataUrl}
-          className="mt-1 inline-flex items-center gap-x-1.5 rounded-lg bg-linear-to-r from-blue-600 to-purple-600 px-3.5 py-1.5 text-sm font-semibold text-white shadow-md hover:shadow-xl transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <Download className="w-4 h-4" />
-          Download file
-        </button>
-      </div>
-    </ConsoleShell>
-  );
-}
-
-function UnavailablePreview({ icon, label }: { icon: ReactNode; label: string }) {
-  return (
-    <div className="flex flex-col items-center gap-2 text-center">
-      {icon}
-      <p className="text-xs text-gray-500">{label}</p>
-    </div>
-  );
-}
-
-/* ---------- Headers panel ---------- */
-
-function HeadersPanel({ entries }: { entries: [string, string][] }) {
-  if (entries.length === 0) {
-    return <EmptyPanelState icon={<Inbox className="w-6 h-6 text-gray-300 dark:text-gray-600" />} label="No headers returned for this response." />;
-  }
-  return (
-    <div className="max-h-[50vh] overflow-auto">
-      {entries.map(([key, value], i) => (
-        <div
-          key={`${key}-${i}`}
-          className="flex items-start gap-4 px-5 py-2.5 border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-        >
-          <span className="w-48 shrink-0 text-xs font-mono font-medium text-gray-700 dark:text-gray-300 pt-0.5">{key}</span>
-          <span className="text-xs font-mono text-gray-500 dark:text-gray-400 break-all">{value}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* ---------- Cookies panel ---------- */
-
-function CookiesPanel({ cookies }: { cookies: ParsedCookie[] }) {
-  if (cookies.length === 0) {
-    return <EmptyPanelState icon={<CookieIcon className="w-6 h-6 text-gray-300 dark:text-gray-600" />} label="No cookies were set by this response." />;
-  }
-  return (
-    <div className="max-h-[50vh] overflow-auto p-4 space-y-2.5">
-      {cookies.map((cookie, i) => (
-        <div
-          key={`${cookie.name}-${i}`}
-          className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 px-4 py-3"
-        >
-          <div className="text-xs font-mono">
-            <span className="font-semibold text-gray-800 dark:text-gray-200">{cookie.name}</span>
-            <span className="text-gray-400 dark:text-gray-500"> = </span>
-            <span className="text-gray-600 dark:text-gray-300 break-all">{cookie.value}</span>
-          </div>
-          {cookie.attrs.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              {cookie.attrs.map((attr, j) => (
-                <span
-                  key={j}
-                  className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
-                >
-                  {attr}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function EmptyPanelState({ icon, label }: { icon: ReactNode; label: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center gap-2 py-12 px-5 text-center">
-      {icon}
-      <p className="text-gray-400 dark:text-gray-500 text-xs">{label}</p>
-    </div>
-  );
-}
+  return formatted.trim();
+};
