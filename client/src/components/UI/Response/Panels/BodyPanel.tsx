@@ -1,3 +1,4 @@
+// client/srccomponents/UI/Response/Panels/BodyPanel
 import { Highlight, themes } from 'prism-react-renderer';
 import { ReactNode } from 'react';
 import {

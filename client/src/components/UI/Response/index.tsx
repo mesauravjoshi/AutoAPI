@@ -1,3 +1,4 @@
+// client/src/components/UI/Response/index.tsx
 import { useState, useMemo } from 'react';
 import {
   Inbox,
@@ -145,8 +146,6 @@ const getCookies = (displayResponse: DisplayResponse): ParsedCookie[] => {
 };
 
 export default function Response({ displayResponse, loading }: ResponseProps) {
-  console.log(displayResponse);
-
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>('body');
 
@@ -170,7 +169,7 @@ export default function Response({ displayResponse, loading }: ResponseProps) {
     if (!displayResponse) return '';
     if (bodyKind === 'json') {
       try {
-        return JSON.stringify(JSON.parse(displayResponse.data), null, 2);
+        return JSON.stringify(displayResponse.data, null, 2);
       } catch {
         return displayResponse.data;
       }

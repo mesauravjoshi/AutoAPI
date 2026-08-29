@@ -1,3 +1,4 @@
+// client/src/components/Request/RequestForm.tsx
 import { defaultAuthState, AuthState } from '@/components/UI/Request/AuthenticationWidget';
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
@@ -100,22 +101,19 @@ export default function RequestForm({
       const end = performance.now();
       const time = end - start;
 
-      // response.status here is YOUR backend's status (basically always 200 now).
-      // The real target-API result lives inside response.data.
-      const result = response.data; // { status, statusText, headers, data, responseTime }
-
-      const dataString = JSON.stringify(result.data, null, 2);
+      const result = response.data; // { status, statusText, headers, data, dataUrl?, size, responseTime }
 
       setDisplayResponse({
-        data: dataString,
-        status: result.status,           // <-- the TARGET API's real status (e.g. 401)
+        data: result.data,
+        status: result.status,
         statusText: result.statusText,
         headers: result.headers ?? {},
-        time: time,
-        size: new Blob([JSON.stringify(result.data)]).size,
+        time,
+        size: result.size, // now the real byte length from the backend, works for binary too
         url: fullUrl,
         ok: result.status >= 200 && result.status < 300,
         redirected: false,
+        dataUrl: result.dataUrl, // set for images/video/pdf, undefined for json/html/text
       });
 
       setLoading(false);

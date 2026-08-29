@@ -1,6 +1,5 @@
+// server/src/controllers/request.controller.js
 import { executeApiRequest } from "#services/request.service.js";
-import Request from "#models/request.js";
-import mongoose from "mongoose";
 
 /**
  * POST /api/request
@@ -44,45 +43,6 @@ export const sendRequest = async (req, res) => {
     return res.status(status).json({ error: error.message });
   }
 };
-
-// export const bulkCreateRequests = async (req, res) => {
-//   try {
-//     const requests = req.body;
-//     // console.log(requests);
-
-//     if (!Array.isArray(requests) || requests.length === 0) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid or empty data",
-//       });
-//     }
-
-//     // Transform $oid -> ObjectId
-//     const formattedData = requests.map((item) => ({
-//       name: item.name,
-//       method: item.method,
-//       url: item.url,
-//       collectionId: new mongoose.Types.ObjectId(
-//         item.collectionId.$oid
-//       ),
-//     }));
-
-//     const savedRequests = await Request.insertMany(formattedData);
-
-//     return res.status(201).json({
-//       success: true,
-//       message: "Requests saved successfully",
-//       data: savedRequests,
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Server error",
-//       error: error.message,
-//     });
-//   }
-// };
 
 export const sendLocalAgentRequest = async (req, res) => {
   try {
