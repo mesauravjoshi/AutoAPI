@@ -49,6 +49,8 @@ export default function BodyPanel({
   onCopy: () => void;
   onDownload: () => void;
 }) {
+  console.log('dataUrl in bodypanel.tsx', dataUrl);
+
   // Terminal-style console — dark regardless of app theme (matches Postman/DevTools convention).
   const ConsoleShell = ({ children }: { children: ReactNode }) => (
     <div className="relative bg-gray-900">

@@ -56,12 +56,12 @@ interface TooltipContextValue {
   delayMs: number;
 }
 
-const TooltipContext = createContext<TooltipContextValue>({ delayMs: 300 });
+const TooltipContext = createContext<TooltipContextValue>({ delayMs: 100 });
 
 export const TooltipProvider: React.FC<{
   delayMs?: number;
   children: React.ReactNode;
-}> = ({ delayMs = 300, children }) => (
+}> = ({ delayMs = 100, children }) => (
   <TooltipContext.Provider value={{ delayMs }}>
     {children}
   </TooltipContext.Provider>
@@ -248,8 +248,8 @@ const TooltipBubble = React.memo(
           "z-50 max-w-xs px-3 py-1.5 pointer-events-none",
           // Shape & color
           "rounded-md border border-zinc-700/60 dark:border-zinc-200/20",
-          "bg-zinc-800 dark:bg-zinc-50",
-          "text-zinc-100 dark:text-zinc-900",
+          "dark:bg-zinc-800 bg-zinc-50",
+          "dark:text-zinc-100 text-zinc-800",
           "text-xs font-medium leading-snug tracking-wide",
           // Shadow
           "shadow-md shadow-black/20 dark:shadow-black/10",
