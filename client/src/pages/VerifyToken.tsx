@@ -1,13 +1,10 @@
 export default function VerifyToken() {
   return (
-    <>
-      <main className="grid min-h-full place-items-center bg-gray-900 px-6 py-24 sm:py-32 lg:px-8">
-        <div className="text-center">
-          <p className="mt-6 text-lg font-medium text-pretty text-gray-400 sm:text-xl/8">
-            Verifying token, please wait...
-          </p>
-        </div>
-      </main>
-    </>
-  )
+    <main className="grid min-h-screen place-items-center bg-gray-900">
+      <div className="flex flex-col items-center gap-4">
+        <img src="/logo.svg" alt="AutoAPI" className="h-10 w-10 animate-pulse" />
+        <p className="text-sm text-gray-400">Loading your workspace…</p>
+      </div>
+    </main>
+  );
 }

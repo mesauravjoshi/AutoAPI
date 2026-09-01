@@ -146,8 +146,6 @@ const getCookies = (displayResponse: DisplayResponse): ParsedCookie[] => {
 };
 
 export default function Response({ displayResponse, loading }: ResponseProps) {
-  console.log('in response/index.jsx', displayResponse?.dataUrl);
-
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>('body');
 

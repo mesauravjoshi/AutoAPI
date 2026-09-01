@@ -174,7 +174,6 @@ export default function RequestForm({
       }
     }
   };
-  // console.log(displayResponse);
 
   const handleSendReq = (
     e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>,
@@ -187,6 +186,7 @@ export default function RequestForm({
     const isLocal = isLocalApiUrl(fullUrl);
     if (isLocal && isValid) {
       localHostAgent({ fullUrl, method, header, body, setLoading, setDisplayResponse });
+      return
     } else {
       if (isValid) fetchAPI();
     }

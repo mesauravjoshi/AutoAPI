@@ -10,16 +10,38 @@ type AuthProviderProps = {
 };
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<UserModelInterface | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<UserModelInterface | null>(() => {
+    try {
+      const stored = localStorage.getItem("AutoAPIUserData");
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [token, setToken] = useState<string | null>(() =>
+    localStorage.getItem("AutoAPIAuthToken")
+  );
+
+  const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(() => {
+    try {
+      const stored = localStorage.getItem("AutoAPICurrentWorkspace");
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [loading, setLoading] = useState(() => {
+    return !!localStorage.getItem("AutoAPIUserData") // has cache -> not "loading" in UX sense
+      ? false
+      : true;
+  });
 
   const login = (data: { user: UserModelInterface; token: string; workspace: Workspace }) => {
     setUser(data.user);
     setToken(data.token);
     setCurrentWorkspace(data.workspace);
-
     localStorage.setItem("AutoAPIUserData", JSON.stringify(data.user));
     localStorage.setItem("AutoAPIAuthToken", data.token);
     localStorage.setItem("AutoAPICurrentWorkspace", JSON.stringify(data.workspace));
@@ -37,68 +59,43 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const fetchUserData = async () => {
     const authUser = localStorage.getItem("AutoAPIUserData");
     const storedToken = localStorage.getItem("AutoAPIAuthToken");
-    const storedWorkspace = localStorage.getItem("AutoAPICurrentWorkspace");
 
+    // No cache at all -> nothing to refresh, nothing to hydrate. Resolve immediately.
+    if (!authUser || !storedToken) {
+      setLoading(false);
+      return;
+    }
+
+    // We already rendered optimistically with cached user/token above.
+    // This just silently reconciles with the server in the background.
     try {
-      if (authUser && storedToken) {
-        // Silently get a fresh access token using the httpOnly refresh token cookie.
-        // This ensures the user isn't stuck with an expired token after returning to the app.
-        try {
-          const { data } = await refreshTokenApi();
-          const freshToken: string = data.token;
+      const { data } = await refreshTokenApi();
+      localStorage.setItem("AutoAPIAuthToken", data.token);
+      setToken(data.token);
+    } catch (err) {
+      const error = err as AxiosError<any>;
 
-          // Update localStorage and state with the fresh token
-          localStorage.setItem("AutoAPIAuthToken", freshToken);
-          setToken(freshToken);
-        } catch (err) {
-          const error = err as AxiosError<any>;
-
-          // Server responded with an error status
-          if (error.response) {
-            const status = error.response.status;
-            const message =
-              error.response.data?.message || "Something went wrong";
-
-            console.error("API Error:", status, message);
-
-            if (status === 401) {
-              console.log("Refresh token expired");
-              logout();
-              return;
-            }
-
-            if (status === 403) {
-              console.log("Access forbidden");
-              logout();
-              return;
-            }
-
-            return;
-          }
-
-          // Request made but no response received
-          if (error.request) {
-            console.error("Network Error:", error.message);
-            return;
-          }
-
-          // Something else happened
-          console.error("Unexpected Error:", error.message);
+      if (error.response) {
+        const status = error.response.status;
+        if (status === 401 || status === 403) {
+          console.log("Session invalid, logging out");
+          logout();
         }
-
-        setUser(JSON.parse(authUser));
-        if (storedWorkspace) {
-          setCurrentWorkspace(JSON.parse(storedWorkspace));
-        }
+        return;
       }
-    } catch (error) {
-      console.error("Error restoring session:", error);
-      logout();
+
+      if (error.request) {
+        console.error("Network Error:", error.message);
+        // Optional: don't log out on pure network failure —
+        // let the user keep working offline with the cached token
+        return;
+      }
+
+      console.error("Unexpected Error:", error.message);
     } finally {
       setLoading(false);
     }
   };
-
   const updateCurrentWorkspace = (workspace: Workspace) => {
     setCurrentWorkspace(workspace);
     localStorage.setItem("AutoAPICurrentWorkspace", JSON.stringify(workspace));
