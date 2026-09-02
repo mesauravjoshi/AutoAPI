@@ -50,14 +50,13 @@ export const DeleteCollectionModal = ({
         <DialogHeader>
           <DialogTitle className="text-red-600">Delete Collection</DialogTitle>
         </DialogHeader>
-
-        <DialogDescription>
-
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            Are you sure you want to delete <span className="font-semibold">{selectedCollection.name}</span>?
-          </p>
-
-          <p className="text-xs text-gray-500 mt-2">This action cannot be undone.</p>
+        
+        <DialogDescription className="text-sm text-gray-600 dark:text-gray-300">
+          Are you sure you want to delete{" "}
+          <span className="font-semibold">{selectedCollection.name}</span>?
+          <span className="block text-xs text-gray-500 mt-2">
+            This action cannot be undone.
+          </span>
         </DialogDescription>
 
         <DialogFooter className="gap-3">

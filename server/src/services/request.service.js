@@ -54,6 +54,7 @@ export const executeApiRequest = async ({ userId, url, method, headers, body }) 
       dataUrl = `data:${contentType};base64,${buffer.toString("base64")}`;
       data = null;
     }
+    // console.log('--------------------', isTextLikeContentType(contentType) ? data : `[binary ${contentType || "unknown"}, ${buffer.length} bytes]`);
 
     await saveHistory({
       userId, url, method, headers,
@@ -74,8 +75,6 @@ export const executeApiRequest = async ({ userId, url, method, headers, body }) 
       responseTime,
     };
   } catch (err) {
-    // console.log();
-
     const responseTime = Date.now() - startTime;
 
     await saveHistory({
@@ -92,9 +91,9 @@ export const executeApiRequest = async ({ userId, url, method, headers, body }) 
   }
 };
 
-const saveHistory = async ({ userId, url, method, headers, requestBody, responseBody, statusCode, responseTime }) => {
+export const saveHistory = async ({ userId, url, method, headers, requestBody, responseBody, statusCode, responseTime }) => {
   try {
-    await RequestHistory.create({
+    const history = await RequestHistory.create({
       userId,
       url,
       method: method.toUpperCase(),
@@ -104,6 +103,8 @@ const saveHistory = async ({ userId, url, method, headers, requestBody, response
       statusCode,
       responseTime,
     });
+    return history;
+
   } catch (dbError) {
     console.error("[HistoryService] Failed to save history record:", dbError.message);
   }

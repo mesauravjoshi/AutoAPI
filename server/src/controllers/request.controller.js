@@ -1,5 +1,5 @@
 // server/src/controllers/request.controller.js
-import { executeApiRequest } from "#services/request.service.js";
+import { executeApiRequest, saveHistory } from "#services/request.service.js";
 
 /**
  * POST /api/request
@@ -52,14 +52,15 @@ export const sendLocalAgentRequest = async (req, res) => {
       return res.status(400).json({ error: "url and method are required." });
     }
 
-    const { responseData, statusCode } = await executeApiRequest({
+    const responseData = await saveHistory({
       userId: req.user.id,
       url,
       method,
       headers,
-      data: body,
+      responseBody: body,
     });
-    return res.status(statusCode).json(responseData);
+
+    return res.status(200).json(responseData);
 
   } catch (error) {
     const status = error.statusCode ?? 500;
