@@ -6,6 +6,7 @@ import History from "@/pages/History";
 import Collection from "@/pages/Collection";
 import Workspace from "@/pages/Workspace";
 import WorkspaceList from "@/pages/WorkspaceList";
+import Team from "@/pages/Team";
 import Environment from "@/pages/Environment";
 import MainLayout from "@/layout/MainLayout";
 import Profile from "@/pages/Profile";
@@ -30,6 +31,7 @@ function Index() {
             <Route path="/collections" element={<Collection />} />
             <Route path="/workspace" element={<Workspace />} />
             <Route path="/workspace/list" element={<WorkspaceList />} />
+            <Route path="/team" element={<Team/>} />
             <Route path="/profile" element={<Profile />} />
           </Route>
         </Route>

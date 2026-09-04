@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import Workspace from "#models/workspace.js";
 
+const WORKSPACE_TYPES = ["personal", "internal", "partner", "public"];
+
 export const getWorkspace = async (req, res) => {
   try {
     // assuming ownerId comes from authenticated user
@@ -37,12 +39,11 @@ export const getWorkspace = async (req, res) => {
 
 export const addWorkspace = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, type } = req.body;
 
     // assuming ownerId comes from authenticated user
     const ownerId = req.user?.id || req.body.ownerId;
 
-    // console.log(name, ownerId);
     if (!name || !ownerId) {
       return res.status(400).json({
         success: false,
@@ -50,11 +51,22 @@ export const addWorkspace = async (req, res) => {
       });
     }
 
+    if (!type || !WORKSPACE_TYPES.includes(type)) {
+      return res.status(400).json({
+        success: false,
+        message: `Type is required and must be one of: ${WORKSPACE_TYPES.join(", ")}`,
+      });
+    }
+
     // Convert to ObjectId
     const ownerObjectId = new mongoose.Types.ObjectId(ownerId);
 
+    // Personal workspaces are single-member by definition; other types
+    // start with just the owner too — additional members are added later
+    // from the Teams page, not at creation time.
     const workspace = new Workspace({
       name,
+      type,
       ownerId: ownerObjectId,
       members: [ownerObjectId],
     });
@@ -67,11 +79,25 @@ export const addWorkspace = async (req, res) => {
       data: savedWorkspace,
     });
   } catch (error) {
-    // Handle duplicate workspace name per owner
+    // Handle duplicate workspace name per owner, and duplicate personal workspace
     if (error.code === 11000) {
+      const isPersonalConflict =
+        error.keyPattern && "type" in error.keyPattern;
       return res.status(400).json({
         success: false,
-        message: "Workspace with this name already exists for this user",
+        message: isPersonalConflict
+          ? "You already have a personal workspace"
+          : "Workspace with this name already exists for this user",
+      });
+    }
+
+    // Handle schema validation errors (e.g. invalid enum value)
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: Object.values(error.errors)
+          .map((e) => e.message)
+          .join(", "),
       });
     }
 

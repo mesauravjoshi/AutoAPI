@@ -226,13 +226,6 @@ const TooltipBubble = React.memo(
   ({ id, content, isOpen, showArrow, placement, position, bubbleRef, className }: BubbleProps) => {
     const resolvedPlacement = position?.resolvedPlacement ?? placement;
 
-    const originClass: Record<TooltipPlacement, string> = {
-      top: "origin-bottom",
-      bottom: "origin-top",
-      left: "origin-right",
-      right: "origin-left",
-    };
-
     return (
       <div
         ref={bubbleRef}
@@ -253,12 +246,11 @@ const TooltipBubble = React.memo(
           "text-xs font-medium leading-snug tracking-wide",
           // Shadow
           "shadow-md shadow-black/20 dark:shadow-black/10",
-          // Animation
-          "transition-all duration-150 ease-out",
-          originClass[resolvedPlacement],
-          isOpen && position
-            ? "opacity-100 scale-100"
-            : "opacity-0 scale-95",
+          // Animation — simple, uniform fade only (no scale/origin/translate).
+          // This is what gives it the calm "just appears in place" Postman feel
+          // instead of growing outward from a corner.
+          "transition-opacity duration-150 ease-linear",
+          isOpen && position ? "opacity-100" : "opacity-0",
           className,
         ]
           .filter(Boolean)
@@ -309,7 +301,7 @@ export const Tooltip = React.memo(function Tooltip({
   useEffect(() => {
     if (!isOpen) {
       // Small delay to let fade-out animation finish before clearing position
-      const t = setTimeout(() => setPosition(null), 200);
+      const t = setTimeout(() => setPosition(null), 150);
       return () => clearTimeout(t);
     }
 
@@ -323,7 +315,9 @@ export const Tooltip = React.memo(function Tooltip({
       setPosition(calculatePosition(triggerRect, bubbleRect, placement));
     };
 
-    // First render: bubble has no real size, defer one frame
+    // First render: bubble has no real size, defer one frame.
+    // Position is set *before* opacity ever animates, so the fade
+    // happens strictly in place — there's nothing sliding into view.
     requestAnimationFrame(measure);
 
     window.addEventListener("resize", measure);
