@@ -7,11 +7,11 @@ import {
   getPasswordStatus,
   createPassword,
   changePassword,
-} from "@/services/profileService";
+} from "@/services/profile.service";
 import type {
   CreatePasswordPayload,
   ChangePasswordPayload,
-} from "@/services/profileService";
+} from "@/services/profile.service";
 import PasswordInput from "@/components/UI/Common/PasswordInput";
 import { SaveButton } from "@/components/UI/Common/Savebutton";
 import { SectionCard } from "@/components/UI/Common/Sectioncard ";

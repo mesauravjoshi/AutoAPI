@@ -7,13 +7,15 @@ import {
   Home as HomeIcon,
   LayoutGrid as WorkspaceIcon,
   User as UserIcon,
+  Users as UsersIcon,
+  Mail as MailIcon,
 } from "lucide-react";
 import { useState } from "react";
 // import { AuthContext } from '@/Context/AuthContext';
 import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
-import { logoutService } from "@/services/authService";
+import { logoutService } from "@/services/auth.service";
 import { WorkspaceModal } from "@/components/Workspace/WorkspaceModal";
 import { SignOutModal } from "@/components/Auth/SignOutModal";
 
@@ -30,7 +32,8 @@ interface NavBarProps {
 
 const userNavigation: UserNavigationItem[] = [
   { name: "Your profile", href: "/profile", icon: UserIcon },
-  { name: "My team", href: "/team", icon: UserIcon },
+  { name: "My team", href: "/team", icon: UsersIcon },
+  { name: "My Invites", href: "/invites", icon: MailIcon },
 ];
 
 // Material Design "filled tonal button" pill style — used for Home / Workspace

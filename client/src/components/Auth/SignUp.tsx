@@ -1,7 +1,7 @@
 import { useGoogleLogin } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { signupApi } from "@/services/authService";
+import { signupApi } from "@/services/auth.service";
 import toast from "react-hot-toast";
 import api from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";

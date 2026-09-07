@@ -1,4 +1,4 @@
-import { Workspace } from "@/types/auth.type";
+import { Workspace } from "@/types/workspace.type";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/UI/button";
 import {

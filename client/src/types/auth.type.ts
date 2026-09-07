@@ -1,3 +1,5 @@
+import { Workspace } from "@/types/workspace.type";
+
 export type UserModelInterface = {
   id: string;
   username: string;
@@ -11,14 +13,15 @@ export type UserModelInterface = {
   createdAt: string; // ISO date string from API
 };
 
-export type Workspace = {
-  _id: string;
-  name: string;
-  ownerId: string;
-  members: string[];
-  createdAt: string;
-  updatedAt: string;
-}
+// export type Workspace = {
+//   _id: string;
+//   name: string;
+//   ownerId: string;
+//   members: string[];
+//   createdAt: string;
+//   updatedAt: string;
+//   type: string;
+// }
 
 export type AuthContextType = {
   user: UserModelInterface | null;

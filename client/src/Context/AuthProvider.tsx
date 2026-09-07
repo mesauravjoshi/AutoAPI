@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { AuthContext } from "@/Context/AuthContext";
-import { UserModelInterface, Workspace } from "@/types/auth.type";
-import { refreshTokenApi } from "@/services/authService";
+import { UserModelInterface } from "@/types/auth.type";
+import { refreshTokenApi } from "@/services/auth.service";
 import { AxiosError } from "axios";
+import { Workspace } from "@/types/workspace.type";
 
 type AuthProviderProps = {
   children: ReactNode;

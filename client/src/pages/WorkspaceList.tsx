@@ -136,7 +136,7 @@ export default function WorkspaceList() {
                           onClick={() => {
                             updateCurrentWorkspace({
                               ...workspace,
-                              ownerId: workspace.owner._id,
+                              // ownerId: workspace.owner._id,
                             });
                             Navigate("/collections");
                           }}

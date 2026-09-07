@@ -5,6 +5,7 @@ export type Workspace = {
   members: string[];
   createdAt: string;
   updatedAt: string;
+  type: string;
 }
 
 type owner = {
