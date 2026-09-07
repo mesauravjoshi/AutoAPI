@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 
+export const MEMBERSHIP_ROLES = ["owner", "admin", "editor", "viewer"];
+export const MEMBERSHIP_STATUS = ["invited", "requested", "active", "rejected"];
+
 const membershipSchema = new mongoose.Schema(
   {
     workspaceId: {
@@ -8,25 +11,31 @@ const membershipSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    // userId is absent until an invited person actually has/creates an account
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      // not required — a pending invite may not have a User yet
+      index: true,
     },
     email: {
-      type: String, // used for invites before the user has an account
+      type: String,
       lowercase: true,
       trim: true,
     },
     role: {
       type: String,
-      enum: ["owner", "admin", "editor", "viewer"],
+      enum: MEMBERSHIP_ROLES,
       default: "viewer",
     },
+    // invited   -> admin sent an invite, waiting for the person to accept
+    // requested -> user asked to join (public workspaces), waiting for approval
+    // active    -> a real member
+    // rejected  -> request/invite was declined
     status: {
       type: String,
-      enum: ["pending", "active"],
-      default: "pending",
+      enum: MEMBERSHIP_STATUS,
+      default: "invited",
+      index: true,
     },
     invitedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -38,8 +47,12 @@ const membershipSchema = new mongoose.Schema(
   { timestamps: true, versionKey: false }
 );
 
-// one membership per user (or invited email) per workspace
+// one row per (workspace, user) and one row per (workspace, email)
 membershipSchema.index({ workspaceId: 1, userId: 1 }, { unique: true, sparse: true });
-membershipSchema.index({ workspaceId: 1, email: 1 }, { unique: true, sparse: true });
+membershipSchema.index(
+  { workspaceId: 1, email: 1 },
+  { unique: true, partialFilterExpression: { email: { $type: "string" } } }
+);
 
-export default mongoose.model("Membership", membershipSchema);
+const Membership = mongoose.models.Membership || mongoose.model("Membership", membershipSchema);
+export default Membership;

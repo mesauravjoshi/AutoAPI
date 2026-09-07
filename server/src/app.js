@@ -12,6 +12,8 @@ import collectionRoutes from "#routes/collection.routes.js";
 import workspaceRoutes from "#routes/workspace.routes.js";
 import usersRoutes from "#routes/users.routes.js";
 import profileRoutes from "#routes/profile.routes.js";
+import teamRoutes from "#routes/team.routes.js";
+import myTeamRoutes from "#routes/myTeam.routes.js";
 
 const app = express();
 
@@ -34,5 +36,7 @@ app.use("/api", collectionRoutes);
 app.use("/api", workspaceRoutes);
 app.use("/api", usersRoutes);
 app.use("/api", profileRoutes);
+app.use("/api/workspaces/:workspaceId/team", teamRoutes);
+app.use("/api/team", myTeamRoutes); 
 
 export default app;
