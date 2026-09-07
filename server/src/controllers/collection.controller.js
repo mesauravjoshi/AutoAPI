@@ -23,26 +23,35 @@ export const getCollections = async (req, res) => {
           as: "workspace",
         },
       },
+      { $unwind: "$workspace" },
 
-      // Convert workspace array to object
+      // Access control — check for an ACTIVE membership row instead of
+      // workspace.ownerId / workspace.members (stale, no longer maintained)
       {
-        $unwind: "$workspace",
-      },
-
-      // Access control
-      {
-        $match: {
-          $or: [
+        $lookup: {
+          from: "memberships",
+          let: { workspaceId: "$workspace._id" },
+          pipeline: [
             {
-              "workspace.ownerId": new mongoose.Types.ObjectId(userId),
-            },
-            {
-              "workspace.members": new mongoose.Types.ObjectId(userId),
-            },
-            {
-              createdBy: new mongoose.Types.ObjectId(userId),
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$workspaceId", "$$workspaceId"] },
+                    { $eq: ["$userId", new mongoose.Types.ObjectId(userId)] },
+                    { $eq: ["$status", "active"] },
+                  ],
+                },
+              },
             },
           ],
+          as: "membership",
+        },
+      },
+
+      // Only proceed if the user has an active membership in this workspace
+      {
+        $match: {
+          "membership.0": { $exists: true },
         },
       },
 
@@ -55,7 +64,6 @@ export const getCollections = async (req, res) => {
           as: "creator",
         },
       },
-
       {
         $unwind: {
           path: "$creator",
@@ -66,7 +74,7 @@ export const getCollections = async (req, res) => {
       // Get requests using collectionId
       {
         $lookup: {
-          from: "requests", // MongoDB collection name
+          from: "requests",
           localField: "_id",
           foreignField: "collectionId",
           as: "requests",
@@ -93,7 +101,6 @@ export const getCollections = async (req, res) => {
             email: "$creator.email",
           },
 
-          // Include request data
           requests: {
             $map: {
               input: "$requests",
@@ -113,19 +120,11 @@ export const getCollections = async (req, res) => {
             },
           },
 
-          // Optional request count
-          requestCount: {
-            $size: "$requests",
-          },
+          requestCount: { $size: "$requests" },
         },
       },
 
-      // Sort collections
-      {
-        $sort: {
-          createdAt: -1,
-        },
-      },
+      { $sort: { createdAt: -1 } },
     ]);
 
     res.status(200).json({
@@ -135,7 +134,6 @@ export const getCollections = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching collections:", error);
-
     res.status(500).json({
       success: false,
       message: "Failed to fetch collections",

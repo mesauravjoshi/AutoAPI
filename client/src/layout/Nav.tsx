@@ -1,7 +1,6 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import {
   Menu as Bars3Icon,
-  Bell as BellIcon,
   ChevronDown as ChevronDownIcon,
   LogOut as LogOutIcon,
   Home as HomeIcon,
@@ -18,6 +17,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { logoutService } from "@/services/auth.service";
 import { WorkspaceModal } from "@/components/Workspace/WorkspaceModal";
 import { SignOutModal } from "@/components/Auth/SignOutModal";
+import { NotificationDropdown } from "@/components/Notifications/NotificationDropdown";
 
 interface UserNavigationItem {
   name: string;
@@ -106,13 +106,7 @@ export const NavBar = ({ setSidebarOpen }: NavBarProps) => {
           </button>
         </div>
         <div className="flex items-center gap-x-4 lg:gap-x-6">
-          <button
-            type="button"
-            className="-m-2.5 p-2.5 text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-300 transition-colors"
-          >
-            <span className="sr-only">View notifications</span>
-            <BellIcon aria-hidden="true" className="size-6" />
-          </button>
+          <NotificationDropdown />
 
           <button
             onClick={toggleTheme}
