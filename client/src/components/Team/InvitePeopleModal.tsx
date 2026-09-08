@@ -1,7 +1,17 @@
 import { useState } from "react";
 import { teamService } from "@/services/team.service";
 import { MembershipRole, TeamUser } from "@/types/team.type";
-import { SearchIcon, XIcon, Loader2Icon } from "lucide-react";
+import { SearchIcon, Loader2Icon } from "lucide-react";
+import CustomSelect from "@/components/UI/Customselect";
+import { Button } from "@/components/UI/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/UI/dialog";
 
 interface Props {
   workspaceId: string;
@@ -51,7 +61,7 @@ export default function InvitePeopleModal({ workspaceId, onClose, onInvited }: P
     setSending(true);
     try {
       console.log(selectedUser);
-      
+
       await teamService.invite(workspaceId, {
         userId: selectedUser?._id,
         email: selectedUser ? undefined : query.trim(),
@@ -67,16 +77,16 @@ export default function InvitePeopleModal({ workspaceId, onClose, onInvited }: P
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-md rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-xl">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
-          <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Invite people</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-            <XIcon size={16} />
-          </button>
-        </div>
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Invite people</DialogTitle>
+          <DialogDescription>
+            Search for a teammate or invite someone by email.
+          </DialogDescription>
+        </DialogHeader>
 
-        <div className="px-5 py-4 space-y-3">
+        <div className="space-y-3">
           <div className="relative">
             <SearchIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -118,38 +128,34 @@ export default function InvitePeopleModal({ workspaceId, onClose, onInvited }: P
             </div>
           )}
 
-          <div>
-            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Role</label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value as MembershipRole)}
-              className="mt-1 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-transparent px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            >
-              <option value="viewer">Viewer</option>
-              <option value="editor">Editor</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
+          <CustomSelect
+            value={role}
+            onChange={setRole}
+            options={[
+              { value: "viewer", label: "Viewer" },
+              { value: "editor", label: "Editor" },
+              { value: "admin", label: "Admin" },
+            ]}
+            buttonClassName="flex items-center justify-between w-full rounded-md border px-3 py-2 text-sm font-medium transition-all duration-150 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:border-gray-400 dark:hover:border-gray-500"
+            wrapperClassName="w-full"
+            dropdownClassName="top-11 left-0 w-full rounded-md bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 py-1 overflow-hidden"
+          />
 
           {error && <p className="text-xs text-red-600">{error}</p>}
         </div>
 
-        <div className="flex justify-end gap-2 px-5 py-4 border-t border-gray-100 dark:border-gray-800">
-          <button
-            onClick={onClose}
-            className="px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
-          >
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose}>
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleInvite}
             disabled={sending || (!selectedUser && !query.trim())}
-            className="px-3 py-1.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 rounded-lg transition-colors"
           >
             {sending ? "Sending..." : "Send invite"}
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -74,7 +74,7 @@ export const NotificationDropdown = () => {
     <Popover className="relative">
       <PopoverButton
         onClick={() => fetchInvites()}
-        className="relative -m-2.5 p-2.5 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors focus:outline-none cursor-pointer group"
+        className="relative -m-1 p-2.5 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors focus:outline-none cursor-pointer group"
       >
         <span className="sr-only">View notifications</span>
         <BellIcon className="size-6 transition-transform group-hover:scale-105" aria-hidden="true" />
