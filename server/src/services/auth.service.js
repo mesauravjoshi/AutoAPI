@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import User from "#models/user.js";
 import Token from "#models/token.js";
 import Workspace from "#models/workspace.js";
+import Membership from "#models/membership.js";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -53,11 +54,26 @@ export const signup = async ({ username, email, password, firstname, lastname })
     password: hashedPassword,
   });
 
-  await Workspace.create({
+  const personalWorkspace = await Workspace.create({
     name: `${firstname}'s Workspace`,
+    type: "personal",
     ownerId: newUser._id,
-    members: [newUser._id],
   });
+
+  await Membership.create({
+    workspaceId: personalWorkspace._id,
+    userId: newUser._id,
+    role: "owner",
+    status: "active",
+    invitedBy: newUser._id,
+    joinedAt: new Date(),
+  });
+
+  // Link any invite sent to this email before the account existed
+  await Membership.updateMany(
+    { email: email.toLowerCase(), status: "invited", userId: { $exists: false } },
+    { $set: { userId: newUser._id }, $unset: { email: 1 } }
+  );
 
   return { message: "User created successfully." };
 };
@@ -70,7 +86,6 @@ export const login = async ({ email, password }) => {
   }
 
   const user = await User.findOne({ email });
-  // console.log(user);
 
   if (!user) {
     throw { status: 401, message: "Invalid email or password." };
@@ -97,13 +112,19 @@ export const login = async ({ email, password }) => {
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 
-  // Remove any previous refresh tokens for this user (single-session)
   await Token.deleteMany({ userId: user._id, type: "refresh" });
-
-  // Save the new refresh token
   await saveRefreshToken(user._id, refreshToken);
 
-  const workspace = await Workspace.findOne({ ownerId: user._id });
+  // Every workspace this user is an ACTIVE member of — not just ones they own
+  const memberships = await Membership.find({ userId: user._id, status: "active" })
+    .populate("workspaceId")
+    .lean();
+
+  const workspaces = memberships.map((m) => ({ ...m.workspaceId, myRole: m.role }));
+
+  // pick the personal workspace as default landing, fallback to first
+  const currentWorkspace =
+    workspaces.find((w) => w.type === "personal") || workspaces[0] || null;
 
   return {
     user: {
@@ -116,7 +137,8 @@ export const login = async ({ email, password }) => {
     },
     accessToken,
     refreshToken,
-    workspace,
+    workspace: workspaces,
+    currentWorkspace: currentWorkspace,
   };
 };
 
@@ -175,8 +197,6 @@ export const googleLogin = async (payload) => {
   let user = await User.findOne({ email });
 
   if (!user) {
-    const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
-    // const hashedPassword = await bcrypt.hash(randomPassword, 10);
     const username = email.split('@')[0] + Math.floor(Math.random() * 10000);
 
     user = await User.create({
@@ -190,11 +210,26 @@ export const googleLogin = async (payload) => {
       picture
     });
 
-    await Workspace.create({
+    const personalWorkspace = await Workspace.create({
       name: `${firstname || username}'s Workspace`,
+      type: "personal",
       ownerId: user._id,
-      members: [user._id],
     });
+
+    await Membership.create({
+      workspaceId: personalWorkspace._id,
+      userId: user._id,
+      role: "owner",
+      status: "active",
+      invitedBy: user._id,
+      joinedAt: new Date(),
+    });
+
+    // Link any invite sent to this email before the account existed
+    await Membership.updateMany(
+      { email: email.toLowerCase(), status: "invited", userId: { $exists: false } },
+      { $set: { userId: user._id }, $unset: { email: 1 } }
+    );
   } else if (!user.googleId) {
     user.googleId = googleId;
     user.provider = "google";
@@ -207,11 +242,19 @@ export const googleLogin = async (payload) => {
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 
-  // Remove previous refresh tokens and save new one
   await Token.deleteMany({ userId: user._id, type: "refresh" });
   await saveRefreshToken(user._id, refreshToken);
 
-  const workspace = await Workspace.findOne({ ownerId: user._id });
+  // All workspaces this user is an active member of — not just owned ones
+  const memberships = await Membership.find({ userId: user._id, status: "active" })
+    .populate("workspaceId")
+    .lean();
+
+  const workspaces = memberships
+    .filter((m) => m.workspaceId)
+    .map((m) => ({ ...m.workspaceId, myRole: m.role }));
+
+  const currentWorkspace = workspaces.find((w) => w.type === "personal") || workspaces[0] || null;
 
   return {
     user: {
@@ -222,7 +265,8 @@ export const googleLogin = async (payload) => {
     },
     accessToken,
     refreshToken,
-    workspace,
+    workspaces,
+    currentWorkspace,
   };
 };
 

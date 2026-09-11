@@ -41,7 +41,7 @@ const LogIn = () => {
           login({
             user: res.data.user,
             token: res.data.token,
-            workspace: res.data.workspace,
+            workspace: res.data.currentWorkspace[0],
           });
           toast.success("Successfully logged in with Google!");
           navigate("/request");
@@ -65,7 +65,7 @@ const LogIn = () => {
         login({
           user: response.data.user,
           token: response.data.token,
-          workspace: response.data.workspace,
+          workspace: response.data.currentWorkspace,
         });
         toast.success("Successfully logged in!");
         navigate("/request");

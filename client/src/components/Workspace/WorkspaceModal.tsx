@@ -26,6 +26,7 @@ export const WorkspaceModal = ({
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [loading, setLoading] = useState(false);
   const { currentWorkspace, updateCurrentWorkspace } = useAuth();
+  // console.log(currentWorkspace);
 
   const navigate = useNavigate();
 
@@ -49,6 +50,8 @@ export const WorkspaceModal = ({
   }, [workspaceOpen]);
 
   const changeWorkspace = (workspace: Workspace) => {
+    console.log(workspace);
+    // return
     updateCurrentWorkspace(workspace);
     setWorkspaceOpen(false);
   };
@@ -79,15 +82,18 @@ export const WorkspaceModal = ({
           {!loading &&
             workspaces.map((workspace) => {
               const isCurrent = currentWorkspace?._id === workspace._id;
+              // console.log(isCurrent);
+              // console.log(currentWorkspace?._id);
+              // console.log(workspace._id);
+
               return (
                 <button
                   key={workspace._id}
                   onClick={() => changeWorkspace(workspace)}
-                  className={`w-full flex items-center gap-3 rounded-xl border p-3 text-left transition-colors cursor-pointer ${
-                    isCurrent
+                  className={`w-full flex items-center gap-3 rounded-xl border p-3 text-left transition-colors cursor-pointer ${isCurrent
                       ? "border-blue-200 dark:border-blue-800 bg-blue-50/70 dark:bg-blue-900/20"
                       : "border-gray-200 dark:border-gray-800 hover:border-blue-200 dark:hover:border-blue-800 hover:bg-blue-50/50 dark:hover:bg-blue-900/10"
-                  }`}
+                    }`}
                 >
                   <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-blue-600 to-purple-600 text-white">
                     <Building2 className="size-4.5" />

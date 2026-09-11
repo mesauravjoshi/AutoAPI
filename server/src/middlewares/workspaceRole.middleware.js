@@ -6,11 +6,7 @@ export function requireWorkspaceRole(allowedRoles) {
   return async (req, res, next) => {
     try {
       const { workspaceId } = req.params;
-      // console.log('workspaceId',workspaceId);
-      // console.log(req.user._id);
-      
       const role = await getMembershipRole(workspaceId, req.user._id);
-      // console.log('role', role);
 
       if (!role) {
         return res.status(403).json({ success: false, message: "Not a member of this workspace" });
@@ -20,7 +16,6 @@ export function requireWorkspaceRole(allowedRoles) {
       }
 
       req.membershipRole = role;
-      console.log('going on next........');
       
       next();
     } catch (err) {

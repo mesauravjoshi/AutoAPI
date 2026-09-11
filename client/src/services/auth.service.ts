@@ -16,7 +16,6 @@ export const signupApi = (data: {
 
 export const refreshTokenApi = () => {
   // Uses httpOnly cookie automatically — no body needed
-  console.log('calling from context');
   return api.post("auth/refresh-token", {}, { withCredentials: true });
 };
 

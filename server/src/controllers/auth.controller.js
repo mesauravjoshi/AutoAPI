@@ -29,6 +29,7 @@ export const login = async (req, res) => {
       user: result.user,
       workspace: result.workspace,
       token: result.accessToken,
+      currentWorkspace: result.currentWorkspace
     });
   } catch (err) {
     return res.status(err.status || 500).json({

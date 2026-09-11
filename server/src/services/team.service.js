@@ -12,15 +12,12 @@ class TeamServiceError extends Error {
 
 // ---- permission helper, reused by controller-level middleware ----
 export async function getMembershipRole(workspaceId, userId) {
-  console.log(workspaceId);
-  console.log(userId);
 
   const membership = await Membership.findOne({
     workspaceId,
     userId,
     status: "active",
   }).lean();
-  console.log('membership llll', membership);
 
   return membership?.role ?? null;
 }
@@ -34,7 +31,6 @@ export async function listMembers(workspaceId) {
 }
 
 export async function listInvites(workspaceId) {
-  console.log('invites....');
   
   return Membership.find({ workspaceId, status: "invited" })
     .populate("userId", "fullname email picture")
@@ -109,7 +105,6 @@ export async function inviteMember({ workspaceId, email, userId, role, invitedBy
     });
 
   await membership.save();
-  console.log(membership);
 
   return membership.populate("userId", "fullname email picture");
 }

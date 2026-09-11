@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { teamService } from "@/services/team.service";
 import { MembershipRole, TeamUser } from "@/types/team.type";
 import { SearchIcon, Loader2Icon } from "lucide-react";
@@ -28,18 +28,24 @@ export default function InvitePeopleModal({ workspaceId, onClose, onInvited }: P
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
 
-  let debounceRef: ReturnType<typeof setTimeout>;
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleSearch = (value: string) => {
     setQuery(value);
     setSelectedUser(null);
-    clearTimeout(debounceRef);
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
     if (value.trim().length < 2) {
       setResults([]);
       return;
     }
-    debounceRef = setTimeout(async () => {
+
+    debounceRef.current = setTimeout(async () => {
       setSearching(true);
+
       try {
         const res = await teamService.searchUsers(workspaceId, value);
         setResults(res.data.data);
@@ -60,8 +66,6 @@ export default function InvitePeopleModal({ workspaceId, onClose, onInvited }: P
     }
     setSending(true);
     try {
-      console.log(selectedUser);
-
       await teamService.invite(workspaceId, {
         userId: selectedUser?._id,
         email: selectedUser ? undefined : query.trim(),

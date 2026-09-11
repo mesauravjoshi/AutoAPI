@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/UI/dialog";
 import { useAuth } from "@/hooks/useAuth";
+import { getAvatarColor } from "@/layout/Nav";
 
 interface SignOutModalProps {
   open: boolean;
@@ -24,6 +25,7 @@ export const SignOutModal = ({
 }: SignOutModalProps) => {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+  const username = user?.username;
 
   const handleConfirm = async () => {
     try {
@@ -63,9 +65,15 @@ export const SignOutModal = ({
           <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800/80">
             <img
               src={
-                user.picture ||
-                `https://ui-avatars.com/api/?name=${user.username || "User"}&background=random&color=fff&size=128`
+                user?.picture ||
+                `https://ui-avatars.com/api/?name=${username || "User"}&background=${getAvatarColor(
+                  username || "User"
+                )}&color=fff&size=128`
               }
+              // src={
+              //   user.picture ||
+              //   `https://ui-avatars.com/api/?name=${user.username || "User"}&background=random&color=fff&size=128`
+              // }
               alt={user.username || "User"}
               className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 object-cover ring-2 ring-gray-200 dark:ring-gray-700"
             />
@@ -107,8 +115,10 @@ export const SignOutModal = ({
               </>
             ) : (
               <>
-                <LogOut className="h-4 w-4" />
-                Sign Out
+                <LogOut className="h-4 w-4 text-gray-300" />
+                <span className="text-gray-300">
+                  Sign Out
+                </span>
               </>
             )}
           </Button>
