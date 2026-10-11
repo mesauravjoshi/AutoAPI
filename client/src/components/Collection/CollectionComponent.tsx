@@ -5,10 +5,11 @@ import {
   Link as LinkIcon,
   Trash2 as TrashIcon,
   ChevronDown as ChevronDownIcon,
+  PlusSquareIcon,
 } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // import { AppDispatch } from "@/store/Store";
-import { addCollectionTab } from "@/store/Slice/tabSlice";
+import { addCollectionTab, addTabAsync } from "@/store/Slice/tabSlice";
 import Tooltip from "@/components/Tooltip";
 import { MethodsTypes } from "@/types/types";
 import methodBadge from '@/utils/getMethodStyles'
@@ -16,6 +17,7 @@ import methodBadge from '@/utils/getMethodStyles'
 import { CreateCollectionModal } from "./CreateCollectionModal";
 import { DeleteCollectionModal } from "./DeleteCollectionModal";
 import { useAuth } from "@/hooks/useAuth";
+import { RootState, AppDispatch } from '@/store/Store'
 
 interface RequestItem {
   _id: string;
@@ -120,6 +122,17 @@ function CollectionAccordion({
   onDeleteCollection: (collection: CollectionItem) => void;
 }) {
   const [open, setOpen] = useState(true);
+  const dispatch = useDispatch<AppDispatch>();
+  const { tabs } = useSelector((state: RootState) => state.tabs);
+
+  const handleAddTab = () => {
+    dispatch(addTabAsync({
+      name: `New Tab ${tabs.length}`,
+      sidebar: "collection",
+      method: 'GET'
+    }));
+  }
+
 
   return (
     <div className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
@@ -153,6 +166,17 @@ function CollectionAccordion({
             className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-200 p-1.5 rounded-md text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400"
           >
             <TrashIcon className="size-4" />
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAddTab
+            }} aria-label={`Delete ${collection.name} collection`}
+            title="Add collection tab"
+            className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-200 p-1.5 rounded-md text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400"
+          >
+            <PlusSquareIcon className="size-4" />
           </button>
 
           <ChevronDownIcon

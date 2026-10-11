@@ -11,7 +11,7 @@ function classNames(...classes: string[]) {
 export default function TabComponent() {
   const dispatch = useDispatch<AppDispatch>();
   const { tabs, activeTab } = useSelector((state: RootState) => state.tabs);
-  // console.log(tabs.length);
+  // console.log(tabs);
 
   const handleAddTab = () => {
     dispatch(addTabAsync({
@@ -72,9 +72,7 @@ export default function TabComponent() {
         {/* Chrome style + button */}
         <button
           onClick={handleAddTab}
-          className="mb-0.5 shrink-0 rounded-full p-2 
-          hover:bg-gray-100 dark:hover:bg-gray-800
-          transition"
+          className="mb-0.5 shrink-0 rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
         >
           <PlusIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>

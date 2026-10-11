@@ -176,9 +176,9 @@ export default function RequestForm({
   };
 
   const handleSendReq = (
-    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>,
+    e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>,
   ) => {
-    e.preventDefault();
+    e?.preventDefault();
     setDisplayResponse(null);
     const isValid = ValidateURL(fullUrl);
     if (!isValid) return;

@@ -6,7 +6,7 @@ import CustomSelect from "@/components/UI/Customselect";
 interface ApiInputProps {
   fullUrl: string;
   setFullUrl: (url: string) => void;
-  handleSendReq: (e: React.MouseEvent<HTMLButtonElement> | React.FormEvent<HTMLFormElement>) => void;
+  handleSendReq: (e?: React.MouseEvent<HTMLButtonElement> | React.FormEvent<HTMLFormElement>) => void;
   inputRef: RefObject<HTMLInputElement | null>;
   setMethod: React.Dispatch<React.SetStateAction<MethodsTypes>>;
   setOpenRightSlider: React.Dispatch<React.SetStateAction<boolean>>;
@@ -80,6 +80,11 @@ export default function ApiInput({ fullUrl, setFullUrl, handleSendReq, inputRef,
           className="block w-full rounded-md bg-white dark:bg-gray-800 px-3 py-2.5 text-base text-gray-900 dark:text-white outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 dark:focus:outline-indigo-400 sm:text-sm/6 transition-colors"
           value={fullUrl}
           onChange={handleBaseUrlChange}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSendReq();
+            }
+          }}
           placeholder="https://api.example.com/resource"
         />
       </div>

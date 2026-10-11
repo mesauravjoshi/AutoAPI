@@ -14,6 +14,7 @@ export const getWorkspace = async (req, res) => {
         populate: { path: "ownerId", select: "_id fullname" },
       })
       .lean();
+    // console.log('memberships', memberships);
 
     const formattedWorkspaces = memberships
       .filter((m) => m.workspaceId) // guard against a dangling ref if a workspace was deleted
@@ -26,6 +27,7 @@ export const getWorkspace = async (req, res) => {
           myRole: m.role, // useful for the client to know if this user can manage the team
         };
       });
+    // console.log('formattedWorkspaces', formattedWorkspaces);
 
     return res.status(200).json({
       success: true,

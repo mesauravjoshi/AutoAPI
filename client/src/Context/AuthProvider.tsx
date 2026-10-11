@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = (data: { user: UserModelInterface; token: string; workspace: Workspace }) => {
     setUser(data.user);
     setToken(data.token);
-    console.log(data.workspace);
+    // console.log(data.workspace);
     
     setCurrentWorkspace(data.workspace);
     localStorage.setItem("AutoAPIUserData", JSON.stringify(data.user));

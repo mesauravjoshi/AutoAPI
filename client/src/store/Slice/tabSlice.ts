@@ -196,9 +196,19 @@ const tabSlice = createSlice({
       })
       // addTabAsync
       .addCase(addTabAsync.fulfilled, (state, action) => {
-        console.log('action.payload._id', action.payload._id);
-
-        state.tabs.push(action.payload);
+        // console.log('action.payload._id', action.payload);
+        state.tabs.push({
+          ...action.payload,
+          historyData: {
+            url: "",
+            method: "GET",
+            headers: {
+              "Connection": "keep-alive",
+              "Accept": "*/*"
+            },
+            body: null,
+          }
+        });
         state.activeTab = action.payload._id;
       })
       // removeTabAsync
