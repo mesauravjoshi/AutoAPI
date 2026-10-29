@@ -8,6 +8,16 @@ import {
 } from "@/types/types";
 
 export interface HistoryPayload {
+  requestId?: string;
+  request?: {
+    name?: string;
+    headers: Array<{ key: string; value: string }>;
+    queryParams: Array<{ key: string; value: string }>;
+    body: {
+      type: string;
+      data: unknown;
+    };
+  };
   method: MethodsTypes;
   url: string;
   headers: Record<string, string>;
@@ -43,7 +53,7 @@ export const saveToHistory = async (payload: HistoryPayload): Promise<void> => {
   try {
     await api.post("/local-agent/request", payload);
   } catch (err) {
-    // Don't block the UI if saving fails — just log it
+    console.error("Failed to save local request history:", err);
   }
 };
 

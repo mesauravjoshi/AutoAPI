@@ -1,5 +1,9 @@
 // server/src/controllers/request.controller.js
-import { executeApiRequest, saveHistory } from "#services/request.service.js";
+import {
+  executeApiRequest,
+  saveHistory,
+  createCollectionRequestService
+} from "#services/request.service.js";
 
 /**
  * POST /api/request
@@ -62,6 +66,25 @@ export const sendLocalAgentRequest = async (req, res) => {
 
     return res.status(200).json(responseData);
 
+  } catch (error) {
+    const status = error.statusCode ?? 500;
+    const message = error.message ?? "An unexpected error occurred.";
+
+    return res.status(status).json({ error: message });
+  }
+};
+
+export const createCollectionRequest = async (req, res) => {
+  try {
+    const { collectionId } = req.params;
+
+    const request = await createCollectionRequestService(collectionId, req.body);
+
+    return res.status(201).json({
+      success: true,
+      message: "Request created successfully",
+      data: request,
+    });
   } catch (error) {
     const status = error.statusCode ?? 500;
     const message = error.message ?? "An unexpected error occurred.";

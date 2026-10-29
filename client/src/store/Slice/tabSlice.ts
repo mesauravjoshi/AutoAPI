@@ -64,7 +64,7 @@ export const addTabAsync = createAsyncThunk("tabs/addTabAsync", async (payload: 
 export const removeTabAsync = createAsyncThunk("tabs/removeTabAsync", async (id: string, { rejectWithValue }) => {
   try {
     // If it's a local unsaved tab
-    if (id.startsWith("default-") || id.startsWith("history-")) {
+    if (id.startsWith("default-") || id.startsWith("history-") || id.startsWith("collection-")) {
       return id;
     }
     await api.delete(`/tabs/${id}`);
@@ -78,6 +78,32 @@ const tabSlice = createSlice({
   name: "tabs",
   initialState,
   reducers: {
+    addNewCollectionTab: (state, action: PayloadAction<RequestItem>) => {
+      const request = action.payload;
+      const newTabId = `collection-${request._id}`;
+
+      state.tabs.push({
+        _id: newTabId,
+        name: request.name || "New Request",
+        sidebar: "collection",
+        url: request.url || "",
+        method: request.method || "GET",
+        historyData: request,
+      });
+      state.activeTab = newTabId;
+    },
+    updateCollectionTabRequest: (state, action: PayloadAction<RequestItem>) => {
+      const request = action.payload;
+      const collectionTab = state.tabs.find((tab) =>
+        tab.sidebar === "collection" && tab.historyData?._id === request._id
+      );
+      if (!collectionTab) return;
+
+      collectionTab.name = request.url || request.name || "New Request";
+      collectionTab.url = request.url;
+      collectionTab.method = request.method;
+      collectionTab.historyData = request;
+    },
     addCollectionTab: (state, action: PayloadAction<RequestItem>) => {
       const selectedCollectionItem = action.payload;
       const existingTabId = `collection-${selectedCollectionItem._id}`;
@@ -232,5 +258,11 @@ const tabSlice = createSlice({
   }
 });
 
-export const { addCollectionTab, addTabFromHistory, setActiveTab } = tabSlice.actions;
+export const {
+  addCollectionTab,
+  addNewCollectionTab,
+  updateCollectionTabRequest,
+  addTabFromHistory,
+  setActiveTab,
+} = tabSlice.actions;
 export default tabSlice.reducer;

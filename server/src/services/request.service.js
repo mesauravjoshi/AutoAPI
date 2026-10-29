@@ -1,5 +1,8 @@
+import mongoose from "mongoose";
 import axios from "axios";
 import RequestHistory from "#models/history.js";
+import Request from "#models/request.js";
+import Collection from "#models/collection.js";
 
 // Content-types we can safely decode as UTF-8 text (JSON, HTML, plain text, XML, etc).
 // Anything else (images, video, pdf, zip, octet-stream, fonts...) is treated as binary.
@@ -108,4 +111,38 @@ export const saveHistory = async ({ userId, url, method, headers, requestBody, r
   } catch (dbError) {
     console.error("[HistoryService] Failed to save history record:", dbError.message);
   }
+};
+
+/**
+ * Create an empty request inside a collection.
+ */
+const assertValidCollection = async (collectionId) => {
+  if (!mongoose.Types.ObjectId.isValid(collectionId)) {
+    throw new ServiceError("Invalid collection id", 400);
+  }
+
+  const collection = await Collection.findById(collectionId).select("_id");
+  if (!collection) {
+    throw new ServiceError("Collection not found", 404);
+  }
+};
+
+export const createCollectionRequestService = async (collectionId, data = {}) => {
+  await assertValidCollection(collectionId);
+
+  const {
+    name = "New Request",
+    method = "GET",
+    url = "https://",
+  } = data;
+
+  return Request.create({
+    name,
+    method,
+    url,
+    collectionId,
+    headers: [],
+    queryParams: [],
+    body: { type: "json", content: {} },
+  });
 };

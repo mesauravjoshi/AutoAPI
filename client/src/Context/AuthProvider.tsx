@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { ReactNode } from "react";
 import { AuthContext } from "@/Context/AuthContext";
 import { UserModelInterface } from "@/types/auth.type";
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   });
 
   const [loading, setLoading] = useState(() => {
-    return !!localStorage.getItem("AutoAPIUserData") // has cache -> not "loading" in UX sense
+    return localStorage.getItem("AutoAPIUserData") // has cache -> not "loading" in UX sense
       ? false
       : true;
   });
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(data.user);
     setToken(data.token);
     // console.log(data.workspace);
-    
+
     setCurrentWorkspace(data.workspace);
     localStorage.setItem("AutoAPIUserData", JSON.stringify(data.user));
     localStorage.setItem("AutoAPIAuthToken", data.token);
@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.removeItem("AutoAPICurrentWorkspace");
   };
 
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     const authUser = localStorage.getItem("AutoAPIUserData");
     const storedToken = localStorage.getItem("AutoAPIAuthToken");
 
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       localStorage.setItem("AutoAPIAuthToken", data.token);
       setToken(data.token);
     } catch (err) {
-      const error = err as AxiosError<any>;
+      const error = err as AxiosError<unknown>;
 
       if (error.response) {
         const status = error.response.status;
@@ -98,8 +98,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } finally {
       setLoading(false);
     }
-  };
-  
+  }, []);
+
   const updateCurrentWorkspace = (workspace: Workspace) => {
     setCurrentWorkspace(workspace);
     localStorage.setItem("AutoAPICurrentWorkspace", JSON.stringify(workspace));
@@ -116,7 +116,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     fetchUserData();
-  }, []);
+  }, [fetchUserData]);
 
   return (
     <AuthContext.Provider

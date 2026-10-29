@@ -107,6 +107,7 @@ export const getCollections = async (req, res) => {
               as: "req",
               in: {
                 _id: "$$req._id",
+                collectionId: "$$req.collectionId",
                 name: "$$req.name",
                 method: "$$req.method",
                 url: "$$req.url",

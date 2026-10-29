@@ -5,7 +5,7 @@ import {
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { BlocksIcon, Building2Icon, HandshakeIcon, GlobeIcon, UserIcon, type LucideIcon } from "lucide-react";
 import toast from "react-hot-toast";
-import { AxiosError } from "axios";
+import axios from "axios";
 
 export type WorkspaceType = "personal" | "internal" | "partner" | "public";
 
@@ -169,9 +169,11 @@ const CreateWorkspaceForm: FC<CreateWorkspaceFormProps> = ({
       }
       toast.success("Workspace created successfully.");
       reset();
-    } catch (error: AxiosError | any) {
-      if (error.response) {
-        const message = error.response.data?.message || "Failed to create workspace.";
+    } catch (error: unknown) {
+      if (axios.isAxiosError<{ message?: string }>(error)) {
+        const message =
+          error.response?.data?.message || "Failed to create workspace.";
+
         toast.error(message);
       } else {
         toast.error("Failed to create workspace.");

@@ -90,7 +90,7 @@ export default function MainLayout() {
                           {
                             location.pathname === '/request' ?
                               <RequestForm defaultData={emptyApiHistory} /> :
-                              <RequestForm defaultData={activeTabData?.historyData} />
+                              <RequestForm key={activeTabData?._id} defaultData={activeTabData?.historyData} />
                           }
                         </>
                     }

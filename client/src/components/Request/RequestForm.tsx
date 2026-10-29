@@ -1,5 +1,5 @@
 // client/src/components/Request/RequestForm.tsx
-import { defaultAuthState, AuthState } from '@/components/UI/Request/AuthenticationWidget';
+import {  AuthState } from '@/components/UI/Request/AuthenticationWidget';
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import ValidateURL from '@/utils/validateURL';
@@ -17,6 +17,13 @@ import api from "@/lib/api";
 import { ApiHistory, RequestItem } from '@/types/types';
 import { isLocalApiUrl } from "@/utils/isLocalApiUrl";
 import { localHostAgent } from "@/utils/localHostAgent";
+
+const defaultAuthState: AuthState = {
+  type: 'No Auth',
+  username: '',
+  password: '',
+  token: '',
+};
 
 export default function RequestForm({
   defaultData,

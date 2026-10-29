@@ -19,7 +19,7 @@ const requestSchema = new mongoose.Schema(
 
     method: {
       type: String,
-      enum: ["GET", "POST", "PUT", "DELETE"],
+      enum: ["GET", "POST", "PUT", "PATCH", "DELETE"],
       required: true,
     },
 
@@ -44,7 +44,7 @@ const requestSchema = new mongoose.Schema(
     body: {
       type: {
         type: String,
-        enum: ["json", "form-data", "raw"],
+        enum: ["json", "form-data", "urlencoded", "raw"],
         default: "json",
       },
       content: {

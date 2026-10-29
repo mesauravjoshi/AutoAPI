@@ -7,9 +7,8 @@ import {
   ChevronDown as ChevronDownIcon,
   PlusSquareIcon,
 } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-// import { AppDispatch } from "@/store/Store";
-import { addCollectionTab, addTabAsync } from "@/store/Slice/tabSlice";
+import { useDispatch } from "react-redux";
+import { addCollectionTab, addNewCollectionTab } from "@/store/Slice/tabSlice";
 import Tooltip from "@/components/Tooltip";
 import { MethodsTypes } from "@/types/types";
 import methodBadge from '@/utils/getMethodStyles'
@@ -17,7 +16,7 @@ import methodBadge from '@/utils/getMethodStyles'
 import { CreateCollectionModal } from "./CreateCollectionModal";
 import { DeleteCollectionModal } from "./DeleteCollectionModal";
 import { useAuth } from "@/hooks/useAuth";
-import { RootState, AppDispatch } from '@/store/Store'
+import { AppDispatch } from '@/store/Store'
 
 interface RequestItem {
   _id: string;
@@ -28,7 +27,9 @@ interface RequestItem {
   queryParams: any[];
   body: {
     type: string;
+    content?: unknown;
   };
+  collectionId?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -61,7 +62,7 @@ function RequestCard({
   onDelete: (id: string) => void;
 }) {
   // console.log('request', request);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleClick = () => {
     // console.log(request);
@@ -116,23 +117,28 @@ function CollectionAccordion({
   collection,
   onDelete,
   onDeleteCollection,
+  onRequestCreated,
 }: {
   collection: CollectionItem;
   onDelete: (id: string) => void;
   onDeleteCollection: (collection: CollectionItem) => void;
+  onRequestCreated: (collectionId: string, request: RequestItem) => void;
 }) {
   const [open, setOpen] = useState(true);
   const dispatch = useDispatch<AppDispatch>();
-  const { tabs } = useSelector((state: RootState) => state.tabs);
 
-  const handleAddTab = () => {
-    dispatch(addTabAsync({
-      name: `New Tab ${tabs.length}`,
-      sidebar: "collection",
-      method: 'GET'
-    }));
-  }
-
+  const handleCollectionReq = async () => {
+    try {
+      const response = await api.post(`/collection/${collection._id}/requests`);
+      const request = response.data.data as RequestItem;
+      setOpen(true);
+      dispatch(addNewCollectionTab(request));
+      // The collection list is held locally, so reflect the newly created entry immediately.
+      onRequestCreated(collection._id, request);
+    } catch (error) {
+      console.error("Failed to create collection request:", error);
+    }
+  };
 
   return (
     <div className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
@@ -171,10 +177,10 @@ function CollectionAccordion({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              handleAddTab
-            }} aria-label={`Delete ${collection.name} collection`}
+              void handleCollectionReq();
+            }} aria-label={`Add request to ${collection.name}`}
             title="Add collection tab"
-            className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-200 p-1.5 rounded-md text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400"
+            className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-all duration-200 p-1.5 rounded-md text-gray-500 dark:text-gray-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
             <PlusSquareIcon className="size-4" />
           </button>
@@ -348,6 +354,13 @@ export default function CollectionComponent() {
                 onDeleteCollection={(collection) => {
                   setSelectedCollection(collection);
                   setDeleteModalOpen(true);
+                }}
+                onRequestCreated={(collectionId, request) => {
+                  setCollections((previous) => previous.map((item) =>
+                    item._id === collectionId
+                      ? { ...item, requests: [...item.requests, request], requestCount: item.requestCount + 1 }
+                      : item
+                  ));
                 }}
               />
             ))}

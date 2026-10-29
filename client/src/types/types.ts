@@ -73,7 +73,9 @@ export interface RequestItem {
   queryParams: any[];
   body: {
     type: string;
+    content?: unknown;
   };
+  collectionId?: string;
   createdAt?: string;
   updatedAt?: string;
 }

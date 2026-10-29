@@ -13,12 +13,12 @@ export interface AuthState {
   token: string;
 }
 
-export const defaultAuthState: AuthState = {
-  type: 'No Auth',
-  username: '',
-  password: '',
-  token: '',
-};
+// export const defaultAuthState: AuthState = {
+//   type: 'No Auth',
+//   username: '',
+//   password: '',
+//   token: '',
+// };
 
 interface AuthenticationWidgetProps {
   header: HeaderItem[];
