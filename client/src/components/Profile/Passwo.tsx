@@ -15,6 +15,7 @@ import type {
 import PasswordInput from "@/components/UI/Common/PasswordInput";
 import { SaveButton } from "@/components/UI/Common/Savebutton";
 import { SectionCard } from "@/components/UI/Common/Sectioncard ";
+import axios from "axios";
 
 // ─── Password Section ─────────────────────────────────────────────────────────
 
@@ -79,8 +80,13 @@ function CreatePasswordForm({ onPasswordCreated }: { onPasswordCreated: () => vo
       toast.success("Password created! You can now sign in with email & password.");
       reset();
       onPasswordCreated();
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to create password.");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(
+          error?.response?.data?.message || "Failed to create password.");
+      } else {
+        toast.error("Failed to update email.");
+      }
     }
   };
 
@@ -130,8 +136,8 @@ function CreatePasswordForm({ onPasswordCreated }: { onPasswordCreated: () => vo
                 <div
                   key={i}
                   className={`h-1 flex-1 rounded-full transition-colors ${met
-                      ? "bg-green-500"
-                      : "bg-gray-200 dark:bg-gray-700"
+                    ? "bg-green-500"
+                    : "bg-gray-200 dark:bg-gray-700"
                     }`}
                 />
               ))}
@@ -183,8 +189,12 @@ function ChangePasswordForm() {
       await changePassword(data);
       toast.success("Password changed successfully!");
       reset();
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to change password.");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error?.response?.data?.message || "Failed to change password.");
+      } else {
+        toast.error("Failed to change password.");
+      }
     }
   };
 

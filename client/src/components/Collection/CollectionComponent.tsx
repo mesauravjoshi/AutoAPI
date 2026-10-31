@@ -17,6 +17,7 @@ import { CreateCollectionModal } from "./CreateCollectionModal";
 import { DeleteCollectionModal } from "./DeleteCollectionModal";
 import { useAuth } from "@/hooks/useAuth";
 import { AppDispatch } from '@/store/Store'
+import axios from "axios";
 
 interface RequestItem {
   _id: string;
@@ -305,11 +306,17 @@ export default function CollectionComponent() {
             .length,
         }))
       );
-    } catch (error: any) {
-      console.error(
-        "Delete failed:",
-        error?.response?.data?.message || error.message
-      );
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Delete failed:",
+          error.response?.data?.message || error.message
+        );
+      } else if (error instanceof Error) {
+        console.error("Delete failed:", error.message);
+      } else {
+        console.error("Delete failed:", error);
+      }
     }
   };
 

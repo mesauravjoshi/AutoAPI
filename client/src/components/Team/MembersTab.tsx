@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { teamService } from "@/services/team.service";
 import { Membership } from "@/types/team.type";
 import TeamTableShell from "@/components/Shared/TeamTableShell";
@@ -14,7 +14,7 @@ export default function MembersTab({ workspaceId }: { workspaceId: string }) {
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
-  const fetchMembers = async () => {
+  const fetchMembers = useCallback(async () => {
     setLoading(true);
     try {
       const res = await teamService.getMembers(workspaceId);
@@ -24,11 +24,11 @@ export default function MembersTab({ workspaceId }: { workspaceId: string }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [workspaceId]);
 
   useEffect(() => {
     fetchMembers();
-  }, [workspaceId]);
+  }, [fetchMembers, workspaceId]);
 
   const handleRemove = async (membershipId: string) => {
     if (!confirm("Remove this member from the workspace?")) return;

@@ -1,6 +1,7 @@
 import { current, createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 import { MethodsTypes, ApiHistory, RequestItem } from '@/types/types'
 import api from "@/lib/api";
+import axios from "axios";
 
 export interface Tab {
   _id: string;
@@ -47,8 +48,13 @@ export const fetchTabs = createAsyncThunk("tabs/fetchTabs", async (_, { rejectWi
   try {
     const response = await api.get("/tabs");
     return response.data.data;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || "Failed to fetch tabs");
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch tabs"
+      );
+    }
+    return rejectWithValue("Failed to fetch tabs");
   }
 });
 
@@ -56,8 +62,11 @@ export const addTabAsync = createAsyncThunk("tabs/addTabAsync", async (payload: 
   try {
     const response = await api.post("/tabs", payload);
     return response.data.data; // the new tab from backend
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || "Failed to add tab");
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      return rejectWithValue(error.response?.data?.message || "Failed to add tab");
+    }
+    return rejectWithValue("Failed to add tabs");
   }
 });
 
@@ -69,8 +78,13 @@ export const removeTabAsync = createAsyncThunk("tabs/removeTabAsync", async (id:
     }
     await api.delete(`/tabs/${id}`);
     return id;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || "Failed to remove tab");
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to remove tab"
+      );
+    }
+    return rejectWithValue("Failed to remove tab");
   }
 });
 

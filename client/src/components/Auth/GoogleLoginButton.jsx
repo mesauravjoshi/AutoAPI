@@ -1,21 +1,21 @@
-import { GoogleLogin } from "@react-oauth/google";
-import axios from "axios";
+// import { GoogleLogin } from "@react-oauth/google";
+// import axios from "axios";
 
-function Login() {
+// function Login() {
 
-  const onSuccess = async (credentialResponse) => {
+//   const onSuccess = async (credentialResponse) => {
 
-    await axios.post("/auth/google", {
-      credential: credentialResponse.credential
-    });
+//     await axios.post("/auth/google", {
+//       credential: credentialResponse.credential
+//     });
 
-  };
+//   };
 
-  return (
-    <GoogleLogin
-      onSuccess={onSuccess}
-      onError={() => console.log("Login Failed")}
-    />
-  );
+//   return (
+//     <GoogleLogin
+//       onSuccess={onSuccess}
+//       onError={() => console.log("Login Failed")}
+//     />
+//   );
 
-}
+// }

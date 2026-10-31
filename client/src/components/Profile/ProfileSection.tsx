@@ -7,6 +7,7 @@ import type { UpdateProfilePayload } from "@/services/profile.service";
 import Input from "@/components/UI/Common/Input";
 import { SaveButton } from "@/components/UI/Common/Savebutton";
 import { SectionCard } from "@/components/UI/Common/Sectioncard ";
+import axios from "axios";
 
 // ─── Profile Section ──────────────────────────────────────────────────────────
 
@@ -30,10 +31,13 @@ export function ProfileSection() {
       const res = await updateProfile(data);
       updateUser(res.data.user);
       toast.success("Profile updated successfully!");
-    } catch (err: any) {
-      toast.error(
-        err?.response?.data?.message || "Failed to update profile."
-      );
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(
+          error?.response?.data?.message || "Failed to update profile.");
+      } else {
+        toast.error("Failed to update profile.");
+      }
     }
   };
 

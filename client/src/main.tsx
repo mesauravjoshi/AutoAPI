@@ -5,7 +5,7 @@ import App from '@/App'
 import { Provider } from 'react-redux'
 import { store } from '@/store/Store'
 import { AuthProvider } from '@/Context/AuthProvider'
-import { ThemeProvider } from "@/Context/ThemeContext";
+import { ThemeProvider } from "@/Context/ThemeProvider";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 createRoot(document.getElementById('root')!).render(

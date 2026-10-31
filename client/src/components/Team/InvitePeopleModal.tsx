@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import axios from "axios";
 import { teamService } from "@/services/team.service";
 import { MembershipRole, TeamUser } from "@/types/team.type";
 import { SearchIcon, Loader2Icon } from "lucide-react";
@@ -73,8 +74,12 @@ export default function InvitePeopleModal({ workspaceId, onClose, onInvited }: P
       });
       onInvited();
       onClose();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Failed to send invite");
+    } catch (error: unknown) {
+      if (axios.isAxiosError<{ message?: string }>(error)) {
+        setError(error.response?.data?.message || "Failed to send invite");
+      } else {
+        setError("Failed to send invite");
+      }
     } finally {
       setSending(false);
     }

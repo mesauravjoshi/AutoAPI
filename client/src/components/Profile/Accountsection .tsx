@@ -8,6 +8,7 @@ import Input from "@/components/UI/Common/Input";
 import PasswordInput from "@/components/UI/Common/PasswordInput";
 import { SaveButton } from "@/components/UI/Common/Savebutton";
 import { SectionCard } from "@/components/UI/Common/Sectioncard ";
+import axios from "axios";
 
 // ─── Account Section ──────────────────────────────────────────────────────────
 
@@ -30,8 +31,12 @@ export function AccountSection() {
       updateUser(res.data.user);
       toast.success("Email updated successfully!");
       reset();
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to update email.");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Failed to update email.");
+      } else {
+        toast.error("Failed to update email.");
+      }
     }
   };
 

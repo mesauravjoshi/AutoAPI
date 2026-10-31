@@ -18,6 +18,7 @@ import { logoutService } from "@/services/auth.service";
 import { WorkspaceModal } from "@/components/Workspace/WorkspaceModal";
 import { SignOutModal } from "@/components/Auth/SignOutModal";
 import { NotificationDropdown } from "@/components/Notifications/NotificationDropdown";
+import { getAvatarColor } from "@/utils/getAvatarColor";
 
 interface UserNavigationItem {
   name: string;
@@ -39,17 +40,6 @@ const userNavigation: UserNavigationItem[] = [
 // Material Design "filled tonal button" pill style — used for Home / Workspace
 const MD_TONAL_BUTTON =
   "inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 active:bg-blue-200/70 dark:active:bg-blue-900/70 transition-colors duration-200 cursor-pointer";
-
-
-export const getAvatarColor = (seed: string) => {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  // Force to a 6-digit hex color
-  const color = (hash & 0x00ffffff).toString(16).padStart(6, "0");
-  return color;
-};
 
 export const NavBar = ({ setSidebarOpen }: NavBarProps) => {
   const { theme, toggleTheme } = useTheme();

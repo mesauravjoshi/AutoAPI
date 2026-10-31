@@ -9,6 +9,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import api from "@/lib/api";
 import Checkbox from "@/components/UI/Common/Checkbox";
 import { Sun, Moon } from "lucide-react";
+import axios from "axios";
 
 type LoginFormData = {
   email: string;
@@ -46,9 +47,13 @@ const LogIn = () => {
           toast.success("Successfully logged in with Google!");
           navigate("/request");
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(error);
-        toast.error("Google login failed.");
+        if (axios.isAxiosError(error)) {
+          toast.error(error.response?.data?.message || "Google login failed.");
+        } else {
+          toast.error("Google login failed.");
+        }
       }
     },
     onError: () => {
@@ -70,9 +75,13 @@ const LogIn = () => {
         toast.success("Successfully logged in!");
         navigate("/request");
       }
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error?.response?.data?.message || error?.response?.data?.error || "Login failed. Please try again.");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error(error);
+        toast.error(error?.response?.data?.message || error?.response?.data?.error || "Login failed. Please try again.");
+      } else {
+        toast.error("Login failed.");
+      }
     } finally {
       reset();
     }

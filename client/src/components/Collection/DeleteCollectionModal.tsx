@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle, DialogDescription
 } from "@/components/UI/dialog";
+import axios from "axios";
 
 type DeleteCollectionModalProps = {
   isOpen: boolean;
@@ -32,11 +33,17 @@ export const DeleteCollectionModal = ({
       await api.delete(`/collection/${selectedCollection._id}`);
       onSuccess(selectedCollection._id);
       onClose();
-    } catch (error: any) {
-      console.error(
-        "Delete collection failed:",
-        error?.response?.data?.message || error.message
-      );
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Delete collection failed:",
+          error.response?.data?.message || error.message
+        );
+      } else if (error instanceof Error) {
+        console.error("Delete collection failed:", error.message);
+      } else {
+        console.error("Delete collection failed:", error);
+      }
     } finally {
       setDeleteLoading(false);
     }
@@ -50,7 +57,7 @@ export const DeleteCollectionModal = ({
         <DialogHeader>
           <DialogTitle className="text-red-600">Delete Collection</DialogTitle>
         </DialogHeader>
-        
+
         <DialogDescription className="text-sm text-gray-600 dark:text-gray-300">
           Are you sure you want to delete{" "}
           <span className="font-semibold">{selectedCollection.name}</span>?

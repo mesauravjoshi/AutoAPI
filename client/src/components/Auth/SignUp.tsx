@@ -7,6 +7,7 @@ import api from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { Sun, Moon } from "lucide-react";
+import axios from "axios";
 
 type SignUpFormData = {
   email: string;
@@ -37,9 +38,16 @@ export default function SignUp() {
         toast.success("Account created successfully!");
         navigate("/login");
       }
-    } catch (error: any) {
-      console.error(error.response.data);
-      toast.error(error?.response?.data?.message || error?.response?.data?.error || "Signup failed. Please try again.");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          "Signup failed. Please try again."
+        );
+      } else {
+        toast.error("Signup failed. Please try again.");
+      }
     }
   };
 
@@ -64,9 +72,16 @@ export default function SignUp() {
           toast.success("Successfully logged in with Google!");
           navigate("/request");
         }
-      } catch (error: any) {
-        console.error(error);
-        toast.error("Google login failed.");
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          toast.error(
+            error.response?.data?.message ||
+            error.response?.data?.error ||
+            "Google login failed."
+          );
+        } else {
+          toast.error("Google login failed.");
+        }
       }
     },
 

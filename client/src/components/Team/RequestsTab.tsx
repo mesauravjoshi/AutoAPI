@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { teamService } from "@/services/team.service";
 import { Membership } from "@/types/team.type";
 import TeamTableShell from "@/components/Shared/TeamTableShell";
@@ -11,7 +11,7 @@ export default function RequestsTab({ workspaceId }: { workspaceId: string }) {
   const [requests, setRequests] = useState<Membership[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     setLoading(true);
     try {
       const res = await teamService.getRequests(workspaceId);
@@ -21,11 +21,11 @@ export default function RequestsTab({ workspaceId }: { workspaceId: string }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [workspaceId])
 
   useEffect(() => {
     fetchRequests();
-  }, [workspaceId]);
+  }, [fetchRequests, workspaceId]);
 
   const respond = async (membershipId: string, approve: boolean) => {
     try {

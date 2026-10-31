@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/UI/dialog";
 import { useAuth } from "@/hooks/useAuth";
-import { getAvatarColor } from "@/layout/Nav";
+import { getAvatarColor } from "@/utils/getAvatarColor";
 
 interface SignOutModalProps {
   open: boolean;

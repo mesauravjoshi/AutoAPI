@@ -3,6 +3,7 @@ import api from "@/lib/api";
 import { Clock as ClockIcon } from "lucide-react";
 import { ApiHistory } from '@/types/types'
 import AccordionSection from '@/components/History/AccordionSection'
+import axios from "axios";
 // import RequestForm from '@/components/Request/RequestForm'
 // import { RootState } from "@/store/Store";
 // import { useSelector } from "react-redux";
@@ -122,11 +123,17 @@ export default function HistoryComponent() {
         prev.filter((item) => item._id !== id)
       );
 
-    } catch (error: any) {
-      console.error(
-        "Delete failed:",
-        error?.response?.data?.message || error.message
-      );
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Delete failed:",
+          error.response?.data?.message || error.message
+        );
+      } else if (error instanceof Error) {
+        console.error("Delete failed:", error.message);
+      } else {
+        console.error("Delete failed:", error);
+      }
     }
   };
 
@@ -141,11 +148,17 @@ export default function HistoryComponent() {
       // Remove all deleted items from UI in one pass
       setHistory((prev) => prev.filter((item) => !ids.includes(item._id)));
 
-    } catch (error: any) {
-      console.error(
-        "Bulk delete failed:",
-        error?.response?.data?.message || error.message
-      );
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Bulk delete failed:",
+          error.response?.data?.message || error.message
+        );
+      } else if (error instanceof Error) {
+        console.error("Delete failed:", error.message);
+      } else {
+        console.error("Delete failed:", error);
+      }
     }
   };
 
