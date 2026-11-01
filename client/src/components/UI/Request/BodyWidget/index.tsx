@@ -3,7 +3,6 @@ import { formDataConfig } from "./FormData";
 import { urlEncodedConfig } from "./UrlEncoded";
 import { rawConfig } from "./Raw";
 import { HeaderItem } from '@/types/types';
-
 export type BodyType = "form-data" | "x-www-form-urlencoded" | "raw";
 export type SerializedBody = string | FormData | URLSearchParams | undefined;
 

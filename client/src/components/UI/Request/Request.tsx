@@ -34,7 +34,7 @@ function classNames(...classes: (string | boolean | undefined)[]): string {
 
 export default function Request({
   body, setBody, header, setHeader, params, setParams,
-  fullUrl, setFullUrl, inputRef, auth, setAuth,             // NEW
+  fullUrl, setFullUrl, inputRef, auth, setAuth,
 }: RequestProps) {
 
   const [currentTab, setCurrentTab] = useState('Body');
