@@ -6,7 +6,7 @@ import {
 // import { useAuth } from "@/hooks/useAuth";
 import ProfileSection from "@/components/Profile/ProfileSection";
 import AccountSection from "@/components/Profile/Accountsection ";
-import PasswordSection from "@/components/Profile/Passwo";
+import PasswordSection from "@/components/Profile/Password";
 import { useState } from "react";
 
 // ─── Section IDs ─────────────────────────────────────────────────────────────

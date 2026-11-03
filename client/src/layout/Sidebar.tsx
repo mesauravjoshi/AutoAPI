@@ -186,7 +186,7 @@ export default function Slider({ sidebarOpen, setSidebarOpen }: SliderProps) {
               </li>
               <li className="mt-auto">
                 <Link
-                  to="#"
+                  to="/profile"
                   className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200"
                 >
                   <Cog6ToothIcon

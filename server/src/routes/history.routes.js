@@ -1,10 +1,12 @@
 import express from "express";
 import { historyRequest, historyDelete, historyBulkDelete } from "#controllers/history.controller.js";
 import { protect } from "#middlewares/auth.middleware.js";
-
+import {
+  requestHistoryLimiter,
+} from "#middlewares/rateLimiter.middleware.js";
 const router = express.Router();
 
-router.get("/history", protect, historyRequest);
+router.get("/history", protect, requestHistoryLimiter, historyRequest);
 
 // NOTE: "/history/bulk" must be registered before "/history/:id",
 // otherwise Express will match "bulk" as the :id param on the route below.
