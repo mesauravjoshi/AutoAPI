@@ -18,7 +18,7 @@ const router = express.Router();
 // All profile routes require authentication
 router.get("/profile/password-status", protect, readLimiter, passwordStatus);
 router.post("/profile/create-password", protect, passwordResetLimiter, createPasswordHandler);
-router.put("/profile/change-password", protect, changePasswordHandler);
+router.put("/profile/change-password", protect, passwordResetLimiter, changePasswordHandler);
 router.put("/profile/update-profile", protect, writeLimiter, updateProfileHandler);
 router.put("/profile/update-email", protect, writeLimiter, updateEmailHandler);
 

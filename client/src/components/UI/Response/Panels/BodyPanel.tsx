@@ -30,6 +30,20 @@ function UnavailablePreview({ icon, label }: { icon: ReactNode; label: string })
   );
 }
 
+function ConsoleShell({ children, contentType }: { children: ReactNode; contentType: string }) {
+  return (
+    <div className="relative bg-gray-900">
+      <div className="flex items-center gap-1.5 px-4 py-2.5 bg-gray-900 border-b border-gray-800">
+        <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+        <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
+        <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
+        <span className="ml-2 text-[11px] text-gray-500 font-mono">{contentType || 'text/plain'}</span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
 export default function BodyPanel({
   bodyKind,
   prettyBody,
@@ -50,23 +64,10 @@ export default function BodyPanel({
   onDownload: () => void;
 }) {
 
-  // Terminal-style console — dark regardless of app theme (matches Postman/DevTools convention).
-  const ConsoleShell = ({ children }: { children: ReactNode }) => (
-    <div className="relative bg-gray-900">
-      <div className="flex items-center gap-1.5 px-4 py-2.5 bg-gray-900 border-b border-gray-800">
-        <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-        <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-        <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
-        <span className="ml-2 text-[11px] text-gray-500 font-mono">{contentType || 'text/plain'}</span>
-      </div>
-      {children}
-    </div>
-  );
-
   if (bodyKind === 'json' || bodyKind === 'html') {
     const language = bodyKind === 'html' ? 'markup' : 'json';
     return (
-      <ConsoleShell>
+      <ConsoleShell contentType={contentType}>
         <div className="relative">
           <CodeBlock code={prettyBody} language={language} />
           <button onClick={onCopy} className="absolute top-3 right-3 ...">
@@ -79,7 +80,7 @@ export default function BodyPanel({
 
   if (bodyKind === 'image') {
     return (
-      <ConsoleShell>
+      <ConsoleShell contentType={contentType}>
         <div
           className="flex items-center justify-center p-8 min-h-50 max-h-[55vh] overflow-auto"
           style={{
@@ -99,7 +100,7 @@ export default function BodyPanel({
 
   if (bodyKind === 'video') {
     return (
-      <ConsoleShell>
+      <ConsoleShell contentType={contentType}>
         <div className="flex items-center justify-center p-6 bg-black min-h-50 max-h-[55vh]">
           {dataUrl ? (
             <video src={dataUrl} controls className="max-h-[48vh] max-w-full rounded-lg" />
@@ -113,7 +114,7 @@ export default function BodyPanel({
 
   if (bodyKind === 'pdf') {
     return (
-      <ConsoleShell>
+      <ConsoleShell contentType={contentType}>
         {dataUrl ? (
           <iframe src={dataUrl} className="w-full h-[55vh] bg-white" title="PDF response preview" />
         ) : (
@@ -127,7 +128,7 @@ export default function BodyPanel({
 
   // binary / zip / anything else — no inline preview, offer a clean download card
   return (
-    <ConsoleShell>
+    <ConsoleShell contentType={contentType}>
       <div className="flex flex-col items-center justify-center gap-3 py-12 px-6 bg-gray-900 dark:bg-gray-950">
         <div className="w-14 h-14 rounded-xl bg-gray-800 flex items-center justify-center">
           <FileArchive className="w-7 h-7 text-gray-400" />

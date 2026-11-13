@@ -36,16 +36,24 @@ export const getPasswordStatus = () =>
 
 /** Create a password for a Google-only account */
 export const createPassword = (data: CreatePasswordPayload) =>
-  api.post("profile/create-password", data);
+  api.post("profile/create-password", data, {
+    skipAuthRefresh: true
+  });
 
 /** Change password for a user who already has one */
 export const changePassword = (data: ChangePasswordPayload) =>
-  api.put("profile/change-password", data);
+  api.put("profile/change-password", data, {
+    skipAuthRefresh: true
+  });
 
 /** Update profile fields (firstname, lastname, username) */
 export const updateProfile = (data: UpdateProfilePayload) =>
-  api.put("profile/update-profile", data);
+  api.put("profile/update-profile", data, {
+    skipAuthRefresh: true
+  });
 
 /** Update email (requires current password for verification) */
 export const updateEmail = (data: UpdateEmailPayload) =>
-  api.put("profile/update-email", data);
+  api.put("profile/update-email", data, {
+    skipAuthRefresh: true
+  });

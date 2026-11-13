@@ -1,3 +1,13 @@
+declare module "axios" {
+  export interface AxiosRequestConfig {
+    skipAuthRefresh?: boolean;
+  }
+
+  export interface InternalAxiosRequestConfig {
+    skipAuthRefresh?: boolean;
+  }
+}
+
 import axios from "axios";
 import type { AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
 
@@ -70,6 +80,10 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    if (is401 && originalRequest.skipAuthRefresh) {
+      return Promise.reject(error);
+    }
+
     // Any other 401 → real AutoAPI session expiry → try refresh once, then hard logout
     if (is401 && !originalRequest._retry) {
       if (isRefreshing) {
@@ -87,6 +101,14 @@ api.interceptors.response.use(
 
       originalRequest._retry = true;
       isRefreshing = true;
+      const isRefreshRequired =
+        originalRequest.url?.includes("/profile/password-status")
+      originalRequest.url?.includes("/profile/create-password")
+      originalRequest.url?.includes("/profile/change-password")
+      originalRequest.url?.includes("/profile/update-profile")
+      originalRequest.url?.includes("/profile/update-email")
+
+      console.log(isRefreshRequired);
 
       try {
         const { data } = await api.post(
@@ -109,7 +131,7 @@ api.interceptors.response.use(
             `Bearer ${newToken}`;
         }
 
-        return api(originalRequest);
+        // return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
         clearAuthAndRedirect();
