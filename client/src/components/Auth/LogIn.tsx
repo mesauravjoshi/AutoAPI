@@ -39,10 +39,11 @@ const LogIn = () => {
         });
 
         if (res.data.success) {
+          const currentWorkspace = res.data.currentWorkspace;
           login({
             user: res.data.user,
             token: res.data.token,
-            workspace: res.data.currentWorkspace[0],
+            workspace: currentWorkspace?.[0] || null,
           });
           toast.success("Successfully logged in with Google!");
           navigate("/request");

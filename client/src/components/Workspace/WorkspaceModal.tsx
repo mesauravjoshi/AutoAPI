@@ -50,7 +50,7 @@ export const WorkspaceModal = ({
   }, [workspaceOpen]);
 
   const changeWorkspace = (workspace: Workspace) => {
-    console.log(workspace);
+    // console.log(workspace);
     // return
     updateCurrentWorkspace(workspace);
     setWorkspaceOpen(false);

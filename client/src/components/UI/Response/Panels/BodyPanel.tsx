@@ -68,7 +68,7 @@ export default function BodyPanel({
     const language = bodyKind === 'html' ? 'markup' : 'json';
     return (
       <ConsoleShell contentType={contentType}>
-        <div className="relative">
+        <div className="relative min-w-0 max-w-full">
           <CodeBlock code={prettyBody} language={language} />
           <button onClick={onCopy} className="absolute top-3 right-3 ...">
             {/* copy button unchanged */}
@@ -153,13 +153,13 @@ function CodeBlock({ code, language }: { code: string; language: 'json' | 'marku
     <Highlight theme={themes.vsDark} code={code} language={language}>
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre
-          className={`${className} p-5 min-h-25 max-h-[50vh] text-sm font-mono overflow-y-auto overflow-x-hidden whitespace-pre-wrap wrap-break-word`}
+          className={`${className} w-full min-w-0 max-w-full p-5 min-h-25 max-h-[50vh] text-sm font-mono overflow-y-auto overflow-x-hidden whitespace-pre-wrap wrap-anywhere`}
           style={{ ...style, background: 'transparent', color: '#d4d4d4' }}
         >
           {tokens.map((line, i) => (
-            <div key={i} {...getLineProps({ line })} className="whitespace-pre-wrap wrap-break-word">
+            <div key={i} {...getLineProps({ line })} className="whitespace-pre-wrap wrap-anywhere">
               {line.map((token, key) => (
-                <span key={key} {...getTokenProps({ token })} className="whitespace-pre-wrap wrap-break-word" />
+                <span key={key} {...getTokenProps({ token })} className="whitespace-pre-wrap wrap-anywhere" />
               ))}
             </div>
           ))}
