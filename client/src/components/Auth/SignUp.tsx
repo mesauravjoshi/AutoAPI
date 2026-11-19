@@ -67,7 +67,7 @@ export default function SignUp() {
           login({
             user: res.data.user,
             token: res.data.token,
-            workspace: res.data.workspace,
+            workspace: res.data.currentWorkspace,
           });
           toast.success("Successfully logged in with Google!");
           navigate("/request");

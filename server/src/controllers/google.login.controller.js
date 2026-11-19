@@ -38,6 +38,7 @@ export const googleLogin = async (req, res) => {
       user: result.user,
       workspace: result.workspace,
       token: result.accessToken,
+      currentWorkspace: result.currentWorkspace,
     });
 
   } catch (error) {

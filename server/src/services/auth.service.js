@@ -250,9 +250,7 @@ export const googleLogin = async (payload) => {
     .populate("workspaceId")
     .lean();
 
-  const workspaces = memberships
-    .filter((m) => m.workspaceId)
-    .map((m) => ({ ...m.workspaceId, myRole: m.role }));
+  const workspaces = memberships.map((m) => ({ ...m.workspaceId, myRole: m.role }));
 
   const currentWorkspace = workspaces.find((w) => w.type === "personal") || workspaces[0] || null;
 
@@ -265,7 +263,7 @@ export const googleLogin = async (payload) => {
     },
     accessToken,
     refreshToken,
-    workspaces,
+    workspace: workspaces,
     currentWorkspace,
   };
 };
