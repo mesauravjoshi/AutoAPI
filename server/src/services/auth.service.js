@@ -405,6 +405,13 @@ export const updateEmail = async (userId, { newEmail, password }) => {
     throw { status: 409, message: "New email is the same as the current email." };
   }
 
+  if (user.password === null && !user.hasLocalPassword) {
+    throw {
+      status: 409,
+      message: "Your account uses Google Sign-In. Please create a password first before changing your email address."
+    };
+  }
+
   // Verify identity via password
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {

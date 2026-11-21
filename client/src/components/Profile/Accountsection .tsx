@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Shield, AlertTriangle } from "lucide-react";
@@ -8,6 +9,7 @@ import Input from "@/components/UI/Common/Input";
 import PasswordInput from "@/components/UI/Common/PasswordInput";
 import { SaveButton } from "@/components/UI/Common/Savebutton";
 import { SectionCard } from "@/components/UI/Common/Sectioncard ";
+import { DeleteAccountModal } from "./DeleteAccountModal";
 import axios from "axios";
 
 // ─── Account Section ──────────────────────────────────────────────────────────
@@ -15,6 +17,7 @@ import axios from "axios";
 export function AccountSection() {
   const { user, updateUser } = useAuth();
   const isGoogleUser = user?.provider === "google";
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const {
     register,
@@ -150,10 +153,8 @@ export function AccountSection() {
             </div>
             <button
               type="button"
-              onClick={() =>
-                toast.error("Account deletion coming soon!", { icon: "⚠️" })
-              }
-              className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-red-600 dark:text-red-400 border border-red-300 dark:border-red-800/60 bg-white dark:bg-transparent hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+              onClick={() => setIsDeleteModalOpen(true)}
+              className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-red-600 dark:text-red-400 border border-red-300 dark:border-red-800/60 bg-white dark:bg-transparent hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
             >
               <AlertTriangle className="size-4" />
               Delete Account
@@ -161,6 +162,12 @@ export function AccountSection() {
           </div>
         </div>
       </SectionCard>
+
+      {/* Delete Account Confirmation Modal */}
+      <DeleteAccountModal
+        open={isDeleteModalOpen}
+        onOpenChange={setIsDeleteModalOpen}
+      />
     </div>
   );
 }
