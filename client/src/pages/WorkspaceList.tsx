@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import { Workspace } from "@/types/workspace.type";
-import { BlocksIcon, ArrowRightIcon, Loader2Icon } from "lucide-react";
+import { BlocksIcon, ArrowRightIcon, Loader2Icon, TrashIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { DeleteWorkspaceModal } from "@/components/Workspace/DeleteWorkspaceModal";
 
 const headers = ["Name", "Owner", "Created", "Updated", ""];
 
 export default function WorkspaceList() {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [loading, setLoading] = useState(true);
+  const [workspaceToDelete, setWorkspaceToDelete] = useState<Workspace | null>(null);
   const { user, currentWorkspace, updateCurrentWorkspace } = useAuth();
   const Navigate = useNavigate();
 
@@ -28,6 +31,17 @@ export default function WorkspaceList() {
 
     fetchWorkspaces();
   }, []);
+
+  const handleWorkspaceDeleted = (deletedId: string) => {
+    setWorkspaces((prev) => {
+      const remaining = prev.filter((w) => w._id !== deletedId);
+      // If the deleted workspace was the active one, switch to the first remaining workspace
+      if (currentWorkspace?._id === deletedId && remaining.length > 0) {
+        updateCurrentWorkspace(remaining[0]);
+      }
+      return remaining;
+    });
+  };
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300">
@@ -96,8 +110,10 @@ export default function WorkspaceList() {
                 </tr>
               ) : (
                 workspaces.map((workspace) => {
-                  const isMine = workspace.owner._id === user?.id;
+                  const isMine = workspace.owner?._id === user?.id;
+                  const isOwner = workspace.myRole === "owner" || isMine;
                   const isActive = currentWorkspace?._id === workspace._id;
+
                   return (
                     <tr
                       key={workspace._id}
@@ -120,7 +136,7 @@ export default function WorkspaceList() {
                           </span>
                         ) : (
                           <span className="text-sm text-gray-500 dark:text-gray-400">
-                            {workspace.owner.fullname}
+                            {workspace.owner?.fullname || "Unknown"}
                           </span>
                         )}
                       </td>
@@ -130,20 +146,44 @@ export default function WorkspaceList() {
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         {new Date(workspace.updatedAt).toLocaleDateString()}
                       </td>
-                      <td className="px-4 py-3 pr-5 whitespace-nowrap text-right">
-                        <button
-                          className="inline-flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100"
-                          onClick={() => {
-                            updateCurrentWorkspace({
-                              ...workspace,
-                              // ownerId: workspace.owner._id,
-                            });
-                            Navigate("/collections");
-                          }}
-                        >
-                          Switch
-                          <ArrowRightIcon size={14} />
-                        </button>
+                      <td className="px-4 py-3 pr-5 whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-3">
+                          <button
+                            type="button"
+                            className="inline-flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100"
+                            onClick={() => {
+                              updateCurrentWorkspace({
+                                ...workspace,
+                              });
+                              Navigate("/collections");
+                            }}
+                          >
+                            Switch
+                            <ArrowRightIcon size={14} />
+                          </button>
+                          {isOwner && (
+                            <button
+                              type="button"
+                              title={
+                                workspaces.length <= 1
+                                  ? "Cannot delete your only workspace"
+                                  : "Delete workspace"
+                              }
+                              className="inline-flex items-center justify-center p-1 rounded-md text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100"
+                              onClick={() => {
+                                if (workspaces.length <= 1) {
+                                  toast.error(
+                                    "Cannot delete your only remaining workspace."
+                                  );
+                                  return;
+                                }
+                                setWorkspaceToDelete(workspace);
+                              }}
+                            >
+                              <TrashIcon size={15} />
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -153,6 +193,14 @@ export default function WorkspaceList() {
           </table>
         </div>
       </div>
+
+      {/* Delete Workspace Confirmation Modal */}
+      <DeleteWorkspaceModal
+        workspace={workspaceToDelete}
+        isOpen={!!workspaceToDelete}
+        onClose={() => setWorkspaceToDelete(null)}
+        onSuccess={handleWorkspaceDeleted}
+      />
     </div>
   );
 }

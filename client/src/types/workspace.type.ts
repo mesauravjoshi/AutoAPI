@@ -6,9 +6,10 @@ export type Workspace = {
   createdAt: string;
   updatedAt: string;
   type: string;
-}
+  myRole?: string;
+};
 
 type owner = {
   _id: string;
   fullname: string;
-}
+};
