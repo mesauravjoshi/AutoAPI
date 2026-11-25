@@ -21,7 +21,6 @@ const LogIn = () => {
   const { theme, toggleTheme } = useTheme();
   const [rememberMe, setRememberMe] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-console.log(isGoogleLoading);
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<LoginFormData>({
     defaultValues: { email: "", password: "" },

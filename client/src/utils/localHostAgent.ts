@@ -121,7 +121,9 @@ export const localHostAgent = async ({
     const end = performance.now();
     const time = end - start;
 
-    const contentType = response.headers["content-type"] || "";
+    const contentTypeHeader = response.headers["content-type"];
+    const contentType =
+      typeof contentTypeHeader === "string" ? contentTypeHeader : "";
     const buf: ArrayBuffer = response.data; // raw bytes, thanks to responseType above
 
     let data;
@@ -144,8 +146,8 @@ export const localHostAgent = async ({
     }
 
     const responseHeaders =
-      typeof (response.headers as any)?.toJSON === "function"
-        ? (response.headers as any).toJSON()
+      typeof (response.headers)?.toJSON === "function"
+        ? (response.headers).toJSON()
         : (response.headers as Record<string, string>);
 
     const result: DisplayResponse = {
